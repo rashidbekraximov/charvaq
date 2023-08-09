@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uz.cluster.enums.Gender;
 
 @Getter
 @Setter
@@ -18,8 +19,10 @@ public class JwtResponse {
     private String middleName;
     private String birthday;
     private String email;
+    private Gender gender;
     private String login;
-    private String roleName;
+    private String systemRoleName;
+    private boolean enabled;
     private int clusterId;
     private String note;
 

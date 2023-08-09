@@ -1,6 +1,7 @@
 package uz.cluster;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -41,6 +42,7 @@ public class ClusterApplication extends SpringBootServletInitializer {
     public RequestContextListener requestContextListener() {
         return new RequestContextListener();
     }
+
     @Bean
     public RestTemplate getRestTemplate() {
         return new RestTemplate();

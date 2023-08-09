@@ -17,7 +17,7 @@ import uz.cluster.payload.response.ApiResponse;
  * User bo'yicha controller
  */
 @RestController
-@RequestMapping(path = "/")
+@RequestMapping(path = "/api/")
 @Tag(name = "Users", description = "User Ustida amallar")
 public class UserController {
     private final AuthService authService;
@@ -36,14 +36,12 @@ public class UserController {
     @Operation(summary = "Yangi Userni kiritish")
     @PostMapping("user/save")
     public HttpEntity<?> addUser(@RequestBody UserDTO userDTO) {
-        ApiResponse apiResponse = authService.add(userDTO);
-        return ResponseEntity.status(apiResponse.isSuccess() ? HttpStatus.CREATED : HttpStatus.CONFLICT).body(apiResponse);
-    }
-
-    @Operation(summary = "Userlarini o'zgartirish")
-    @PutMapping(path = "user/{user_id}")
-    public HttpEntity<?> saveUser(@PathVariable("user_id") int userId, @RequestBody UserDTO userDTO, MultipartHttpServletRequest request) {
-        ApiResponse apiResponse = authService.edit(userDTO, request, userId);
+        ApiResponse apiResponse = null;
+        if (userDTO.getId() == 0){
+            apiResponse = authService.add(userDTO);
+        }else {
+            apiResponse = authService.edit(userDTO,userDTO.getId());
+        }
         return ResponseEntity.status(apiResponse.isSuccess() ? HttpStatus.CREATED : HttpStatus.CONFLICT).body(apiResponse);
     }
 

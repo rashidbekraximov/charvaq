@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface FormRepository extends JpaRepository<Form, Integer> {
 
-    @Query(value = "select t.*,(select first_name||' '||last_name||' '|| ' '||middle_name from users u) uname from r_forms t where t.status = 'ACTIVE' order by order_number", nativeQuery = true)
+    @Query(value = "select * from r_forms t where t.status = 'ACTIVE' order by order_number ", nativeQuery = true)
     List<Form> getForms();
 
     Optional<Form> findByFormNumber(String formNumber);

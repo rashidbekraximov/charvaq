@@ -15,6 +15,7 @@ import java.sql.Types;
 import java.util.Locale;
 
 public class Nls implements UserType, Serializable {
+
     @Version
     private static final long serialVersionUID = -4363175251635937661L;
     private final String checkComma = ",";

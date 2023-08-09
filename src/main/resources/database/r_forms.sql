@@ -23,6 +23,18 @@ insert into r_forms(id, form_number, name, order_number, status, created_by, cre
 VALUES (110, 110, row ('Информации', 'Маълумотлар', 'Malumotlar'), 110, 'ACTIVE', null, now(), null, null,
         null, null);
 
+insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (111, 111,
+        row ('АНАЛОГИЧНАЯ ИНФОРМАЦИЯ', 'ЎХШАШ МАъЛУМОТЛАР', 'O''XSHASH MA''LUMOTLAR'),
+        111, 'ACTIVE', null, now(), null, null, '/references/def_references', 110);
+
+insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (112, 112,
+        row ('Налоги', 'Солиқлар', 'Soliqlar'),
+        112, 'ACTIVE', null, now(), null, null, '/references/taxes', 110);
+
 -------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------
 insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,

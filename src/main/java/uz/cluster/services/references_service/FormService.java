@@ -79,13 +79,13 @@ public class FormService {
             form.setParentFormId(form.getParentForm() != null ? form.getParentForm().getId() : null);
         });
 
-        List<Form> sortedList = formList.stream()
-                .sorted(Comparator.comparing(Form::isStarred).reversed())
-                .collect(Collectors.toList());
+//        List<Form> sortedList = formList.stream()
+//                .sorted(Comparator.comparing(Form::isStarred).reversed())
+//                .collect(Collectors.toList());
 
-        sortedList.removeIf(form -> form.getParentForm() != null);
-        filterByUserPermission(sortedList, user);
-        return sortedList;
+        formList.removeIf(form -> form.getParentForm() != null);
+        filterByUserPermission(formList, user);
+        return formList;
     }
 
     public void filterByUserPermission(List<Form> forms, @NotNull User user) {

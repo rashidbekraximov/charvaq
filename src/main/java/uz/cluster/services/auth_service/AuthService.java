@@ -16,10 +16,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import uz.cluster.annotation.CheckPermission;
 import uz.cluster.entity.auth.User;
 import uz.cluster.security.JwtResponse;
-import uz.cluster.repository.references.GenderRepository;
 import uz.cluster.repository.user_info.RoleRepository;
 import uz.cluster.repository.user_info.UserRepository;
-import uz.cluster.entity.references.model.Gender;
 import uz.cluster.entity.references.model.Role;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.auth.SystemRoleName;
@@ -42,7 +40,6 @@ public class AuthService implements UserDetailsService{
     private final AuthenticationManager authenticationManager;
 
     private final JwtProvider jwtProvider;
-    private final GenderRepository genderRepository;
     private final RoleRepository roleRepository;
 
     @Transactional
@@ -60,11 +57,7 @@ public class AuthService implements UserDetailsService{
         if (userDTO.getPassword().isEmpty()) //This check that user has passport or not, if not it terminates from adding
             return new ApiResponse(false, LanguageManager.getLangMessage("no_password"));
 
-        Optional<Gender> optionalGender = genderRepository.findById(userDTO.getGenderId() != null ? userDTO.getGenderId() : 0);
         Optional<Role> optionalRole = roleRepository.findById(userDTO.getRoleId() != null ? userDTO.getRoleId() : 0);
-
-        if (optionalGender.isEmpty()) //This check that user has this info or not, if not this statement terminates from adding
-            return new ApiResponse(false, LanguageManager.getLangMessage("no_gender"));
 
         if (
                 optionalRole.isEmpty()
@@ -84,8 +77,8 @@ public class AuthService implements UserDetailsService{
                 userDTO.getLogin(),
                 userDTO.getPassword(),
                 userDTO.getEmail(),
-                userDTO.getGenderId(),
-                optionalRole.get(),
+                userDTO.getGender(),
+                userDTO.getRoleId() != null ? optionalRole.get() : null,
                 userDTO.getNotes(),
                 userDTO.getSystemRoleName(),
                 userDTO.isAccountNonLocked(),
@@ -106,7 +99,7 @@ public class AuthService implements UserDetailsService{
 
     @Transactional
     @CheckPermission(form = FormEnum.ADMIN_PANEL, permission = Action.CAN_EDIT)
-    public ApiResponse edit(UserDTO userDTO, MultipartHttpServletRequest request, int id) {
+    public ApiResponse edit(UserDTO userDTO,int id) {
         ApiResponse apiResponse = new ApiResponse();
         if (userRepository.existsByLoginAndIdNot(userDTO.getLogin(), userDTO.getId())) //This will check login is unique or not, if not it terminates from adding
             return new ApiResponse(false, LanguageManager.getLangMessage("phone_exists"));
@@ -118,15 +111,11 @@ public class AuthService implements UserDetailsService{
             return new ApiResponse(false, LanguageManager.getLangMessage("passport_number_exists"));
 
         Optional<User> optionalUser = userRepository.findById(id);
-        Optional<Gender> optionalGender = genderRepository.findById(userDTO.getGenderId());
 
         Optional<Role> optionalRole =  (userDTO.getRoleId() ==null )?null: roleRepository.findById(userDTO.getRoleId());
 
         if (optionalUser.isEmpty()) //This check that there is such user, if not this statement terminates from adding
             return new ApiResponse(false, id, LanguageManager.getLangMessage("no_user"));
-
-        if (optionalGender.isEmpty()) //This check that user has this info or not, if not this statement terminates from adding
-            return new ApiResponse(false, id, LanguageManager.getLangMessage("no_gender"));
 
         if ( (userDTO.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_FORM_MEMBER || userDTO.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_MEMBER) &&( optionalRole == null ||optionalRole.isEmpty())) //This check that user has this info or not, if not this statement terminates from adding
             return new ApiResponse(false, id, LanguageManager.getLangMessage("no_position"));
@@ -161,7 +150,9 @@ public class AuthService implements UserDetailsService{
 
     @CheckPermission(form = FormEnum.ADMIN_PANEL, permission = Action.CAN_VIEW)
     public User getById(int id) {
-        return userRepository.findById(id).orElse(new User());
+        Optional<User> user = userRepository.findById(id);
+        user.ifPresent(value -> value.setPassword(""));
+        return user.orElse(new User());
     }
 
     public ApiResponse delete(int id) {
@@ -197,8 +188,10 @@ public class AuthService implements UserDetailsService{
                     user.getMiddleName(),
                     "",
                     user.getEmail(),
+                    user.getGender(),
                     user.getLogin(),
                     user.getSystemRoleName().name(),
+                    true,
                     user.getClusterId(),
                     ""
             );
@@ -214,6 +207,8 @@ public class AuthService implements UserDetailsService{
                     null,
                     null,
                     null,
+                    null,
+                    false,
                     0,
                     null
             );

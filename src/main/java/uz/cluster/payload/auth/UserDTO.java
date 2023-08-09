@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+import uz.cluster.enums.Gender;
 import uz.cluster.enums.auth.SystemRoleName;
 
 import javax.persistence.EnumType;
@@ -33,7 +34,7 @@ public class UserDTO {
 
     private Integer documentTypeId;
     private Integer degreeId;
-    private Integer genderId;
+    private Gender gender;
     private Integer roleId;
 
     private int clusterId;

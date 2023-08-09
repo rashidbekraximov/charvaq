@@ -14,8 +14,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import uz.cluster.entity.Auditable;
-import uz.cluster.entity.references.model.Gender;
 import uz.cluster.entity.references.model.Role;
+import uz.cluster.enums.Gender;
 import uz.cluster.enums.auth.SystemRoleName;
 import uz.cluster.util.DateUtil;
 
@@ -64,8 +64,9 @@ public class User extends Auditable  implements UserDetails {
     @Column(name = "birthday")
     private LocalDate birthday;
 
-    @Column(name = "gender_id")
-    private int genderId;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", columnDefinition = "varchar(10) default 'MALE'")
+    private Gender gender = Gender.MALE;
 
     @Schema(example = "0", defaultValue = "0")
     @ManyToOne
@@ -102,7 +103,7 @@ public class User extends Auditable  implements UserDetails {
     public User(
             String firstName, String lastName, String middleName,
             String documentSerialNumber, LocalDate birthday, String login,
-            String password, String email, int genderId, Role role, String notes,
+            String password, String email, Gender gender, Role role, String notes,
             SystemRoleName systemRoleName, boolean accountNonLocked, int clusterId) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -112,7 +113,7 @@ public class User extends Auditable  implements UserDetails {
         this.login = login;
         this.password = password;
         this.email = email;
-        this.genderId = genderId;
+        this.gender = gender;
         this.role = role;
         this.notes = notes;
         this.systemRoleName = systemRoleName;
@@ -132,7 +133,7 @@ public class User extends Auditable  implements UserDetails {
         this.login = user.login;
         this.password = user.password;
         this.email = user.email;
-        this.genderId = user.genderId;
+        this.gender = user.gender;
         this.notes = user.notes;
         this.role = user.role;
         this.clusterId = user.clusterId;

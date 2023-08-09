@@ -38,10 +38,11 @@ public class GlobalParams {
     public static int getCurrentClusterId() {
         SpringSecurityAuditorAware s = new SpringSecurityAuditorAware();
         int activeUserId = 0;
-        if (s.getCurrentClusterId().isPresent()){
-            activeUserId = s.getCurrentClusterId().get();
+        if (s.getCurrentAuditor().isPresent() && s.getCurrentAuditor().get() != -1){
+            return UserComponent.getById(s.getCurrentAuditor().get()).getClusterId();
+        }else{
+            return activeUserId;
         }
-        return activeUserId;
     }
 
     public static User getCurrentUser() {
