@@ -9,6 +9,6 @@ import javax.persistence.Table;
 
 @Entity
 @Audited(targetAuditMode = RelationTargetAuditMode.AUDITED)
-@Table(name = "r_seasons")
-public class Season extends AbstractReferenceModel {
+@Table(name = "r_product_type")
+public class ProductType extends AbstractReferenceModel {
 }

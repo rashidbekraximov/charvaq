@@ -1,8 +1,8 @@
 insert into references_list(id, table_name, title)
-values (1, 'r_cluster',
-        row('Кластер',
-            'Кластер',
-            'Klaster')::t_nls);
+values (1, 'r_product_type',
+        row('Наименование товара',
+            'Маҳсулот номи',
+            'Mahsulot nomi')::t_nls);
 
 insert into references_list(id, table_name,title)
 values (2, 'r_communal_group',
@@ -11,10 +11,10 @@ values (2, 'r_communal_group',
             'Kommunal turi')::t_nls);
 
 insert into references_list(id, table_name, title)
-values (3, 'r_cost_content',
-        row('Содержание стоимости',
-            'Содержание стоимости',
-            'Xarajat mazmuni')::t_nls);
+values (3, 'r_status',
+        row('Положение дел',
+            'Ҳолати',
+            'Holati')::t_nls);
 
 insert into references_list(id, table_name, title)
 values (4, 'r_currency_unit',

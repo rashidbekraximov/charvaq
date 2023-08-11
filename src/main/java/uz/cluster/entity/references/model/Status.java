@@ -9,6 +9,6 @@ import javax.persistence.Table;
 
 @Entity
 @Audited(targetAuditMode = RelationTargetAuditMode.AUDITED)
-@Table(name = "r_cluster")
-public class Clusters extends AbstractReferenceModel {
+@Table(name = "r_status")
+public class Status extends AbstractReferenceModel {
 }

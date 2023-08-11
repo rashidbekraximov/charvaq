@@ -27,18 +27,16 @@ public class ReferencesController {
     public static Map<String, String> localReferences = new HashMap<>();
 
     static {
-        globalReferences.put("seasons", "r_seasons");
+        globalReferences.put("product_type", "r_product_type");
+        globalReferences.put("status", "r_status");
         globalReferences.put("currency_unit", "r_currency_unit");
         globalReferences.put("salary_groups", "r_salary_groups");
         globalReferences.put("salary_type", "r_salary_type");
         globalReferences.put("unit_of_measurements", "r_unit_of_measurements");
-        globalReferences.put("mechanical_product", "r_mechanical_product");
         globalReferences.put("forms", "r_forms");
         globalReferences.put("reference_list", "references_list");
         globalReferences.put("communal_group", "r_communal_group");
-        globalReferences.put("cost_content", "r_cost_content");
         globalReferences.put("tax_type", "r_tax_type");
-        globalReferences.put("cluster", "r_cluster");
     }
 
     public static void clearGlobalCache() {
