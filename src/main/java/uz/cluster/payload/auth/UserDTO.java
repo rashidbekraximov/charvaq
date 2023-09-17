@@ -26,20 +26,16 @@ public class UserDTO {
     private String password;
     private String email;
     private String documentSerialNumber;
-    private String notes;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
-    private Integer documentTypeId;
-    private Integer degreeId;
     private Gender gender;
-    private Integer roleId;
 
     private int clusterId;
 
-    private boolean accountNonLocked;
+    private boolean enabled;
 
     @Enumerated(value = EnumType.STRING)
     private SystemRoleName systemRoleName;

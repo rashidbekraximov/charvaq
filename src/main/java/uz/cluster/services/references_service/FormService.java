@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class FormService {
     private final FormRepository formRepository;
 
-    @CheckPermission(form = FormEnum.FORM_LIST, permission = Action.CAN_VIEW)
+//    @CheckPermission(form = FormEnum.FORM_LIST, permission = Action.CAN_VIEW)
     public List<FormDao> getAll() {
 
         List<Form> repositoryAll = formRepository.getForms();
@@ -44,7 +44,7 @@ public class FormService {
 
     }
 
-    @CheckPermission(form = FormEnum.FORM_LIST, permission = Action.CAN_ADD)
+//    @CheckPermission(form = FormEnum.FORM_LIST, permission = Action.CAN_ADD)
     @Transactional
     public ApiResponse update(FormDao formDao) {
         formDao.prepare();
@@ -79,10 +79,6 @@ public class FormService {
             form.setParentFormId(form.getParentForm() != null ? form.getParentForm().getId() : null);
         });
 
-//        List<Form> sortedList = formList.stream()
-//                .sorted(Comparator.comparing(Form::isStarred).reversed())
-//                .collect(Collectors.toList());
-
         formList.removeIf(form -> form.getParentForm() != null);
         filterByUserPermission(formList, user);
         return formList;
@@ -91,13 +87,73 @@ public class FormService {
     public void filterByUserPermission(List<Form> forms, @NotNull User user) {
         if (
                 user.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_SUPER_ADMIN
-                        || user.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_ADMIN
         ) {
             return;
         }
 
-        if (user.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_MAIN_AUDITOR || user.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_AUDITOR || user.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_MODERATOR) {
-            forms.removeIf(f -> f.getId() == 130);
+        if (user.getSystemRoleName() == SystemRoleName.PURCHASE_ADMIN) {
+            for (int i = 0; i < 8; i++) {
+                if (i <= 6){
+                    forms.get(i).getChildForms().removeIf(f -> f.getParentFormId() != 100);
+                }else{
+                    forms.remove(i);
+                }
+            }
+            return;
+        }
+
+        if (user.getSystemRoleName() == SystemRoleName.LOGISTIC_ADMIN) {
+            for (int i = 0; i < 8; i++) {
+                if (i <= 6){
+                    forms.get(i).getChildForms().removeIf(f -> f.getParentFormId() != 101);
+                }else{
+                    forms.remove(i);
+                }
+            }
+            return;
+        }
+
+        if (user.getSystemRoleName() == SystemRoleName.PRODUCE_ADMIN) {
+            for (int i = 0; i < 8; i++) {
+                if (i <= 6){
+                    forms.get(i).getChildForms().removeIf(f -> f.getParentFormId() != 110);
+                }else{
+                    forms.remove(i);
+                }
+            }
+            return;
+        }
+
+        if (user.getSystemRoleName() == SystemRoleName.LEADER_BETON_ADMIN) {
+            for (int i = 0; i < 8; i++) {
+                if (i <= 6){
+                    forms.get(i).getChildForms().removeIf(f -> f.getParentFormId() != 120);
+                }else{
+                    forms.remove(i);
+                }
+            }
+            return;
+        }
+
+        if (user.getSystemRoleName() == SystemRoleName.NASOS_ADMIN) {
+            for (int i = 0; i < 8; i++) {
+                if (i <= 6){
+                    forms.get(i).getChildForms().removeIf(f -> f.getParentFormId() != 130);
+                }else{
+                    forms.remove(i);
+                }
+            }
+            return;
+        }
+
+        if (user.getSystemRoleName() == SystemRoleName.SALARY_ADMIN) {
+            for (int i = 0; i < 8; i++) {
+                if (i <= 6){
+                    forms.get(i).getChildForms().removeIf(f -> f.getParentFormId() != 140);
+                }else{
+                    forms.remove(i);
+                }
+            }
             return;
         }
     }
@@ -113,5 +169,4 @@ public class FormService {
             return new ApiResponse(true, id, LanguageManager.getLangMessage("deleted"));
         }
     }
-
 }

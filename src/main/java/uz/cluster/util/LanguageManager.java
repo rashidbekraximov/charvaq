@@ -15,4 +15,12 @@ public class LanguageManager {
         ByteBuffer encodedText = StandardCharsets.UTF_8.encode(text);
         return StandardCharsets.UTF_8.decode(encodedText).toString();
     }
+
+    public static String getExcelLangMessage(String keyword) {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle(excelBundleName, LocaleContextHolder.getLocale());
+        if (resourceBundle.containsKey(keyword))
+            return resourceBundle.getString(keyword);
+        else
+            return keyword;
+    }
 }

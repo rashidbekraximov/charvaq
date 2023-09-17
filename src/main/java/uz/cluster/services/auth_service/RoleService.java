@@ -3,17 +3,15 @@ package uz.cluster.services.auth_service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.cluster.annotation.CheckPermission;
 import uz.cluster.entity.auth.RoleFormPermission;
+import uz.cluster.entity.references.model.Form;
 import uz.cluster.entity.references.model.Role;
-import uz.cluster.repository.references.FormRepository;
-import uz.cluster.repository.user_info.RoleRepository;
-import uz.cluster.enums.auth.Action;
-import uz.cluster.enums.forms.FormEnum;
+import uz.cluster.enums.auth.SystemRoleName;
 import uz.cluster.payload.auth.FormPermissionDTO;
 import uz.cluster.payload.auth.RoleDTO;
 import uz.cluster.payload.response.ApiResponse;
-import uz.cluster.util.GlobalParams;
+import uz.cluster.repository.references.FormRepository;
+import uz.cluster.repository.user_info.RoleRepository;
 import uz.cluster.util.LanguageManager;
 
 import java.util.ArrayList;
@@ -28,42 +26,42 @@ public class RoleService {
 
     private final FormRepository formRepository;
 
-    @CheckPermission(form = FormEnum.ROlE_LIST, permission = Action.CAN_VIEW)
+//    @CheckPermission(form = FormEnum.ROlE_LIST, permission = Action.CAN_VIEW)
     public List<Role> getAll() {
-        return roleRepository.findByClusterId(GlobalParams.getCurrentClusterId());
+        return roleRepository.findAll();
+    }
+
+//    @CheckPermission(form = FormEnum.ROlE_LIST, permission = Action.CAN_VIEW)
+    public List<Form> getAllFormByRole(SystemRoleName systemRoleName) {
+        return formRepository.findAllByParentForm_Id(systemRoleName.getValue());
     }
 
     public Role getById(int id) {
         return roleRepository.findById(id).orElse(null);
     }
 
-    public Role getByName(String name) {
-        return roleRepository.findByName(name).orElse(null);
-    }
-
-    @CheckPermission(form = FormEnum.ROlE_LIST, permission = Action.CAN_ADD)
-    @Transactional
-    public ApiResponse add(Role role) {
-        if (role.getName() == null || role.getName().isEmpty())
-            return new ApiResponse(false, role, LanguageManager.getLangMessage("no_data_submitted"));
-        roleRepository.save(role);
-        return new ApiResponse(true, role, LanguageManager.getLangMessage("saved"));
+    public Role getByName(SystemRoleName name) {
+        return roleRepository.findBySystemRoleName(name.name()).get();
     }
 
     @Transactional
     public ApiResponse addWithPermission(RoleDTO roleDTO) {
-        if (roleDTO.getName() == null || roleDTO.getName().isEmpty())
+        if (roleDTO.getSystemRoleName() == null || roleDTO.getSystemRoleName().name().isEmpty())
             return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
 
-        if (roleRepository.existsByName(roleDTO.getName()))
+        if (roleDTO.getId() != 0){
+            return editWithPermission(roleDTO,roleDTO.getId());
+        }
+
+        if (roleRepository.existsBySystemRoleName(roleDTO.getSystemRoleName()))
             return new ApiResponse(false, LanguageManager.getLangMessage("already_exist"));
 
-        Role role = new Role(roleDTO.getName(), roleDTO.isActive(), roleDTO.getDescription());
+        Role role = new Role(roleDTO.getSystemRoleName());
 
         List<RoleFormPermission> roleFormPermissionList = new ArrayList<>();
         int permissionCode = 0;
 
-        for (FormPermissionDTO formPermissionDTO : roleDTO.getFormPermissionDTOS()) {
+        for (FormPermissionDTO formPermissionDTO : roleDTO.getRoleFormPermissions()) {
             if (formPermissionDTO.isCanView())
                 permissionCode += 1000;
             if (formPermissionDTO.isCanInsert())
@@ -96,35 +94,34 @@ public class RoleService {
         if (optionalRole.isEmpty())
             return new ApiResponse(false, LanguageManager.getLangMessage("cant_find"));
 
-        if (roleRepository.existsByNameAndIdNot(roleDTO.getName(), id))
+        if (roleRepository.existsBySystemRoleNameAndIdNot(roleDTO.getSystemRoleName(), id)){
             return new ApiResponse(false, LanguageManager.getLangMessage("already_exist"));
+        }
 
         Role editingRole = optionalRole.get();
-        editingRole.setName(roleDTO.getName());
-        editingRole.setActive(roleDTO.isActive());
-        editingRole.setDescription(roleDTO.getDescription());
+        editingRole.setSystemRoleName(roleDTO.getSystemRoleName());
 
         List<RoleFormPermission> roleFormPermissionList = new ArrayList<>();
         int permissionCode = 0;
 
         int i = 0;
         for (RoleFormPermission roleFormPermission : editingRole.getRoleFormPermissions()) {
-            if (roleDTO.getFormPermissionDTOS().get(i).isCanView())
+            if (roleDTO.getRoleFormPermissions().get(i).isCanView())
                 permissionCode += 1000;
-            if (roleDTO.getFormPermissionDTOS().get(i).isCanInsert())
+            if (roleDTO.getRoleFormPermissions().get(i).isCanInsert())
                 permissionCode += 100;
-            if (roleDTO.getFormPermissionDTOS().get(i).isCanEdit())
+            if (roleDTO.getRoleFormPermissions().get(i).isCanEdit())
                 permissionCode += 10;
-            if (roleDTO.getFormPermissionDTOS().get(i).isCanDelete())
+            if (roleDTO.getRoleFormPermissions().get(i).isCanDelete())
                 permissionCode += 1;
             roleFormPermission.setRole(editingRole);
-            roleFormPermission.setForm(formRepository.findByFormNumber(roleDTO.getFormPermissionDTOS().get(i).getFormNumber()).orElse(null));
+            roleFormPermission.setForm(formRepository.findByFormNumber(roleDTO.getRoleFormPermissions().get(i).getFormNumber()).orElse(null));
             roleFormPermission.setPermissionCode(permissionCode);
-            roleFormPermission.setCanView(roleDTO.getFormPermissionDTOS().get(i).isCanView());
-            roleFormPermission.setCanInsert(roleDTO.getFormPermissionDTOS().get(i).isCanInsert());
-            roleFormPermission.setCanEdit(roleDTO.getFormPermissionDTOS().get(i).isCanEdit());
-            roleFormPermission.setCanDelete(roleDTO.getFormPermissionDTOS().get(i).isCanDelete());
-            roleFormPermission.setTime(roleDTO.getFormPermissionDTOS().get(i).getTime());
+            roleFormPermission.setCanView(roleDTO.getRoleFormPermissions().get(i).isCanView());
+            roleFormPermission.setCanInsert(roleDTO.getRoleFormPermissions().get(i).isCanInsert());
+            roleFormPermission.setCanEdit(roleDTO.getRoleFormPermissions().get(i).isCanEdit());
+            roleFormPermission.setCanDelete(roleDTO.getRoleFormPermissions().get(i).isCanDelete());
+            roleFormPermission.setTime(roleDTO.getRoleFormPermissions().get(i).getTime());
             permissionCode = 0;
             i++;
         }
@@ -134,21 +131,7 @@ public class RoleService {
         return new ApiResponse(true, id, LanguageManager.getLangMessage("edited"));
     }
 
-    @CheckPermission(form = FormEnum.ROlE_LIST, permission = Action.CAN_EDIT)
-    @Transactional
-    public ApiResponse edit(Role role, int id) {
-        Optional<Role> optionalRole = roleRepository.findById(id);
-        if (optionalRole.isEmpty())
-            return new ApiResponse(false, role, LanguageManager.getLangMessage("cant_find"));
-        Role editingRole = optionalRole.get();
-        editingRole.setName(role.getName());
-        editingRole.setActive(role.isActive());
-        editingRole.setDescription(role.getDescription());
-        roleRepository.save(editingRole);
-        return new ApiResponse(true, editingRole, LanguageManager.getLangMessage("saved"));
-    }
-
-    @CheckPermission(form = FormEnum.ROlE_LIST, permission = Action.CAN_DELETE)
+//    @CheckPermission(form = FormEnum.ROlE_LIST, permission = Action.CAN_DELETE)
     public ApiResponse delete(int id) {
         Optional<Role> optionalRole = roleRepository.findById(id);
         if (optionalRole.isEmpty())

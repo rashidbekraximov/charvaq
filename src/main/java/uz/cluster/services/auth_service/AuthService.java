@@ -34,7 +34,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService implements UserDetailsService{
+public class AuthService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -57,14 +57,6 @@ public class AuthService implements UserDetailsService{
         if (userDTO.getPassword().isEmpty()) //This check that user has passport or not, if not it terminates from adding
             return new ApiResponse(false, LanguageManager.getLangMessage("no_password"));
 
-        Optional<Role> optionalRole = roleRepository.findById(userDTO.getRoleId() != null ? userDTO.getRoleId() : 0);
-
-        if (
-                optionalRole.isEmpty()
-                        && (userDTO.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_FORM_MEMBER || userDTO.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_MEMBER)
-        ) //This check that user has this info or not, if not this statement terminates from adding
-            return new ApiResponse(false, LanguageManager.getLangMessage("no_position"));
-
         if (Period.between(userDTO.getBirthday(), LocalDate.now()).getYears() < 18)  //This check that user's age is not less than AGE_RESTRICTION, if not this statement terminates from adding
             return new ApiResponse(false, LanguageManager.getLangMessage("age_restriction"));
 
@@ -78,17 +70,9 @@ public class AuthService implements UserDetailsService{
                 userDTO.getPassword(),
                 userDTO.getEmail(),
                 userDTO.getGender(),
-                userDTO.getRoleId() != null ? optionalRole.get() : null,
-                userDTO.getNotes(),
                 userDTO.getSystemRoleName(),
-                userDTO.isAccountNonLocked(),
-                userDTO.getClusterId()
+                userDTO.isEnabled()
         );
-
-        if (
-                user.getSystemRoleName() != SystemRoleName.SYSTEM_ROLE_FORM_MEMBER
-                        && user.getSystemRoleName() != SystemRoleName.SYSTEM_ROLE_MEMBER
-        )
 
 
         user.setPassword(passwordEncoder.encode(userDTO.getPassword())); //This sets user's password that is encrypted
@@ -112,13 +96,9 @@ public class AuthService implements UserDetailsService{
 
         Optional<User> optionalUser = userRepository.findById(id);
 
-        Optional<Role> optionalRole =  (userDTO.getRoleId() ==null )?null: roleRepository.findById(userDTO.getRoleId());
-
         if (optionalUser.isEmpty()) //This check that there is such user, if not this statement terminates from adding
             return new ApiResponse(false, id, LanguageManager.getLangMessage("no_user"));
 
-        if ( (userDTO.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_FORM_MEMBER || userDTO.getSystemRoleName() == SystemRoleName.SYSTEM_ROLE_MEMBER) &&( optionalRole == null ||optionalRole.isEmpty())) //This check that user has this info or not, if not this statement terminates from adding
-            return new ApiResponse(false, id, LanguageManager.getLangMessage("no_position"));
 
         if (Period.between(userDTO.getBirthday(), LocalDate.now()).getYears() < 18) //This check that user's age is not less than 18, if not this statement terminates from adding
             return new ApiResponse(false, optionalUser.get(), LanguageManager.getLangMessage("age_restriction"));
@@ -130,16 +110,18 @@ public class AuthService implements UserDetailsService{
         editingUser.setLogin(userDTO.getLogin());
         editingUser.setDocumentSerialNumber(userDTO.getDocumentSerialNumber());
         editingUser.setSystemRoleName(userDTO.getSystemRoleName());
+        editingUser.setBirthday(userDTO.getBirthday());
+        editingUser.setGender(userDTO.getGender());
+        editingUser.setEnabled(userDTO.isEnabled());
 
-        if ( editingUser.getSystemRoleName() != SystemRoleName.SYSTEM_ROLE_FORM_MEMBER && editingUser.getSystemRoleName() != SystemRoleName.SYSTEM_ROLE_MEMBER )
 
-        if (!userDTO.getPassword().isEmpty()) //If user's password is changed, it again encrypts it and assigns to user
+        if (!userDTO.getPassword().isEmpty())
             editingUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
-        User editedUser = userRepository.save(editingUser); //This will save User to DB
-        apiResponse.setSuccess(true); //apiResponse status -> True or False
-        apiResponse.setObject(editedUser); //this is User obj to give to Front-end
-        apiResponse.setMessage(LanguageManager.getLangMessage("edited")); //ApiResponses message
+        User editedUser = userRepository.save(editingUser);
+        apiResponse.setSuccess(true);
+        apiResponse.setObject(editedUser);
+        apiResponse.setMessage(LanguageManager.getLangMessage("edited"));
         return apiResponse;
     }
 
@@ -172,8 +154,8 @@ public class AuthService implements UserDetailsService{
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     loginDTO.getLogin(),
                     loginDTO.getPassword()
-            )); //System checks user is exists or not
-            User user = (User) authentication.getPrincipal(); //Casts Principal to User
+            ));
+            User user = (User) authentication.getPrincipal();
 
             String token = jwtProvider.generateToken(user.getLogin());
             SecurityContext sc = SecurityContextHolder.getContext();
@@ -191,9 +173,7 @@ public class AuthService implements UserDetailsService{
                     user.getGender(),
                     user.getLogin(),
                     user.getSystemRoleName().name(),
-                    true,
-                    user.getClusterId(),
-                    ""
+                    true
             );
         } catch (Exception exception) {
             return new JwtResponse(
@@ -208,9 +188,7 @@ public class AuthService implements UserDetailsService{
                     null,
                     null,
                     null,
-                    false,
-                    0,
-                    null
+                    false
             );
         }
     }

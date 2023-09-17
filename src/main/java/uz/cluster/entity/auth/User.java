@@ -87,7 +87,7 @@ public class User extends Auditable  implements UserDetails {
     private boolean accountNonExpired = true;
 
     @Column
-    private boolean accountNonLocked;
+    private boolean accountNonLocked = true;
 
     @Column
     private boolean credentialsNonExpired = true;
@@ -103,8 +103,8 @@ public class User extends Auditable  implements UserDetails {
     public User(
             String firstName, String lastName, String middleName,
             String documentSerialNumber, LocalDate birthday, String login,
-            String password, String email, Gender gender, Role role, String notes,
-            SystemRoleName systemRoleName, boolean accountNonLocked, int clusterId) {
+            String password, String email, Gender gender,
+            SystemRoleName systemRoleName, boolean enabled) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.middleName = middleName;
@@ -114,12 +114,8 @@ public class User extends Auditable  implements UserDetails {
         this.password = password;
         this.email = email;
         this.gender = gender;
-        this.role = role;
-        this.notes = notes;
         this.systemRoleName = systemRoleName;
-        this.accountNonLocked = accountNonLocked;
-        this.enabled = false;
-        this.clusterId = clusterId;
+        this.enabled = enabled;
     }
 
 
@@ -134,9 +130,6 @@ public class User extends Auditable  implements UserDetails {
         this.password = user.password;
         this.email = user.email;
         this.gender = user.gender;
-        this.notes = user.notes;
-        this.role = user.role;
-        this.clusterId = user.clusterId;
     }
 
     public String getFio() {

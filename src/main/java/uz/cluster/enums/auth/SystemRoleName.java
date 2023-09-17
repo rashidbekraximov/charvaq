@@ -1,13 +1,14 @@
 package uz.cluster.enums.auth;
 
 public enum SystemRoleName {
+
     SYSTEM_ROLE_SUPER_ADMIN(1),
-    SYSTEM_ROLE_ADMIN(2),
-    SYSTEM_ROLE_MODERATOR(3),
-    SYSTEM_ROLE_MAIN_AUDITOR(4),
-    SYSTEM_ROLE_AUDITOR(5),
-    SYSTEM_ROLE_FORM_MEMBER(6),
-    SYSTEM_ROLE_MEMBER(7);
+    PURCHASE_ADMIN(100),
+    LOGISTIC_ADMIN(101),
+    PRODUCE_ADMIN(110),
+    LEADER_BETON_ADMIN(120),
+    NASOS_ADMIN(130),
+    SALARY_ADMIN(140);
 
     private final int value;
 

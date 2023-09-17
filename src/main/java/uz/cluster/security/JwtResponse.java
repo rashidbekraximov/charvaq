@@ -23,7 +23,4 @@ public class JwtResponse {
     private String login;
     private String systemRoleName;
     private boolean enabled;
-    private int clusterId;
-    private String note;
-
 }

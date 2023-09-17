@@ -16,15 +16,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByLogin(String login);
 
-    Optional<User> findByEmail(@Email String email);
-
-//    List<User> findByClusterId(int clusterId);
-
-//    Optional<User> findByEmailAndEmailCode(@Email String email, String emailCode);
+    Optional<User> findByEmail(String email);
 
     boolean existsByLoginAndIdNot(String login, int id);
 
-    boolean existsByEmailAndIdNot(@Email String email, int id);
+    boolean existsByEmailAndIdNot(String email, int id);
 
     boolean existsByDocumentSerialNumberAndIdNot(String documentSerialNumber, int id);
 

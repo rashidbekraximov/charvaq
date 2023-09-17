@@ -4,23 +4,35 @@ import lombok.Getter;
 import lombok.Setter;
 
 public enum FormEnum {
-    FORM(100),
-    FORM_1(1),
-    FORM_2(2),
-    FORM_3(3),
+    //Sotuv
+    PURCHASE(1),
+    ESTINGUISH_DEBT(2),
+    ORDER(3),
+    REMAINDER(4),
+    PRICE(5),
 
+    //Logistika
+    TECHNICIAN(102),
+    DROBILKA(103),
+    BRING_DROBILKA_PRODUCT(104),
 
-    REPORT(100),
-    REFERENCES(110),
-    SIMILAR_INFORMATION(111),
-    TAXES(112),
-    FORM_LIST(113),
-    ROlE_LIST(114),
+    //Ishlab chiqarish
+    READY_PRODUCT(112),
+    PRODUCE_COST(113),
 
-    ADMIN_PANEL(130),
-    ADMIN_PANEL_USER_LIST(131),
-    ADMIN_PANEL_FORM_USER(132),
-    ADMIN_PANEL_ADD_ADMIN(133);
+    //Nasos
+    NASOS(131),
+
+    //Ish haqi,
+    TABEL(141),
+    SALARY(142),
+    EMPLOYEE(143),
+
+    //Umumiy malumot
+    SIMILAR_INFORMATION(151),
+
+    //Admin Panel
+    ADMIN_PANEL(160);
 
 
     private final int value;

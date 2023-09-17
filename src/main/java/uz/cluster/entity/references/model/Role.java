@@ -10,6 +10,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 import uz.cluster.entity.auth.RoleFormPermission;
 import uz.cluster.entity.Auditable;
+import uz.cluster.enums.auth.SystemRoleName;
 
 import javax.persistence.*;
 import java.util.List;
@@ -33,32 +34,20 @@ public class Role extends Auditable {
     @Column(name = "id", updatable = false, unique = true, nullable = false)
     private int id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
-
-    @Column(nullable = false)
-    private boolean active;
-
-    @Column
-    private String description;
-
-    @Column(name = "cluster_id", columnDefinition = " real default 1 ")
-    private int clusterId = 1;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "system_role_name")
+    private SystemRoleName systemRoleName;
 
     @OneToMany(  mappedBy = "role", cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)//cannot simultaneously fetch multiple that's why added
     private List<RoleFormPermission> roleFormPermissions;
 
-    public Role(String name, boolean active, String description) {
-        this.name = name;
-        this.active = active;
-        this.description = description;
+    public Role(SystemRoleName name) {
+        this.systemRoleName = name;
     }
 
-    public Role(String name, boolean active, String description, List<RoleFormPermission> roleFormPermissions) {
-        this.name = name;
-        this.active = active;
-        this.description = description;
+    public Role(SystemRoleName name, List<RoleFormPermission> roleFormPermissions) {
+        this.systemRoleName = name;
         this.roleFormPermissions = roleFormPermissions;
     }
 }

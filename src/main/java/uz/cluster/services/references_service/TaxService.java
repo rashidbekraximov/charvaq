@@ -27,7 +27,7 @@ public class TaxService {
 
     private final TaxTypeRepository taxTypeRepository;
 
-    @CheckPermission(form = FormEnum.TAXES, permission = Action.CAN_VIEW)
+//    @CheckPermission(form = FormEnum.TAXES, permission = Action.CAN_VIEW)
     public List<TaxesDao> getTaxList(){
         return taxesRepository.findAllByClusterId(GlobalParams.getCurrentClusterId()).stream().map(Taxes::asDao).collect(Collectors.toList());
     }
@@ -60,7 +60,7 @@ public class TaxService {
         return taxes;
     }
 
-    @CheckPermission(form = FormEnum.TAXES, permission = Action.CAN_ADD)
+//    @CheckPermission(form = FormEnum.TAXES, permission = Action.CAN_ADD)
     @Transactional
     public ApiResponse add(TaxesDao tax) {
         Taxes taxes = tax.copy(tax);
@@ -82,7 +82,7 @@ public class TaxService {
         return new ApiResponse(true, taxes1, LanguageManager.getLangMessage("saved"));
     }
 
-    @CheckPermission(form = FormEnum.TAXES, permission = Action.CAN_EDIT)
+//    @CheckPermission(form = FormEnum.TAXES, permission = Action.CAN_EDIT)
     @Transactional
     public ApiResponse edit(Taxes taxes) {
         Optional<Taxes> optionalTaxes = taxesRepository.findById(taxes.getId());

@@ -16,6 +16,8 @@ public interface FormRepository extends JpaRepository<Form, Integer> {
 
     Optional<Form> findByFormNumber(String formNumber);
 
+    List<Form> findAllByParentForm_Id(int parentForm_id);
+
     @Query("select f from Form f order by f.orderNumber asc ")
     List<Form> findAllSort();
 }

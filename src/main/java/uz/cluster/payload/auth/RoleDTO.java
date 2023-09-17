@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uz.cluster.enums.auth.SystemRoleName;
 
 import java.util.List;
 
@@ -13,9 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class RoleDTO {
     private int id;
-    private String name;
-    private boolean active;
-    private String description;
-    private List<FormPermissionDTO> formPermissionDTOS;
+    private SystemRoleName systemRoleName;
+    private List<FormPermissionDTO> roleFormPermissions;
 }
 

@@ -69,7 +69,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         JwtResponse jwtResponse = new JwtResponse(accessToken,true, user.getFio(), user.getFirstName(),
                 user.getLastName(), user.getMiddleName(), user.getBirthdayString(),
                 user.getEmail(),user.getGender(), user.getLogin(),
-                user.getSystemRoleName().name(),true, user.getClusterId(), user.getNotes()
+                user.getSystemRoleName().name(),true
         );
 
         String refreshToken = JWT.create()

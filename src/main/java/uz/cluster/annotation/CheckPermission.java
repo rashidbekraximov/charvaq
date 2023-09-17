@@ -12,5 +12,5 @@ import java.lang.annotation.*;
 public @interface CheckPermission {
     FormEnum form();
     Action permission();
-    SystemRoleName systemRoleName() default SystemRoleName.SYSTEM_ROLE_FORM_MEMBER;
+    SystemRoleName systemRoleName() default SystemRoleName.SYSTEM_ROLE_SUPER_ADMIN;
 }
