@@ -10,6 +10,7 @@ import uz.cluster.entity.logistic.Drobilka;
 import uz.cluster.entity.logistic.Technician;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.references.model.Unit;
+import uz.cluster.enums.MCHJ;
 import uz.cluster.enums.Status;
 
 import javax.persistence.Transient;
@@ -41,6 +42,8 @@ public class BringDrobilkaProductDao extends BaseDao {
 
     private int technicianId;
 
+    private MCHJ mchj;
+
     public BringDrobilkaProduct copy(BringDrobilkaProductDao bringDrobilkaProductDao){
         BringDrobilkaProduct bringDrobilkaProduct = new BringDrobilkaProduct();
         bringDrobilkaProduct.setId((int) bringDrobilkaProductDao.getId());
@@ -54,6 +57,7 @@ public class BringDrobilkaProductDao extends BaseDao {
         bringDrobilkaProduct.setIncome(bringDrobilkaProductDao.getIncome());
         bringDrobilkaProduct.setKm(bringDrobilkaProductDao.getKm());
         bringDrobilkaProduct.setDate(bringDrobilkaProductDao.getDate());
+        bringDrobilkaProduct.setMchj(bringDrobilkaProductDao.getMchj());
         return bringDrobilkaProduct;
     }
 }

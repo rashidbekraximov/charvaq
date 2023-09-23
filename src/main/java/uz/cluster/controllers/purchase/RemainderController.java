@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.cluster.dao.purchase.RemainderDao;
+import uz.cluster.enums.MCHJ;
+import uz.cluster.enums.Status;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.services.purchase.RemainderService;
 
@@ -21,9 +23,9 @@ public class RemainderController {
 
     private final RemainderService remainderService;
 
-    @GetMapping("remainders")
-    public ResponseEntity<List<RemainderDao>> getOrderList() {
-        return ResponseEntity.ok(remainderService.getRemainderList());
+    @GetMapping("remainders/{status}")
+    public ResponseEntity<List<RemainderDao>> getOrderList(@PathVariable String status) {
+        return ResponseEntity.ok(remainderService.getRemainderList(MCHJ.valueOf(status.equals("LB") ? "LB" : "CHSM")));
     }
 
     @GetMapping("remainder/{id}")

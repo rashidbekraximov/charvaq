@@ -11,12 +11,19 @@ import org.springframework.stereotype.Service;
 import uz.cluster.dao.purchase.DocumentFilter;
 import uz.cluster.entity.purchase.Purchase;
 import uz.cluster.entity.purchase.PurchasedProduct;
+import uz.cluster.enums.purchase.PaymentEnum;
+import uz.cluster.enums.purchase.PurchaseEnum;
 import uz.cluster.repository.purchase.PurchasedProductRepository;
 import uz.cluster.services.excel.style.CustomXSSFRow;
 import uz.cluster.services.excel.style.ExcelStyle;
 import uz.cluster.services.purchase.PurchaseService;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,17 +33,7 @@ public class DailyPurchase {
 
     XSSFCellStyle cellStyleCenterBackgroundGreenWithBorder;
     XSSFCellStyle cellStyleCenterOnlyFontWithBorderWithBold;
-    XSSFCellStyle cellStyleLeftOnlyFontBoldWithBorder;
-    XSSFCellStyle cellStyleCenterOnlyFontWithBorderWithoutBold;
-    XSSFCellStyle cellStyleLeftOnlyFontWithoutBoldWithBorder;
     XSSFCellStyle cellStyleCenterBackgroundOrangeWithBorder;
-    XSSFCellStyle cellStyleCenterBackgroundGreenWithoutBorder;
-    XSSFCellStyle cellStyleCenterBackgroundPurpleWithBorder;
-    XSSFCellStyle cellStyleLeftBackgroundGreenWithBorder;
-    XSSFCellStyle cellStyleCenterDarkBackgroundGreenWithBorder;
-    XSSFCellStyle cellStyleCenterBackgroundYellowWithBorder;
-    XSSFCellStyle cellStyleBackgroundRedWithoutBorder;
-    XSSFCellStyle cellStyleCenterBackgroundSeaGreenWithBorder;
 
     XSSFCell cell1;
     XSSFCell cell2;
@@ -70,7 +67,6 @@ public class DailyPurchase {
 
         counter = 0;
         try {
-
             XSSFSheet sheet = workbook.createSheet("Sotuvlar ro'yxati");
 
             cellStyleCenterBackgroundGreenWithBorder = ExcelStyle.cellStyleCenterBackgroundGreenWithBorder(workbook);
@@ -79,29 +75,34 @@ public class DailyPurchase {
 
             int currColumnIndex = 1;
             List<Purchase> purchases = purchaseService.getPurchasesByPage(documentFilter);
-            for (int i = 0; i < 15; i++) {
-                if (i == 3){
-                    sheet.setColumnWidth(currColumnIndex++, 256 * 22);
-                }else if (i == 1){
-                    sheet.setColumnWidth(currColumnIndex++, 256 * 15);
-                }else if (i == 14){
-                    sheet.setColumnWidth(currColumnIndex++, 256 * 27);
-                }else {
-                    sheet.setColumnWidth(currColumnIndex++, 256 * 19);
+            for (int i = 0; i < 22; i++) {
+                if (i <= 14) {
+                    sheet.setColumnWidth(currColumnIndex++, 256 * 10);
+                } else if (i == 18) {
+                    sheet.setColumnWidth(currColumnIndex++, 256 * 35);
+                } else {
+                    sheet.setColumnWidth(currColumnIndex++, 256 * 17);
                 }
             }
             counter++;
 
-            sheet.addMergedRegion(new CellRangeAddress(counter, counter, 1, 14));
+            sheet.addMergedRegion(new CellRangeAddress(counter, counter, 1, 3));
             rowInTable = new CustomXSSFRow(sheet.createRow(counter), cellStyleCenterOnlyFontWithBorderWithBold);
             rowInTable.setHeight((short) 400);
-            for (int i = 1; i < 15; i++) {
-                cell1 = rowInTable.createCell(CellType.STRING);
-            }
+            cell1 = rowInTable.createCell(CellType.STRING);
+            cell2 = rowInTable.createCell(CellType.STRING);
+            cell3 = rowInTable.createCell(CellType.STRING);
+            cell3.setCellValue(LocalDate.now());
             counter++;
 
+            for (int i = 2; i <= 14; i++) {
+                if (i % 2 == 0) {
+                    sheet.addMergedRegion(new CellRangeAddress(counter, counter, i, i + 1));
+                }
+            }
             rowInTable = new CustomXSSFRow(sheet.createRow(counter), cellStyleCenterBackgroundGreenWithBorder);
-            rowInTable.setHeight((short) 650);
+            rowInTable.setHeight((short) 480);
+            sheet.addMergedRegion(new CellRangeAddress(counter, counter + 1, 1, 1));
             cell1 = rowInTable.createCell(CellType.STRING);
             cell1.setCellValue("№ Tall.");
             cell2 = rowInTable.createCell(CellType.STRING);
@@ -133,21 +134,21 @@ public class DailyPurchase {
             cell18.setCellValue("Avto");
             cell19 = rowInTable.createCell(CellType.STRING);
             cell19.setCellValue("BUYURTMACHI/MIJOZ MANZILI");
+            sheet.addMergedRegion(new CellRangeAddress(counter, counter, 20, 21));
             cell20 = rowInTable.createCell(CellType.STRING);
             cell20.setCellValue("YO'L HAQI");
             cell21 = rowInTable.createCell(CellType.STRING);
             counter++;
 
             rowInTable = new CustomXSSFRow(sheet.createRow(counter), cellStyleCenterBackgroundGreenWithBorder);
-            rowInTable.setHeight((short) 450);
             cell1 = rowInTable.createCell(CellType.STRING);
-            for (int i = 2; i < 12; i++) {
-                if (i % 2 == 0){
+            for (int i = 2; i <= 15; i++) {
+                if (i % 2 == 0) {
                     cell2 = rowInTable.createCell(CellType.STRING);
                     cell2.setCellValue("N");
-                }else{
+                } else {
                     cell3 = rowInTable.createCell(CellType.STRING);
-                    cell2.setCellValue("Q");
+                    cell3.setCellValue("Q");
                 }
             }
             cell16 = rowInTable.createCell(CellType.STRING);
@@ -165,33 +166,41 @@ public class DailyPurchase {
                 cell1 = rowInTable.createCell(CellType.STRING);
                 cell1.setCellValue(purchase.getId() + "");
                 List<PurchasedProduct> products = purchasedProductRepository.findAllByPurchaseIdOrderByProductType(purchase.getId());
-                for (PurchasedProduct purchasedProduct : products){
+                for (int i = 1; i <= 7; i++) {
+                    Optional<PurchasedProduct> product = purchasedProductRepository.findByProductType_IdAndPurchaseId(i, purchase.getId());
                     cell2 = rowInTable.createCell(CellType.STRING);
-                    cell2.setCellValue(purchase.getDate().toString());
                     cell3 = rowInTable.createCell(CellType.STRING);
-                    cell3.setCellValue(purchase.getClient());
-                    cell4 = rowInTable.createCell(CellType.STRING);
-                    cell4.setCellValue(purchase.getPhoneNumber());
-                    cell5 = rowInTable.createCell(CellType.STRING);
-                    cell5.setCellValue(purchasedProduct.getProductType().getName().getActiveLanguage());
-                    cell6 = rowInTable.createCell(CellType.NUMERIC);
-                    cell6.setCellValue(purchasedProduct.getWeight());
-                    cell7 = rowInTable.createCell(CellType.NUMERIC);
-                    cell7.setCellValue(purchasedProduct.getPrice());
-                    cell8 = rowInTable.createCell(CellType.NUMERIC);
-                    cell8.setCellValue(purchasedProduct.getValue());
-                    cell9 = rowInTable.createCell(CellType.STRING);
-                    cell9.setCellValue(purchase.getTechnician().getTechniqueType().getName().getActiveLanguage());
-                    cell10 = rowInTable.createCell(CellType.NUMERIC);
-                    cell10.setCellValue(purchase.getFare() / products.size());
-                    cell11 = rowInTable.createCell(CellType.NUMERIC);
-                    cell11.setCellValue(purchase.getNasos());
-                    cell12 = rowInTable.createCell(CellType.STRING);
-                    cell12.setCellValue(purchase.getPaymentType().getName().getActiveLanguage());
-                    cell13 = rowInTable.createCell(CellType.STRING);
-                    cell13.setCellValue(purchase.getExpiryDate().toString());
-                    cell14 = rowInTable.createCell(CellType.STRING);
-                    cell14.setCellValue(purchase.getDescription());
+                    if (product.isPresent()) {
+                        if (purchase.getPaidTotalValue() != 0) {
+                            cell2.setCellValue(product.get().getWeight());
+                        } else {
+                            cell3.setCellValue(product.get().getWeight());
+                        }
+                    } else {
+                        cell2.setCellValue("");
+                        cell3.setCellValue("");
+                    }
+                }
+                cell16 = rowInTable.createCell(CellType.NUMERIC);
+                cell16.setCellValue(purchase.getPaidTotalValue() - purchase.getFare());
+                cell17 = rowInTable.createCell(CellType.NUMERIC);
+                if (purchase.getDebtTotalValue() == 0){
+                    cell17.setCellValue(purchase.getDebtTotalValue());
+                }else{
+                    cell17.setCellValue(purchase.getDebtTotalValue() - purchase.getFare());
+                }
+                cell18 = rowInTable.createCell(CellType.STRING);
+                cell18.setCellValue(purchase.getTechnician().getTechniqueType().getName().getActiveLanguage());
+                cell19 = rowInTable.createCell(CellType.STRING);
+                cell19.setCellValue(purchase.getClient() + "/" + purchase.getLocation());
+                cell20 = rowInTable.createCell(CellType.NUMERIC);
+                cell21 = rowInTable.createCell(CellType.NUMERIC);
+                if (purchase.getPaidTotalValue() != 0){
+                    cell20.setCellValue(purchase.getFare());
+                    cell21.setCellValue(0);
+                }else{
+                    cell21.setCellValue(purchase.getFare());
+                    cell20.setCellValue(0);
                 }
                 counter++;
             }
@@ -231,7 +240,6 @@ public class DailyPurchase {
             e.printStackTrace();
         }
     }
-
 
 
 }

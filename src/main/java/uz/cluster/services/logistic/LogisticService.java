@@ -3,7 +3,7 @@ package uz.cluster.services.logistic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
-import uz.cluster.dao.forms.SalaryDao;
+import uz.cluster.dao.salary.SalaryDao;
 import uz.cluster.dao.logistic.DashboardLogistic;
 import uz.cluster.dao.logistic.DashboardTechnician;
 import uz.cluster.entity.forms.Salary;

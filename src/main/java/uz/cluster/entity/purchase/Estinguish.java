@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import uz.cluster.dao.purchase.AllDebtDao;
 import uz.cluster.entity.Auditable;
 
 import javax.persistence.*;
@@ -41,5 +42,5 @@ public class Estinguish extends Auditable {
     private double remainderDebtValue;
 
     @Transient
-    List<Purchase> purchases = new ArrayList<>();
+    List<AllDebtDao> allDebts = new ArrayList<>();
 }

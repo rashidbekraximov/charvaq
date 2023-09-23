@@ -32,4 +32,14 @@ public class ReportController {
     public void downloadPurchaseDailyTotal(HttpServletResponse response, @RequestBody DocumentFilter documentFilter) throws Exception {
         driver.excelDailyPurchaseSheet(response, documentFilter);
     }
+
+    @PostMapping("/lb-purchase")
+    public void downloadLBPurchaseTotal(HttpServletResponse response, @RequestBody DocumentFilter documentFilter) throws Exception {
+        driver.excelLBPurchaseSheet(response, documentFilter);
+    }
+
+    @PostMapping("/lb-produce")
+    public void downloadLBProduceTotal(HttpServletResponse response, @RequestBody DocumentFilter documentFilter) throws Exception {
+        driver.excelLBProduceSheet(response, documentFilter);
+    }
 }

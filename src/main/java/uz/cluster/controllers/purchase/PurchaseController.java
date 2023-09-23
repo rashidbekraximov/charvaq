@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uz.cluster.dao.purchase.AllDebtDao;
 import uz.cluster.dao.purchase.DocumentFilter;
 import uz.cluster.dao.purchase.Notification;
 import uz.cluster.dao.purchase.PurchaseDao;
 import uz.cluster.payload.response.ApiResponse;
+import uz.cluster.services.purchase.EstinguishService;
 import uz.cluster.services.purchase.PurchaseService;
 import uz.cluster.util.GlobalParams;
 
@@ -23,25 +25,27 @@ public class PurchaseController {
 
     private final PurchaseService purchaseService;
 
+    private final EstinguishService estinguishService;
+
     @GetMapping("purchases")
     public ResponseEntity<List<PurchaseDao>> getList(){
         return ResponseEntity.ok(purchaseService.getList());
     }
 
     @GetMapping("purchase/debts")
-    public ResponseEntity<List<PurchaseDao>> getDebtList(){
-        return ResponseEntity.ok(purchaseService.getDebtList());
+    public ResponseEntity<List<AllDebtDao>> getDebtList(){
+        return ResponseEntity.ok(estinguishService.getDebtList());
     }
 
     @GetMapping("purchase/debts/searched")
-    public ResponseEntity<List<PurchaseDao>> getSearchList(@RequestParam String client){
-        return ResponseEntity.ok(purchaseService.getSearchList(client));
+    public ResponseEntity<List<AllDebtDao>> getSearchList(@RequestParam String client){
+        return ResponseEntity.ok(estinguishService.getSearchList(client));
     }
-
-    @GetMapping("purchase/debt")
-    public ResponseEntity<List<Notification>> getNotificationList(){
-        return ResponseEntity.ok(purchaseService.getNotifications());
-    }
+//
+//    @GetMapping("purchase/debt")
+//    public ResponseEntity<List<Notification>> getNotificationList(){
+//        return ResponseEntity.ok(purchaseService.getNotifications());
+//    }
 
     @PostMapping(value = "purchase/filter")
     public ResponseEntity<?> getListDocuments(@RequestBody DocumentFilter documentFilter){

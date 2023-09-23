@@ -1,4 +1,4 @@
-package uz.cluster.dao.forms;
+package uz.cluster.dao.salary;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

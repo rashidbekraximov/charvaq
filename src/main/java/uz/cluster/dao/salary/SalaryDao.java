@@ -1,4 +1,4 @@
-package uz.cluster.dao.forms;
+package uz.cluster.dao.salary;
 
 import uz.cluster.entity.Document;
 import uz.cluster.entity.forms.Salary;

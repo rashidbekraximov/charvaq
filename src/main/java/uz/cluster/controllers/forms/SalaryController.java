@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.cluster.dao.forms.SalaryDao;
+import uz.cluster.dao.salary.SalaryDao;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.services.salary.SalaryService;
 

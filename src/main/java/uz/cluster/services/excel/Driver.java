@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import uz.cluster.dao.purchase.DocumentFilter;
+import uz.cluster.services.excel.lb.LBProduceReportSheet;
+import uz.cluster.services.excel.lb.LBPurchaseReportSheet;
 import uz.cluster.services.excel.purchase.DailyPurchase;
 import uz.cluster.services.excel.purchase.PurchaseReport;
 import uz.cluster.services.excel.tabel.TabelReport;
@@ -24,6 +26,10 @@ public class Driver {
     private final PurchaseReport purchaseReport;
 
     private final DailyPurchase dailyPurchase;
+
+    private final LBPurchaseReportSheet lbPurchaseReportSheet;
+
+    private final LBProduceReportSheet lbProduceReportSheet;
 
     public void excelTabelSheet(HttpServletResponse response, Date beginDate, Date endDate,int direction) throws IOException {
 
@@ -65,6 +71,59 @@ public class Driver {
 
         System.out.println("Purchases");
         purchaseReport.purchaseReportSheet(workbook,documentFilter);
+
+        System.out.println("After excel writing: " + LocalTime.now());
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        System.out.println("Workbook write time: " + LocalTime.now());
+        workbook.close();
+        System.out.println("Workbook close:      " + LocalTime.now());
+        response.getOutputStream().flush();
+        response.getOutputStream().close();
+        outputStream.flush();
+        outputStream.close();
+        System.out.println("Output close:        " + LocalTime.now());
+    }
+    public void excelLBPurchaseSheet(HttpServletResponse response, DocumentFilter documentFilter) throws IOException {
+
+        String headerKey = "Content-Disposition";
+
+        String fileName = "Sotuv LB.xlsx";
+
+        response.setContentType("application/octet-stream");
+        response.setHeader(headerKey, "attachment; filename=" + java.net.URLEncoder.encode(fileName.replaceAll(" ", "_").toLowerCase(), StandardCharsets.UTF_8));
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        System.out.println("Purchases");
+        lbPurchaseReportSheet.purchaseReportSheet(workbook,documentFilter);
+
+        System.out.println("After excel writing: " + LocalTime.now());
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        System.out.println("Workbook write time: " + LocalTime.now());
+        workbook.close();
+        System.out.println("Workbook close:      " + LocalTime.now());
+        response.getOutputStream().flush();
+        response.getOutputStream().close();
+        outputStream.flush();
+        outputStream.close();
+        System.out.println("Output close:        " + LocalTime.now());
+    }
+
+    public void excelLBProduceSheet(HttpServletResponse response, DocumentFilter documentFilter) throws IOException {
+
+        String headerKey = "Content-Disposition";
+
+        String fileName = "Ishlab chiqarish LB.xlsx";
+
+        response.setContentType("application/octet-stream");
+        response.setHeader(headerKey, "attachment; filename=" + java.net.URLEncoder.encode(fileName.replaceAll(" ", "_").toLowerCase(), StandardCharsets.UTF_8));
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        System.out.println("Produce");
+        lbProduceReportSheet.purchaseReportSheet(workbook,documentFilter);
 
         System.out.println("After excel writing: " + LocalTime.now());
         ServletOutputStream outputStream = response.getOutputStream();

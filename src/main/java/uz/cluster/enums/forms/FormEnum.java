@@ -20,6 +20,11 @@ public enum FormEnum {
     READY_PRODUCT(112),
     PRODUCE_COST(113),
 
+    //Leader Beton
+    LB_PURCHASE(121),
+    MIXER(122),
+    INGREDIENT(123),
+
     //Nasos
     NASOS(131),
 

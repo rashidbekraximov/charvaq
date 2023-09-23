@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import uz.cluster.entity.purchase.Purchase;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PurchaseRepository extends JpaRepository<Purchase,Integer> {

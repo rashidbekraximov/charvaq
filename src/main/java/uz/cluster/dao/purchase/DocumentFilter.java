@@ -23,6 +23,12 @@ public class DocumentFilter {
 
     private int orderId;
 
+    private int mark;
+
+    private int auto;
+
+    private int amount;
+
     private String checkNumber;
 
     private LocalDate beginDate;

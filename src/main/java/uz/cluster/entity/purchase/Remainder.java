@@ -9,6 +9,7 @@ import uz.cluster.dao.purchase.RemainderDao;
 import uz.cluster.entity.Auditable;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.references.model.Unit;
+import uz.cluster.enums.MCHJ;
 import uz.cluster.enums.Status;
 
 import javax.persistence.*;
@@ -39,8 +40,8 @@ public class Remainder extends Auditable {
     private double amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "varchar(10) default 'ACTIVE'")
-    private uz.cluster.enums.Status status = Status.ACTIVE;
+    @Column(name = "mchj", columnDefinition = "varchar(5) default 'CHSM'")
+    private MCHJ mchj;
 
     @Transient
     private int productTypeId;
@@ -56,7 +57,7 @@ public class Remainder extends Auditable {
         remainderDao.setUnit(getUnit());
         remainderDao.setUnitId(getUnitId());
         remainderDao.setAmount(getAmount());
-        remainderDao.setStatus(getStatus());
+        remainderDao.setMchj(getMchj());
         return remainderDao;
     }
 }

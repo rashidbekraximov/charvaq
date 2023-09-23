@@ -8,7 +8,6 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
-import uz.cluster.dao.forms.Tabel;
 import uz.cluster.dao.purchase.DocumentFilter;
 import uz.cluster.entity.purchase.Purchase;
 import uz.cluster.entity.purchase.PurchasedProduct;
@@ -16,9 +15,8 @@ import uz.cluster.repository.purchase.PurchasedProductRepository;
 import uz.cluster.services.excel.style.CustomXSSFRow;
 import uz.cluster.services.excel.style.ExcelStyle;
 import uz.cluster.services.purchase.PurchaseService;
-import uz.cluster.services.salary.SalaryService;
 
-import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,17 +27,7 @@ public class PurchaseReport {
 
     XSSFCellStyle cellStyleCenterBackgroundGreenWithBorder;
     XSSFCellStyle cellStyleCenterOnlyFontWithBorderWithBold;
-    XSSFCellStyle cellStyleLeftOnlyFontBoldWithBorder;
-    XSSFCellStyle cellStyleCenterOnlyFontWithBorderWithoutBold;
-    XSSFCellStyle cellStyleLeftOnlyFontWithoutBoldWithBorder;
     XSSFCellStyle cellStyleCenterBackgroundOrangeWithBorder;
-    XSSFCellStyle cellStyleCenterBackgroundGreenWithoutBorder;
-    XSSFCellStyle cellStyleCenterBackgroundPurpleWithBorder;
-    XSSFCellStyle cellStyleLeftBackgroundGreenWithBorder;
-    XSSFCellStyle cellStyleCenterDarkBackgroundGreenWithBorder;
-    XSSFCellStyle cellStyleCenterBackgroundYellowWithBorder;
-    XSSFCellStyle cellStyleBackgroundRedWithoutBorder;
-    XSSFCellStyle cellStyleCenterBackgroundSeaGreenWithBorder;
 
     XSSFCell cell1;
     XSSFCell cell2;
@@ -55,7 +43,6 @@ public class PurchaseReport {
     XSSFCell cell12;
     XSSFCell cell13;
     XSSFCell cell14;
-    XSSFCell cell15;
 
     int counter = 0;
 
@@ -98,7 +85,7 @@ public class PurchaseReport {
             counter++;
 
             rowInTable = new CustomXSSFRow(sheet.createRow(counter), cellStyleCenterBackgroundGreenWithBorder);
-            rowInTable.setHeight((short) 650);
+            rowInTable.setHeight((short) 450);
             cell1 = rowInTable.createCell(CellType.STRING);
             cell1.setCellValue("Id");
             cell2 = rowInTable.createCell(CellType.STRING);
@@ -134,7 +121,6 @@ public class PurchaseReport {
                 List<PurchasedProduct> products = purchasedProductRepository.findAllByPurchaseIdOrderByProductType(purchase.getId());
                 for (PurchasedProduct purchasedProduct : products){
                     rowInTable = new CustomXSSFRow(sheet.createRow(counter), cellStyleCenterOnlyFontWithBorderWithBold);
-                    rowInTable.setHeight((short) 600);
                     cell1 = rowInTable.createCell(CellType.STRING);
                     cell1.setCellValue(purchase.getId() + "");
                     cell2 = rowInTable.createCell(CellType.STRING);

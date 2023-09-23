@@ -94,6 +94,39 @@ VALUES (120, 120, row ('Лидер Бетон', 'Леадер Бетон', 'Lead
 
 insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
                     modified_by, modified_on, href, parent_id)
+VALUES (121, 121,
+        row ('Продажа', 'Сотиш', 'Sotish'),
+        121, 'ACTIVE', null, now(), null, null, '/leader-beton/purchase', 120);
+
+
+insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (122, 122,
+        row ('Список миксеры', 'Миксерлар рўйхати', 'Mikserlar ro''yxati'),
+        122, 'ACTIVE', null, now(), null, null, '/leader-beton/mixers', 120);
+
+
+insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (123, 123,
+        row ('Бетонный состав', 'Бетон таркиби', 'Beton tarkibi'),
+        123, 'ACTIVE', null, now(), null, null, '/leader-beton/ingredients', 120);
+
+insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (124, 124,
+        row ('Список продаж ', 'Сотувлар рўйҳати ', 'Sotuvlar ro''yhati'),
+        124, 'ACTIVE', null, now(), null, null, '/leader-beton/purchase-list', 120);
+
+insert into r_forms(id, form_number, name, order_number,  status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (125, 125,
+        row ('Остаток состав', 'Tаркиб қолдиғи', 'Tarkib qoldig''i'),
+        125, 'ACTIVE', null, now(), null, null, '/leader-beton/remainder', 120);
+
+
+insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
 VALUES (130, 130, row ('Насос', 'Насос', 'Nasos'), 130, 'ACTIVE', null, now(), null, null,
         null, null);
 

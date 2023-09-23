@@ -2,6 +2,8 @@ package uz.cluster.services.purchase;
 
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.SynchronizeableQuery;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
@@ -37,6 +39,7 @@ import uz.cluster.util.StringUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -80,10 +83,6 @@ public class PurchaseService {
         }
     }
 
-    @CheckPermission(form = FormEnum.PURCHASE, permission = Action.CAN_VIEW)
-    public List<PurchaseDao> getDebtList() {
-        return purchaseRepository.getAllDebts().stream().map(Purchase::asDao).collect(Collectors.toList());
-    }
 
     public PurchaseDao getById(int id) {
         Optional<Purchase> optionalPurchase = purchaseRepository.findById(id);
@@ -95,18 +94,18 @@ public class PurchaseService {
         }
     }
 
-    public List<Notification> getNotifications(){
-        List<Notification> notifications = new ArrayList<>();
-        List<NotificationDto> notificationDtos = purchaseRepository.getAllDebt();
-        notificationDtos.forEach(dto -> {
-            Notification notification = new Notification();
-            notification.setId(dto.getId());
-            notification.setDays(dto.getDays());
-            notification.setClient(dto.getClient());
-            notifications.add(notification);
-        });
-        return notifications;
-    }
+//    public List<Notification> getNotifications(){
+//        List<Notification> notifications = new ArrayList<>();
+//        List<NotificationDto> notificationDtos = purchaseRepository.getAllDebt();
+//        notificationDtos.forEach(dto -> {
+//            Notification notification = new Notification();
+//            notification.setId(dto.getId());
+//            notification.setDays(dto.getDays());
+//            notification.setClient(dto.getClient());
+//            notifications.add(notification);
+//        });
+//        return notifications;
+//    }
 
     @CheckPermission(form = FormEnum.PURCHASE, permission = Action.CAN_ADD)
     @Transactional
@@ -238,6 +237,7 @@ public class PurchaseService {
     }
 
     @CheckPermission(form = FormEnum.PURCHASE, permission = Action.CAN_VIEW)
+    @Transactional
     public List<Purchase> getPurchasesByPage(DocumentFilter documentFilter) {
         if (documentFilter == null) {
             documentFilter = new DocumentFilter();
@@ -248,16 +248,18 @@ public class PurchaseService {
         if (StringUtil.isNotEmpty(documentFilter.getClient())) {
             where += " and client like  '%'||:client||'%' ";
         }
+
         if (StringUtil.isNotEmpty(documentFilter.getCheckNumber())) {
             where += " and check_number like  '%'||:check_number||'%' ";
         }
+
         if (documentFilter.getBeginDate() != null && documentFilter.getEndDate() != null) {
             where += " and date between :beginDate and :endDate";
         }else{
             if (documentFilter.getId() != 0 || StringUtil.isNotEmpty(documentFilter.getCheckNumber())  || StringUtil.isNotEmpty(documentFilter.getClient()) || (documentFilter.getBeginDate() != null && documentFilter.getEndDate() != null)){
-                where += " and EXTRACT(MONTH FROM t.date) >= :monthId ";
+                where += " and date between :beginDate and :endDate ";
             }else{
-                where += "  EXTRACT(MONTH FROM t.date) >= :monthId ";
+                where += "date between :beginDate and :endDate ";
             }
         }
 
@@ -277,9 +279,10 @@ public class PurchaseService {
             where = where.substring(4, where.length());
         }
 
-        String jSql = "select * from purchase t where " + where + " order by t.id desc";
+        String jSql = "select t.* from purchase t where " + where + " order by t.id desc";
+//        String jSql = "select t.* from purchase t ";
 
-        Query selQuery = entityManager.createNativeQuery(jSql, Purchase.class);
+        Query selQuery = this.entityManager.createNativeQuery(jSql, Purchase.class);
 
 
         if (StringUtil.isNotEmpty(documentFilter.getCheckNumber())) {
@@ -293,8 +296,9 @@ public class PurchaseService {
 
             selQuery.setParameter("endDate", documentFilter.getEndDate());
         }else{
-            int monthId = LocalDate.now().getMonthValue();
-            selQuery.setParameter("monthId", monthId);
+            selQuery.setParameter("beginDate",getBeginDate(LocalDate.now()));
+
+            selQuery.setParameter("endDate", getEndDate(LocalDate.now()));
         }
 
         if (documentFilter.getPaymentTypeId() != 0) {
@@ -305,7 +309,16 @@ public class PurchaseService {
             selQuery.setParameter("technicianId", documentFilter.getTechnicianId());
         }
 
-        List<Purchase> purchases = selQuery.getResultList();
+        @SuppressWarnings("unchecked")
+        List<Purchase> purchases =  selQuery.getResultList();
         return purchases;
+    }
+
+    public LocalDate getBeginDate(LocalDate date){
+        return LocalDate.of(date.getYear(), (date.getMonth()),1);
+    }
+    public LocalDate getEndDate(LocalDate date){
+
+        return LocalDate.of(date.getYear(), (date.getMonth()),date.getDayOfMonth());
     }
 }

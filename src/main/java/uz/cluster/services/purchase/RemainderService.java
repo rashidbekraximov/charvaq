@@ -9,7 +9,7 @@ import uz.cluster.entity.logistic.BringDrobilkaProduct;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.purchase.Remainder;
 import uz.cluster.entity.references.model.Unit;
-import uz.cluster.enums.Status;
+import uz.cluster.enums.MCHJ;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
@@ -33,8 +33,8 @@ public class RemainderService {
     private final UnitRepository unitRepository;
 
     @CheckPermission(form = FormEnum.REMAINDER, permission = Action.CAN_VIEW)
-    public List<RemainderDao> getRemainderList() {
-        return remainderRepository.findAll().stream().map(Remainder::asDao).collect(Collectors.toList());
+    public List<RemainderDao> getRemainderList(MCHJ mchj) {
+        return remainderRepository.findAllByMchj(mchj).stream().map(Remainder::asDao).collect(Collectors.toList());
     }
 
     public RemainderDao getById(int id) {
@@ -65,7 +65,7 @@ public class RemainderService {
             return edit(remainder);
         }
 
-        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_Id(remainder.getProductTypeId());
+        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(remainder.getProductTypeId(),remainder.getMchj());
         if (optionalRemainder.isPresent()){
             return new ApiResponse(false, LanguageManager.getLangMessage("already_created"));
         }
@@ -79,11 +79,6 @@ public class RemainderService {
     public ApiResponse edit(Remainder remainder) {
         Optional<Remainder> optionalRemainder = remainderRepository.findById(remainder.getId());
         if (optionalRemainder.isPresent()){
-            optionalRemainder.get().setId(remainder.getId());
-            optionalRemainder.get().setProductType(remainder.getProductType());
-            optionalRemainder.get().setProductTypeId(remainder.getProductTypeId());
-            optionalRemainder.get().setAmount(remainder.getAmount());
-            optionalRemainder.get().setStatus(remainder.getStatus());
             Remainder remainderEdited = remainderRepository.save(optionalRemainder.get());
             return new ApiResponse(true, remainderEdited, LanguageManager.getLangMessage("edited"));
         }else{
@@ -96,7 +91,6 @@ public class RemainderService {
     public ApiResponse delete(int id) {
         Optional<Remainder> optionalRemainder = remainderRepository.findById(id);
         if (optionalRemainder.isPresent()){
-            optionalRemainder.get().setStatus(Status.PASSIVE);
             Remainder remainderPassive = remainderRepository.save(optionalRemainder.get());
             return new ApiResponse(true, remainderPassive, LanguageManager.getLangMessage("deleted"));
         }else{
@@ -105,7 +99,7 @@ public class RemainderService {
     }
 
     public void addByBringing(BringDrobilkaProduct bringDrobilkaProduct) {
-        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_Id(bringDrobilkaProduct.getProductType().getId());
+        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(bringDrobilkaProduct.getProductType().getId(),bringDrobilkaProduct.getMchj());
         if(optionalRemainder.isPresent()){
             optionalRemainder.get().setAmount(optionalRemainder.get().getAmount() + bringDrobilkaProduct.getAmount());
             remainderRepository.save(optionalRemainder.get());
@@ -114,19 +108,20 @@ public class RemainderService {
             remainder.setProductType(bringDrobilkaProduct.getProductType());
             remainder.setUnit(bringDrobilkaProduct.getUnit());
             remainder.setAmount(bringDrobilkaProduct.getAmount());
+            remainder.setMchj(bringDrobilkaProduct.getMchj());
             remainderRepository.save(remainder);
         }
     }
 
     public void editByBringing(BringDrobilkaProduct bringDrobilkaProduct, BringDrobilkaProduct editedBringDrobilkaProduct) {
         if (bringDrobilkaProduct.getProductType().getId() == editedBringDrobilkaProduct.getProductType().getId()){
-            Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_Id(bringDrobilkaProduct.getProductType().getId());
+            Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(bringDrobilkaProduct.getProductType().getId(),bringDrobilkaProduct.getMchj());
             if(optionalRemainder.isPresent()){
                 optionalRemainder.get().setAmount((optionalRemainder.get().getAmount() - bringDrobilkaProduct.getAmount()) + editedBringDrobilkaProduct.getAmount());
                 remainderRepository.save(optionalRemainder.get());
             }
         }else {
-            Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_Id(bringDrobilkaProduct.getProductType().getId());
+            Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(bringDrobilkaProduct.getProductType().getId(),bringDrobilkaProduct.getMchj());
             if (optionalRemainder.isPresent()){
                 optionalRemainder.get().setAmount(optionalRemainder.get().getAmount() - bringDrobilkaProduct.getAmount());
                 remainderRepository.save(optionalRemainder.get());

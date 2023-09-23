@@ -10,6 +10,8 @@ import uz.cluster.dao.logistic.BringDrobilkaProductDao;
 import uz.cluster.entity.Auditable;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.references.model.Unit;
+import uz.cluster.enums.MCHJ;
+import uz.cluster.enums.Status;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -53,6 +55,10 @@ public class BringDrobilkaProduct extends Auditable {
     @Column(name = "km")
     private double km;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mchj", columnDefinition = "varchar(5) default 'CHSM'")
+    private MCHJ mchj;
+
     @Transient
     private int productTypeId;
 
@@ -75,6 +81,7 @@ public class BringDrobilkaProduct extends Auditable {
         bringDrobilkaProductDao.setKm(getKm());
         bringDrobilkaProductDao.setIncome(getIncome());
         bringDrobilkaProductDao.setDate(getDate());
+        bringDrobilkaProductDao.setMchj(getMchj());
         return bringDrobilkaProductDao;
     }
 }
