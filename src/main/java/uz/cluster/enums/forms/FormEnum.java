@@ -8,8 +8,9 @@ public enum FormEnum {
     PURCHASE(1),
     ESTINGUISH_DEBT(2),
     ORDER(3),
-    REMAINDER(4),
-    PRICE(5),
+    PRICE(4),
+    REMAINDER(5),
+    DAILY_COST(7),
 
     //Logistika
     TECHNICIAN(102),

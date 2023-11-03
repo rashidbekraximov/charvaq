@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
 import uz.cluster.dao.purchase.DocumentFilter;
+import uz.cluster.dao.purchase.LineChartDao;
 import uz.cluster.dao.purchase.Notification;
 import uz.cluster.dao.purchase.PurchaseDao;
 import uz.cluster.entity.Document;
@@ -39,7 +40,6 @@ import uz.cluster.util.StringUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -65,20 +65,38 @@ public class PurchaseService {
 
     private final OrderRepository orderRepository;
 
+    private final RemainderService remainderService;
+
     private final LogisticService logisticService;
 
+    private final DailyIncomeService dailyIncomeService;
+
     private final ReadyProductRepository readyProductRepository;
+
 
     @CheckPermission(form = FormEnum.PURCHASE, permission = Action.CAN_VIEW)
     public List<PurchaseDao> getList() {
         return purchaseRepository.findAll().stream().map(Purchase::asDao).collect(Collectors.toList());
     }
 
+    public List<PurchaseDao> getLastARow() {
+        return purchaseRepository.getAllByDescForTallon().stream().map(Purchase::asDao).collect(Collectors.toList());
+    }
+
+    public List<PurchaseDao> getLastRows() {
+        return purchaseRepository.getAllByDesc().stream().map(Purchase::asDao).collect(Collectors.toList());
+    }
+
+    public List<PurchaseDao> getByDateForConfirm(Date date) {
+        return purchaseRepository.getAllByDate(date).stream().map(Purchase::asDao).collect(Collectors.toList());
+    }
+
+
     @CheckPermission(form = FormEnum.PURCHASE, permission = Action.CAN_VIEW)
     public List<PurchaseDao> getSearchList(String client) {
-        if (!client.isEmpty() && !client.trim().isEmpty()){
+        if (!client.isEmpty() && !client.trim().isEmpty()) {
             return purchaseRepository.getSearchedDebts(client).stream().map(Purchase::asDao).collect(Collectors.toList());
-        }else{
+        } else {
             return purchaseRepository.getAllDebts().stream().map(Purchase::asDao).collect(Collectors.toList());
         }
     }
@@ -94,25 +112,83 @@ public class PurchaseService {
         }
     }
 
-//    public List<Notification> getNotifications(){
-//        List<Notification> notifications = new ArrayList<>();
-//        List<NotificationDto> notificationDtos = purchaseRepository.getAllDebt();
-//        notificationDtos.forEach(dto -> {
-//            Notification notification = new Notification();
-//            notification.setId(dto.getId());
-//            notification.setDays(dto.getDays());
-//            notification.setClient(dto.getClient());
-//            notifications.add(notification);
-//        });
-//        return notifications;
-//    }
+    public List<LineChartDao> getLineList() {
+        List<LineChartDao> lineChartDaoList = new ArrayList<>();
+        for (int i = 1; i < 4; i++) {
+            LineChartDao line = new LineChartDao();
+            line.setId((byte) i);
+            List<Double> amount = new ArrayList<>();
+            for (int j = 1; j < 13; j++) {
+                double a = 0;
+                List<Integer> monthValueList = purchaseRepository.getAllPurchaseForLineChart(j);
+                for (Integer id : monthValueList) {
+                    List<Double> optional = purchasedProductRepository.getSumValueForLineChart(i, id);
+                    for (Double d : optional) {
+                        a += d;
+                    }
+                }
+                amount.add(a);
+            }
+            line.setMonthValue(amount);
+            lineChartDaoList.add(line);
+        }
+
+        return lineChartDaoList;
+    }
+
+    public List<Long> getBarList() {
+        List<Long> lineChartDaoList = new ArrayList<>();
+        for (int j = 1; j < 13; j++) {
+            long numsMonthLy = purchaseRepository.getAllPurchaseNumberForBarChart(j);
+            lineChartDaoList.add(numsMonthLy);
+        }
+        return lineChartDaoList;
+    }
+
+    public List<Long> getBarLastMonthly() {
+        List<Long> lineChartDaoList = new ArrayList<>();
+        long numPurchase = purchaseRepository.geCountOfPurchaseForBarChartMonthly();
+        lineChartDaoList.add(numPurchase);
+        long numPurchaseDebt = purchaseRepository.geCountOfDebtForBarChartMonthly();
+        lineChartDaoList.add(numPurchaseDebt);
+        long numPurchaseNoDebt = purchaseRepository.geCountOfNoDebtForBarChartMonthly();
+        lineChartDaoList.add(numPurchaseNoDebt);
+        return lineChartDaoList;
+    }
+
+    public List<Long> getBarLastDaily() {
+        List<Long> lineChartDaoList = new ArrayList<>();
+        long numPurchase = purchaseRepository.geCountOfPurchaseForBarChartDaily();
+        lineChartDaoList.add(numPurchase);
+        long numPurchaseDebt = purchaseRepository.geCountOfDebtForBarChartDaily();
+        lineChartDaoList.add(numPurchaseDebt);
+        long numPurchaseNoDebt = purchaseRepository.geCountOfNoDebtForBarChartDaily();
+        lineChartDaoList.add(numPurchaseNoDebt);
+        return lineChartDaoList;
+    }
+
+    public List<Notification> getNotifications(){
+        List<Notification> notifications = new ArrayList<>();
+        List<NotificationDto> notificationDtos = purchaseRepository.getAllDebt();
+        notificationDtos.forEach(dto -> {
+            Notification notification = new Notification();
+            notification.setId(dto.getId());
+            notification.setDays(dto.getDays());
+            notification.setClient(dto.getClient());
+            notification.setLocation(dto.getLocation());
+            notification.setDebtTotalValue(dto.getDebtTotalValue());
+            notifications.add(notification);
+        });
+        return notifications;
+    }
+
 
     @CheckPermission(form = FormEnum.PURCHASE, permission = Action.CAN_ADD)
     @Transactional
     public ApiResponse add(PurchaseDao purchaseDao) {
         Purchase purchase = purchaseDao.copy(purchaseDao);
 
-        if (purchase.getTechnicianId() == 0 || purchase.getPaymentTypeId() == 0) {
+        if (purchase.getPaymentTypeId() == 0) {
             return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
         }
         Optional<Technician> optionalTechnician = technicianRepository.findById(purchase.getTechnicianId());
@@ -121,24 +197,22 @@ public class PurchaseService {
         Optional<PaymentType> optionalPaymentType = paymentTypeRepository.findById(purchase.getPaymentTypeId());
         optionalPaymentType.ifPresent(purchase::setPaymentType);
 
-        for (PurchasedProduct purchasedProduct : purchase.getPurchasedProductList()){
+        for (PurchasedProduct purchasedProduct : purchase.getPurchasedProductList()) {
             if (purchasedProduct.getProductTypeId() == 0) {
                 return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
             }
             Optional<ProductType> optionalProductType = productTypeRepository.findById(purchasedProduct.getProductTypeId());
             optionalProductType.ifPresent(purchasedProduct::setProductType);
             purchasedProduct.setTechnicianId(purchase.getTechnicianId());
-            if(purchase.getId() == 0 && purchasedProduct.getProductType().getId() == PurchaseEnum.SH_BLOK.getValue()){
-                Optional<ReadyProduct> optionalReadyProduct = readyProductRepository.findByProductType_Id(purchasedProduct.getProductType().getId());
-                if (optionalReadyProduct.isPresent() && optionalReadyProduct.get().getAmount() - purchasedProduct.getWeight() >= 0){
-                    optionalReadyProduct.get().setAmount(optionalReadyProduct.get().getAmount() - purchasedProduct.getWeight());
-                    readyProductRepository.save(optionalReadyProduct.get());
+            if (purchase.getId() == 0) {
+                if (remainderService.purchase(purchasedProduct.getProductTypeId(),purchasedProduct.getWeight())){
+                    return new ApiResponse(false, LanguageManager.getLangMessage("not_found_all"));
                 }
             }
         }
-        if (purchase.getOrderId() != 0){
+        if (purchase.getOrderId() != 0) {
             Optional<Order> orderOptional = orderRepository.findById(purchase.getOrderId());
-            if (orderOptional.isPresent()){
+            if (orderOptional.isPresent()) {
                 orderOptional.get().setStatus(Status.PASSIVE);
                 purchase.setOrder(orderOptional.get());
             }
@@ -147,13 +221,13 @@ public class PurchaseService {
         if (purchase.getId() != 0) {
             return edit(purchase);
         }
-
+        dailyIncomeService.addFromPurchase(purchase);
         Purchase saved = purchaseRepository.save(purchase);
-        for (PurchasedProduct purchasedProduct : purchase.getPurchasedProductList()){
+        for (PurchasedProduct purchasedProduct : purchase.getPurchasedProductList()) {
             purchasedProduct.setPurchaseId(saved.getId());
         }
         purchasedProductRepository.saveAll(purchase.getPurchasedProductList());
-        if (optionalTechnician.isPresent()){
+        if (optionalTechnician.isPresent()) {
             BringDrobilkaProduct bringDrobilkaProduct = new BringDrobilkaProduct();
             bringDrobilkaProduct.setId(purchase.getId());
             bringDrobilkaProduct.setDate(purchase.getDate());
@@ -168,18 +242,18 @@ public class PurchaseService {
     @Transactional
     public ApiResponse edit(Purchase purchase) {
         Optional<Purchase> optionalPurchase = purchaseRepository.findById(purchase.getId());
-        if (optionalPurchase.isPresent()){
+        if (optionalPurchase.isPresent()) {
             List<PurchasedProduct> products = purchasedProductRepository.findAllByPurchaseIdOrderByProductType(optionalPurchase.get().getId());
-            if (optionalPurchase.get().getOrderId() != 0){
+            if (optionalPurchase.get().getOrderId() != 0) {
                 Optional<Order> orderOptional = orderRepository.findById(purchase.getOrderId());
                 orderOptional.ifPresent(order -> order.setStatus(Status.ACTIVE));
             }
-            for (PurchasedProduct product : purchase.getPurchasedProductList()){
+            for (PurchasedProduct product : purchase.getPurchasedProductList()) {
                 product.setPurchaseId(purchase.getId());
-                for (PurchasedProduct purchasedProduct : products){
-                    if (product.getProductType().getId() == purchasedProduct.getProductType().getId()){
+                for (PurchasedProduct purchasedProduct : products) {
+                    if (product.getProductType().getId() == purchasedProduct.getProductType().getId()) {
                         Optional<ReadyProduct> optionalReadyProduct = readyProductRepository.findByProductType_Id(product.getProductType().getId());
-                        if (optionalReadyProduct.isPresent()){
+                        if (optionalReadyProduct.isPresent()) {
                             optionalReadyProduct.get().setAmount((optionalReadyProduct.get().getAmount() + purchasedProduct.getWeight()) - product.getWeight());
                             readyProductRepository.save(optionalReadyProduct.get());
                         }
@@ -199,7 +273,7 @@ public class PurchaseService {
                 logisticService.createBringProductLogisticCost(bringDrobilkaProduct);
             }
             return new ApiResponse(true, edited, LanguageManager.getLangMessage("edited"));
-        }else{
+        } else {
             return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
         }
     }
@@ -208,13 +282,13 @@ public class PurchaseService {
     @Transactional
     public ApiResponse delete(int id) {
         Optional<Purchase> optionalPurchase = purchaseRepository.findById(id);
-        if (optionalPurchase.isPresent()){
+        if (optionalPurchase.isPresent()) {
             optionalPurchase.get().setStatus(Status.PASSIVE);
             Purchase passive = purchaseRepository.save(optionalPurchase.get());
             purchasedProductRepository.deleteAllByPurchaseId(id);
             logisticService.deleteAllById(id);
             return new ApiResponse(true, passive, LanguageManager.getLangMessage("deleted"));
-        }else{
+        } else {
             return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
         }
     }
@@ -223,7 +297,7 @@ public class PurchaseService {
     @Transactional
     public ApiResponse deleteDebt(int id) {
         Optional<Purchase> optionalPurchase = purchaseRepository.findById(id);
-        if (optionalPurchase.isPresent()){
+        if (optionalPurchase.isPresent()) {
             optionalPurchase.get().setStatus(Status.PASSIVE);
             optionalPurchase.get().setDebtTotalValue(0);
             optionalPurchase.get().setPaidTotalValue(optionalPurchase.get().getTotalValue());
@@ -231,7 +305,7 @@ public class PurchaseService {
             purchasedProductRepository.deleteAllByPurchaseId(id);
             logisticService.deleteAllById(id);
             return new ApiResponse(true, passive, LanguageManager.getLangMessage("deleted"));
-        }else{
+        } else {
             return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
         }
     }
@@ -254,12 +328,12 @@ public class PurchaseService {
         }
 
         if (documentFilter.getBeginDate() != null && documentFilter.getEndDate() != null) {
-            where += " and date between :beginDate and :endDate";
-        }else{
-            if (documentFilter.getId() != 0 || StringUtil.isNotEmpty(documentFilter.getCheckNumber())  || StringUtil.isNotEmpty(documentFilter.getClient()) || (documentFilter.getBeginDate() != null && documentFilter.getEndDate() != null)){
-                where += " and date between :beginDate and :endDate ";
-            }else{
-                where += "date between :beginDate and :endDate ";
+            where += " and t.date between :beginDate and :endDate";
+        } else {
+            if (documentFilter.getId() != 0 || StringUtil.isNotEmpty(documentFilter.getCheckNumber()) || StringUtil.isNotEmpty(documentFilter.getClient()) || (documentFilter.getBeginDate() != null && documentFilter.getEndDate() != null)) {
+                where += " and t.date between :beginDate and :endDate ";
+            } else {
+                where += "t.date between :beginDate and :endDate ";
             }
         }
 
@@ -275,7 +349,7 @@ public class PurchaseService {
             where += " and debt_total_value != 0 ";
         }
 
-        if (where.substring(1,4).trim().equals("and")){
+        if (where.substring(1, 4).trim().equals("and")) {
             where = where.substring(4, where.length());
         }
 
@@ -295,8 +369,8 @@ public class PurchaseService {
             selQuery.setParameter("beginDate", documentFilter.getBeginDate());
 
             selQuery.setParameter("endDate", documentFilter.getEndDate());
-        }else{
-            selQuery.setParameter("beginDate",getBeginDate(LocalDate.now()));
+        } else {
+            selQuery.setParameter("beginDate", getBeginDate(LocalDate.now()));
 
             selQuery.setParameter("endDate", getEndDate(LocalDate.now()));
         }
@@ -310,15 +384,16 @@ public class PurchaseService {
         }
 
         @SuppressWarnings("unchecked")
-        List<Purchase> purchases =  selQuery.getResultList();
+        List<Purchase> purchases = selQuery.getResultList();
         return purchases;
     }
 
-    public LocalDate getBeginDate(LocalDate date){
-        return LocalDate.of(date.getYear(), (date.getMonth()),1);
+    public LocalDate getBeginDate(LocalDate date) {
+        return LocalDate.of(date.getYear(), (date.getMonth()), 1);
     }
-    public LocalDate getEndDate(LocalDate date){
 
-        return LocalDate.of(date.getYear(), (date.getMonth()),date.getDayOfMonth());
+    public LocalDate getEndDate(LocalDate date) {
+
+        return LocalDate.of(date.getYear(), (date.getMonth()), date.getDayOfMonth());
     }
 }

@@ -145,13 +145,13 @@ public class LogisticService {
             for (LogisticDao dao : logisticRepository.getAllByTechnicianId(technician.getId())){
                 DashboardLogistic dashboardLogistic = new DashboardLogistic();
                 dashboardLogistic.setCostId(dao.getCostId());
-                dashboardLogistic.setAmount(dao.getAmount());
+                dashboardLogistic.setAmount(round(dao.getAmount()));
                 totalAmount += dao.getAmount();
                 dashboardTechnician.getDashboardLogistics().add(dashboardLogistic);
             }
             DashboardLogistic dashboardLogistic = new DashboardLogistic();
             dashboardLogistic.setCostId(CostEnum.ALL_COST.getValue());
-            dashboardLogistic.setAmount(totalAmount);
+            dashboardLogistic.setAmount(round(totalAmount));
             dashboardTechnician.getDashboardLogistics().add(dashboardLogistic);
             DashboardLogistic dashboardLogisticIncome = new DashboardLogistic();
             List<Double> allIncome = bringDrobilkaProductRepository.getAllIncomeTechnicianId(technician.getId());
@@ -159,16 +159,20 @@ public class LogisticService {
             allIncome.forEach(dashboardLogisticIncome::setAmount);
             List<Double> lastIncome = purchaseRepository.getAllIncomeTechnicianId(technician.getId());
             lastIncome.forEach(last -> {
-                dashboardLogisticIncome.setAmount(dashboardLogisticIncome.getAmount() + last);
+                dashboardLogisticIncome.setAmount(round(dashboardLogisticIncome.getAmount() + last));
             });
             dashboardTechnician.getDashboardLogistics().add(dashboardLogisticIncome);
             DashboardLogistic dashboardLogisticProfit = new DashboardLogistic();
             dashboardLogisticProfit.setCostId(CostEnum.ALL_PROFIT.getValue());
-            dashboardLogisticProfit.setAmount(dashboardLogisticIncome.getAmount() - totalAmount);
+            dashboardLogisticProfit.setAmount(round(dashboardLogisticIncome.getAmount() - totalAmount));
             dashboardTechnician.getDashboardLogistics().add(dashboardLogisticProfit);
             dashboardTechnicians.add(dashboardTechnician);
         }
 
         return dashboardTechnicians;
+    }
+
+    public double round(double value){
+        return Math.round((value * 100.0))/100.0;
     }
 }

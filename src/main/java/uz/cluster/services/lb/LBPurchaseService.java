@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
+import uz.cluster.dao.lb.BarDao;
 import uz.cluster.dao.lb.IngredientDao;
 import uz.cluster.dao.lb.LBPurchaseDao;
 import uz.cluster.dao.purchase.DocumentFilter;
+import uz.cluster.dao.purchase.PurchaseDao;
 import uz.cluster.entity.lb.Ingredient;
 import uz.cluster.entity.lb.LBPurchase;
 import uz.cluster.entity.lb.Mixer;
@@ -17,6 +19,7 @@ import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.enums.purchase.PurchaseEnum;
 import uz.cluster.payload.response.ApiResponse;
+import uz.cluster.repository.lb.BarChart;
 import uz.cluster.repository.lb.LBPurchaseRepository;
 import uz.cluster.repository.lb.MixerRepository;
 import uz.cluster.repository.purchase.RemainderRepository;
@@ -27,6 +30,7 @@ import uz.cluster.util.StringUtil;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,6 +54,73 @@ public class LBPurchaseService {
     @CheckPermission(form = FormEnum.LB_PURCHASE, permission = Action.CAN_VIEW)
     public List<LBPurchaseDao> getList() {
         return lbPurchaseRepository.findAll().stream().map(LBPurchase::asDao).collect(Collectors.toList());
+    }
+
+    public List<LBPurchaseDao> getLastRows() {
+        return lbPurchaseRepository.getAllByDesc().stream().map(LBPurchase::asDao).collect(Collectors.toList());
+    }
+
+    public List<Long> getBarList() {
+        List<Long> lineChartDaoList = new ArrayList<>();
+        for (int j = 1; j < 13; j++) {
+            long numsMonthLy = lbPurchaseRepository.getAllPurchaseNumberForBarChart(j);
+            lineChartDaoList.add(numsMonthLy);
+        }
+        return lineChartDaoList;
+    }
+
+    public List<Double> getBarListDaily() {
+        List<Double> lineChartDaoList = new ArrayList<>();
+        List<LBPurchase> purchaseList = lbPurchaseRepository.getAllPurchaseNumberForBarChartDaily();
+        double income = 0;
+        double hour = 0;
+        for(LBPurchase purchase : purchaseList){
+            income += purchase.getNasos();
+            hour += purchase.getHour();
+        }
+        lineChartDaoList.add(income);
+        lineChartDaoList.add(hour);
+        return lineChartDaoList;
+    }
+
+    public List<Double> getBarListMonthly() {
+        List<Double> lineChartDaoList = new ArrayList<>();
+        List<LBPurchase> purchaseList = lbPurchaseRepository.getAllPurchaseNumberForBarChartMonthly();
+        double income = 0;
+        double hour = 0;
+        for(LBPurchase purchase : purchaseList){
+            income += purchase.getNasos();
+            hour += purchase.getHour();
+        }
+        lineChartDaoList.add(income);
+        lineChartDaoList.add(hour);
+        return lineChartDaoList;
+    }
+
+    public List<Long> getBarListForNasos() {
+        List<Long> lineChartDaoList = new ArrayList<>();
+        for (int j = 1; j < 13; j++) {
+            long numsMonthLy = lbPurchaseRepository.getAllHireForNasos(j);
+            lineChartDaoList.add(numsMonthLy);
+        }
+        return lineChartDaoList;
+    }
+
+    public List<BarDao> getBarLast(String time) {
+        List<BarDao> lineChartDaoList = new ArrayList<>();
+        List<BarChart> bars = new ArrayList<>();
+        if (time.equals("DAILY")){
+            bars = lbPurchaseRepository.getAllByMarkDaily();
+        }else{
+            bars = lbPurchaseRepository.getAllByMarkMonthly();
+        }
+        bars.forEach(bar -> {
+            BarDao barDao = new BarDao();
+            barDao.setMark(bar.getMark());
+            barDao.setAmount(bar.getAmount());
+            lineChartDaoList.add(barDao);
+        });
+        return lineChartDaoList;
     }
 
     public LBPurchaseDao getById(int id) {
@@ -81,11 +152,11 @@ public class LBPurchaseService {
         if (remainder4.isPresent() && remainder4.get().getAmount() - lbPurchase.getPesok() >= 0){
             test = true;
         }
-
-        Optional<Remainder> remainder5 = remainderRepository.findByProductType_IdAndMchj(PurchaseEnum.DOBAVKA.getValue(), MCHJ.LB);
-        if (remainder5.isPresent() && remainder5.get().getAmount() - lbPurchase.getDobavka() >= 0){
-            test = true;
-        }
+//
+//        Optional<Remainder> remainder5 = remainderRepository.findByProductType_IdAndMchj(PurchaseEnum.DOBAVKA.getValue(), MCHJ.LB);
+//        if (remainder5.isPresent() && remainder5.get().getAmount() - lbPurchase.getDobavka() >= 0){
+//            test = true;
+//        }
 
         if (test){
             return new ApiResponse(true, LanguageManager.getLangMessage("enough"));
@@ -114,7 +185,7 @@ public class LBPurchaseService {
             remainder1.get().setAmount(remainder1.get().getAmount() - lbPurchase.getSement());
             remainderRepository.save(remainder1.get());
         }else{
-            return new ApiResponse(true, LanguageManager.getLangMessage("remainder") + LanguageManager.getLangMessage("sement") + LanguageManager.getLangMessage("not_found"));
+            return new ApiResponse(true, LanguageManager.getLangMessage("remainder") + " " + LanguageManager.getLangMessage("sement") + " " + LanguageManager.getLangMessage("not_found"));
         }
 
         Optional<Remainder> remainder2 = remainderRepository.findByProductType_IdAndMchj(PurchaseEnum.KLINES.getValue(), MCHJ.LB);
@@ -122,7 +193,7 @@ public class LBPurchaseService {
             remainder2.get().setAmount(remainder2.get().getAmount() - lbPurchase.getKlines());
             remainderRepository.save(remainder2.get());
         }else{
-            return new ApiResponse(true, LanguageManager.getLangMessage("remainder") + LanguageManager.getLangMessage("klines") + LanguageManager.getLangMessage("not_found"));
+            return new ApiResponse(true, LanguageManager.getLangMessage("remainder") + " " + LanguageManager.getLangMessage("klines") + " " + LanguageManager.getLangMessage("not_found"));
         }
 
         Optional<Remainder> remainder3 = remainderRepository.findByProductType_IdAndMchj(PurchaseEnum.SHEBEN.getValue(), MCHJ.LB);
@@ -130,7 +201,7 @@ public class LBPurchaseService {
             remainder3.get().setAmount(remainder3.get().getAmount() - lbPurchase.getSheben());
             remainderRepository.save(remainder3.get());
         }else{
-            return new ApiResponse(true, LanguageManager.getLangMessage("remainder") + LanguageManager.getLangMessage("sheben") + LanguageManager.getLangMessage("not_found"));
+            return new ApiResponse(true, LanguageManager.getLangMessage("remainder") + " " + LanguageManager.getLangMessage("sheben") + " " + LanguageManager.getLangMessage("not_found"));
         }
 
         Optional<Remainder> remainder4 = remainderRepository.findByProductType_IdAndMchj(PurchaseEnum.CHINOZ.getValue(), MCHJ.LB);
@@ -138,16 +209,18 @@ public class LBPurchaseService {
             remainder4.get().setAmount(remainder4.get().getAmount() - lbPurchase.getPesok());
             remainderRepository.save(remainder4.get());
         }else{
-            return new ApiResponse(true, LanguageManager.getLangMessage("remainder") + LanguageManager.getLangMessage("pesok") + LanguageManager.getLangMessage("not_found"));
+            return new ApiResponse(true, LanguageManager.getLangMessage("remainder") + " " + LanguageManager.getLangMessage("pesok") + " " + LanguageManager.getLangMessage("not_found"));
         }
 
+/*
         Optional<Remainder> remainder5 = remainderRepository.findByProductType_IdAndMchj(PurchaseEnum.DOBAVKA.getValue(), MCHJ.LB);
         if (remainder5.isPresent() && remainder5.get().getAmount() - lbPurchase.getDobavka() >= 0){
             remainder5.get().setAmount(remainder5.get().getAmount() - lbPurchase.getDobavka());
             remainderRepository.save(remainder5.get());
         }else{
-            return new ApiResponse(true, LanguageManager.getLangMessage("remainder") + LanguageManager.getLangMessage("dobavka") + LanguageManager.getLangMessage("not_found"));
+            return new ApiResponse(true, LanguageManager.getLangMessage("remainder") + " " + LanguageManager.getLangMessage("dobavka") + " " + LanguageManager.getLangMessage("not_found"));
         }
+*/
 
         LBPurchase saved = lbPurchaseRepository.save(lbPurchase);
         return new ApiResponse(true, saved, LanguageManager.getLangMessage("saved"));

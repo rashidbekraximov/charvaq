@@ -78,7 +78,7 @@ public class OrderService {
         if (order.getId() != 0) {
             return edit(order);
         }
-
+        order.setStatus(Status.ACTIVE);
         Order orderSaved = orderRepository.save(order);
         return new ApiResponse(true, orderSaved, LanguageManager.getLangMessage("saved"));
     }

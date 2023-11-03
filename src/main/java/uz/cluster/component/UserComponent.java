@@ -1,10 +1,13 @@
 package uz.cluster.component;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uz.cluster.entity.auth.User;
+import uz.cluster.entity.produce.Cost;
 import uz.cluster.entity.references.model.Role;
 import uz.cluster.enums.auth.SystemRoleName;
+import uz.cluster.repository.produce.CostRepository;
 import uz.cluster.services.auth_service.AuthUserService;
 import uz.cluster.services.auth_service.RoleService;
 
@@ -15,10 +18,21 @@ public class UserComponent {
 
     private static RoleService roleService;
 
+    private static CostRepository costRepository;
+
     @Autowired
-    public UserComponent(AuthUserService authService,RoleService roleService) {
+    public UserComponent(AuthUserService authService,RoleService roleService,CostRepository costRepository) {
         UserComponent.authService = authService;
         UserComponent.roleService = roleService;
+        UserComponent.costRepository = costRepository;
+    }
+
+//    hourly 0 0 * * * *
+//    daily 0 0 0 * * *
+    @Scheduled(cron = "0 59 23 * * *")
+    public void timeMethod(){
+        System.out.println("Ishladi");
+        costRepository.save(new Cost());
     }
 
     public static User getById(int id){

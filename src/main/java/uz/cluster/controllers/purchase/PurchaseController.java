@@ -1,20 +1,27 @@
 package uz.cluster.controllers.purchase;
 
+import com.lowagie.text.DocumentException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.cluster.dao.purchase.AllDebtDao;
-import uz.cluster.dao.purchase.DocumentFilter;
-import uz.cluster.dao.purchase.Notification;
-import uz.cluster.dao.purchase.PurchaseDao;
+import uz.cluster.dao.purchase.*;
+import uz.cluster.entity.purchase.Purchase;
 import uz.cluster.payload.response.ApiResponse;
+import uz.cluster.repository.purchase.PurchaseRepository;
+import uz.cluster.repository.purchase.PurchasedProductRepository;
+import uz.cluster.services.pdf.PdfGenerator;
 import uz.cluster.services.purchase.EstinguishService;
 import uz.cluster.services.purchase.PurchaseService;
-import uz.cluster.util.GlobalParams;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -25,6 +32,10 @@ public class PurchaseController {
 
     private final PurchaseService purchaseService;
 
+    private final PurchaseRepository purchaseRepository;
+
+    private final PurchasedProductRepository purchasedProductRepository;
+
     private final EstinguishService estinguishService;
 
     @GetMapping("purchases")
@@ -32,20 +43,67 @@ public class PurchaseController {
         return ResponseEntity.ok(purchaseService.getList());
     }
 
+    @GetMapping("check-tallon")
+    public ResponseEntity<List<PurchaseDao>> checkForTallonNumber(){
+        return ResponseEntity.ok(purchaseService.getLastARow());
+    }
+
     @GetMapping("purchase/debts")
     public ResponseEntity<List<AllDebtDao>> getDebtList(){
         return ResponseEntity.ok(estinguishService.getDebtList());
+    }
+
+    @GetMapping("purchase/line")
+    public ResponseEntity<List<LineChartDao>> getLineList(){
+        return ResponseEntity.ok(purchaseService.getLineList());
+    }
+
+    @GetMapping("purchased/last-line")
+    public ResponseEntity<List<PurchaseDao>> getLastLineList(){
+        return ResponseEntity.ok(purchaseService.getLastRows());
+    }
+
+    @PostMapping("/purchase/nakladnoy")
+    public void generatePdfFile(@RequestBody Integer id, HttpServletResponse response) throws DocumentException, IOException {
+        response.setContentType("application/pdf");
+        DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD:HH:MM:SS");
+        String currentDateTime = dateFormat.format(new Date());
+        String headerkey = "Content-Disposition";
+        String headervalue = "attachment; filename=student" + currentDateTime + ".pdf";
+        response.setHeader(headerkey, headervalue);
+        PdfGenerator generator = new PdfGenerator();
+        PurchaseDao optionalPurchase = purchaseService.getById((int) id);
+        generator.generate(optionalPurchase, response);
+    }
+
+    @GetMapping("daily-confirm/{date}")
+    public ResponseEntity<List<PurchaseDao>> getByDateForConfirm(@PathVariable String date){
+        return ResponseEntity.ok(purchaseService.getByDateForConfirm(java.sql.Date.valueOf(date)));
+    }
+
+    @GetMapping("purchased/bar")
+    public ResponseEntity<List<Long>> getForBarChart(){
+        return ResponseEntity.ok(purchaseService.getBarList());
+    }
+
+    @GetMapping("purchased/bar-last/{time}")
+    public ResponseEntity<List<Long>> getForBarLast(@PathVariable String time){
+        if(time.equals("DAILY")){
+            return ResponseEntity.ok(purchaseService.getBarLastDaily());
+        }else{
+            return ResponseEntity.ok(purchaseService.getBarLastMonthly());
+        }
     }
 
     @GetMapping("purchase/debts/searched")
     public ResponseEntity<List<AllDebtDao>> getSearchList(@RequestParam String client){
         return ResponseEntity.ok(estinguishService.getSearchList(client));
     }
-//
-//    @GetMapping("purchase/debt")
-//    public ResponseEntity<List<Notification>> getNotificationList(){
-//        return ResponseEntity.ok(purchaseService.getNotifications());
-//    }
+
+    @GetMapping("purchase/debt")
+    public ResponseEntity<List<Notification>> getNotificationList(){
+        return ResponseEntity.ok(purchaseService.getNotifications());
+    }
 
     @PostMapping(value = "purchase/filter")
     public ResponseEntity<?> getListDocuments(@RequestBody DocumentFilter documentFilter){

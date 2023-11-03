@@ -23,15 +23,12 @@ public class ReadyProductDao extends BaseDao {
 
     private ProductType productType;
 
-    private Unit unit;
-
     private double amount;
 
     private double costAmount;
 
     private int productTypeId;
 
-    private int unitId;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
@@ -39,8 +36,6 @@ public class ReadyProductDao extends BaseDao {
     public ReadyProduct copy(ReadyProductDao remainderDao){
         ReadyProduct remainder = new ReadyProduct();
         remainder.setId((int) remainderDao.getId());
-        remainder.setUnit(remainderDao.getUnit());
-        remainder.setUnitId(remainderDao.getUnitId());
         remainder.setProductType(remainderDao.getProductType());
         remainder.setProductTypeId(remainderDao.getProductTypeId());
         remainder.setAmount(remainderDao.getAmount());

@@ -53,9 +53,13 @@ public class LBPurchaseDao  extends BaseDao {
 
     private byte xodka;
 
+    private double hour;
+
     private int mixerId;
 
     private double antimaroz;
+
+    private double km;
 
     private Mixer mixer;
 
@@ -82,6 +86,8 @@ public class LBPurchaseDao  extends BaseDao {
         order.setGivenValue(lbPurchaseDao.getGivenValue());
         order.setDebtTotalValue(lbPurchaseDao.getDebtTotalValue());
         order.setXodka(lbPurchaseDao.getXodka());
+        order.setKm(lbPurchaseDao.getKm());
+        order.setHour(lbPurchaseDao.getHour());
         order.setMixer(lbPurchaseDao.getMixer());
         order.setMixerId(lbPurchaseDao.getMixerId());
         order.setAntimaroz(lbPurchaseDao.getAntimaroz());

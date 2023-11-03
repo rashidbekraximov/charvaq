@@ -17,4 +17,7 @@ public class Notification {
 
     private String client;
 
+    private String location;
+
+    private double debtTotalValue;
 }

@@ -11,9 +11,13 @@ import java.util.List;
 @Repository
 public interface CostRepository extends JpaRepository<Cost,Integer> {
 
-    @Query(value = "select  cost_type_id costId, COALESCE(sum(amount),0) amount from cost " +
-            "group by cost_type_id", nativeQuery = true)
-    List<LogisticDao> getAllByCostId();
+    @Query(value = "select  cost_type_id costId, COALESCE(sum(amount),0) amount from cost cc" +
+            " where EXTRACT(MONTH FROM  cc.date) = EXTRACT(MONTH FROM CURRENT_DATE) group by cost_type_id", nativeQuery = true)
+    List<LogisticDao> getAllByCostIdMonthly();
+
+    @Query(value = "select  cost_type_id costId, COALESCE(sum(amount),0) amount from cost cc" +
+            " where cc.date = CURRENT_DATE group by cost_type_id", nativeQuery = true)
+    List<LogisticDao> getAllByCostIdDaily();
 
 
 }

@@ -8,4 +8,7 @@ public interface NotificationDto {
 
     String getClient();
 
+    String getLocation();
+
+    double getDebtTotalValue();
 }

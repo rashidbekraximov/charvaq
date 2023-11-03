@@ -17,11 +17,15 @@ import uz.cluster.repository.produce.ProduceCostDao;
 import uz.cluster.repository.produce.ReadyProductRepository;
 import uz.cluster.repository.references.ProductTypeRepository;
 import uz.cluster.repository.references.UnitRepository;
+import uz.cluster.services.purchase.RemainderService;
 import uz.cluster.util.LanguageManager;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,22 +35,33 @@ public class ReadyProductService {
 
     private final ProductTypeRepository productTypeRepository;
 
-    private final UnitRepository unitRepository;
-
     private final CostService costService;
+
+    private final RemainderService remainderService;
 
     @CheckPermission(form = FormEnum.READY_PRODUCT, permission = Action.CAN_VIEW)
     public List<ReadyProductDao> getList() {
-        List<ReadyProductDao> list = new ArrayList<>();
-        List<ProduceCostDao> produceCostDaoList = readyProductRepository.getAllByProductTypeId();
-        produceCostDaoList.forEach(produce -> {
-            ReadyProductDao readyProductDao = new ReadyProductDao();
-            Optional<ProductType> optionalProductType = productTypeRepository.findById(produce.getProductTypeId());
-            optionalProductType.ifPresent(readyProductDao::setProductType);
-            readyProductDao.setAmount(produce.getAmount());
-            list.add(readyProductDao);
+        return readyProductRepository.findAllByOrderByDateDesc().stream().map(ReadyProduct::asDao).collect(Collectors.toList());
+    }
+
+    public List<LocalDate> getListDate() {
+        List<LocalDate> dates = new ArrayList<>();
+        List<ReadyProduct> list = readyProductRepository.findAllByOrderByDateAsc();
+        Collections.reverse(list);
+        list.forEach(l -> {
+            dates.add(l.getDate());
         });
-        return list;
+        return dates;
+    }
+
+    public List<Double> getListAmount() {
+        List<Double> dates = new ArrayList<>();
+        List<ReadyProduct> list = readyProductRepository.findAllByOrderByDateAsc();
+        Collections.reverse(list);
+        list.forEach(l -> {
+            dates.add(l.getAmount());
+        });
+        return dates;
     }
 
     public ReadyProductDao getById(int id) {
@@ -63,15 +78,27 @@ public class ReadyProductService {
     public ApiResponse add(ReadyProductDao remainderDao) {
         ReadyProduct remainder = remainderDao.copy(remainderDao);
 
-        if (remainder.getProductTypeId() == 0 || remainder.getUnitId() == 0) {
+        if (remainder.getProductTypeId() == 0) {
             return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
         }
 
         Optional<ProductType> optionalProductType = productTypeRepository.findById(remainder.getProductTypeId());
         optionalProductType.ifPresent(remainder::setProductType);
 
-        Optional<Unit> optionalUnit = unitRepository.findById(remainder.getUnitId());
-        optionalUnit.ifPresent(remainder::setUnit);
+        remainderService.enter(remainder.getProductTypeId(),remainder.getAmount());
+
+        Optional<ReadyProduct> readyProduct = readyProductRepository.findByDate(remainder.getDate());
+        if (readyProduct.isPresent()){
+            CostDao costDao = new CostDao();
+            costDao.setDate(readyProduct.get().getDate());
+            costDao.setCostTypeId(ProduceEnum.PRODUCE_COST.getValue());
+            costDao.setAmount(remainder.getAmount() * remainder.getCostAmount());
+            costService.add(costDao);
+            readyProduct.get().setAmount(readyProduct.get().getAmount() + remainder.getAmount());
+            readyProduct.get().setAllCostAmount(readyProduct.get().getAllCostAmount() + (remainder.getCostAmount() * remainder.getAmount()));
+            ReadyProduct remainderSaved = readyProductRepository.save(readyProduct.get());
+            return new ApiResponse(true, remainderSaved, LanguageManager.getLangMessage("saved"));
+        }
 
         remainder.setAllCostAmount(remainder.getCostAmount() * remainder.getAmount());
         readyProductRepository.save(remainder);

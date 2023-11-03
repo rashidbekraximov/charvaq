@@ -38,6 +38,12 @@ VALUES (6, 6,
         row ('Список продаж', 'Сотувлар рўйхати', 'Sotuvlar ro''yxati'),
         6, 'ACTIVE', null, now(), null, null, '/purchase/list', 100);
 
+insert into r_forms(id, form_number, name, order_number,  status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (7, 7,
+        row ('Ежедневная стоимость', 'Кунлик харажат', 'Kunlik xarajat'),
+        7, 'ACTIVE', null, now(), null, null, '/purchase/daily-cost', 100);
+
 
 insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
                     modified_by, modified_on, href, parent_id)
@@ -132,8 +138,8 @@ VALUES (130, 130, row ('Насос', 'Насос', 'Nasos'), 130, 'ACTIVE', null
 
 insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
                     modified_by, modified_on, href, parent_id)
-VALUES (131, 131, row ('Список Насос', 'Насос рўйхати', 'Nasos ro''yxati'), 131, 'ACTIVE', null, now(), null, null,
-        null, 130);
+VALUES (131, 131, row ('Насос', 'Насос', 'Nasos'), 131, 'ACTIVE', null, now(), null, null,
+        '/nasos', 130);
 
 insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
                     modified_by, modified_on, href, parent_id)

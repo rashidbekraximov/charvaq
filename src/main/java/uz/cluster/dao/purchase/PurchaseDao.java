@@ -10,7 +10,6 @@ import uz.cluster.entity.purchase.Order;
 import uz.cluster.entity.purchase.Purchase;
 import uz.cluster.entity.references.model.PaymentType;
 
-import javax.persistence.Transient;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +23,8 @@ public class PurchaseDao extends BaseDao {
     private int key;
 
     private String checkNumber;
+
+    private String documentCode;
 
     private String client;
 

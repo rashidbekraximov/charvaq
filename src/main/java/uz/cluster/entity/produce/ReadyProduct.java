@@ -39,10 +39,6 @@ public class ReadyProduct extends Auditable {
     @Column(name = "date")
     private LocalDate date;
 
-    @ManyToOne
-    @JoinColumn(name = "unit_id")
-    private Unit unit;
-
     @Column(name = "amount")
     private double amount;
 
@@ -55,16 +51,11 @@ public class ReadyProduct extends Auditable {
     @Transient
     private int productTypeId;
 
-    @Transient
-    private int unitId;
-
     public ReadyProductDao asDao(){
         ReadyProductDao remainderDao = new ReadyProductDao();
         remainderDao.setId(getId());
         remainderDao.setProductType(getProductType());
         remainderDao.setProductTypeId(getProductTypeId());
-        remainderDao.setUnit(getUnit());
-        remainderDao.setUnitId(getUnitId());
         remainderDao.setAmount(getAmount());
         remainderDao.setCostAmount(getCostAmount());
         remainderDao.setDate(getDate());

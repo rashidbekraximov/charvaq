@@ -113,23 +113,30 @@ public class RemainderService {
         }
     }
 
-    public void editByBringing(BringDrobilkaProduct bringDrobilkaProduct, BringDrobilkaProduct editedBringDrobilkaProduct) {
-        if (bringDrobilkaProduct.getProductType().getId() == editedBringDrobilkaProduct.getProductType().getId()){
-            Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(bringDrobilkaProduct.getProductType().getId(),bringDrobilkaProduct.getMchj());
-            if(optionalRemainder.isPresent()){
-                optionalRemainder.get().setAmount((optionalRemainder.get().getAmount() - bringDrobilkaProduct.getAmount()) + editedBringDrobilkaProduct.getAmount());
-                remainderRepository.save(optionalRemainder.get());
-            }
-        }else {
-            Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(bringDrobilkaProduct.getProductType().getId(),bringDrobilkaProduct.getMchj());
-            if (optionalRemainder.isPresent()){
-                optionalRemainder.get().setAmount(optionalRemainder.get().getAmount() - bringDrobilkaProduct.getAmount());
-                remainderRepository.save(optionalRemainder.get());
-            }
+    public boolean purchase(int productId,double amount){
+        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(productId,MCHJ.CHSM);
+        if (optionalRemainder.isPresent() && optionalRemainder.get().getAmount() >= amount){
+            optionalRemainder.get().setAmount(optionalRemainder.get().getAmount() - amount);
+            remainderRepository.save(optionalRemainder.get());
+            return false;
+        }else{
+            return true;
         }
-
     }
 
+    public void enter(int productId,double amount){
+        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(productId,MCHJ.CHSM);
+        if (optionalRemainder.isPresent()){
+            optionalRemainder.get().setAmount(optionalRemainder.get().getAmount() + amount);
+            remainderRepository.save(optionalRemainder.get());
+        }else{
+            Remainder remainder  = new Remainder();
+            Optional<ProductType> optionalProductType = productTypeRepository.findById(productId);
+            optionalProductType.ifPresent(remainder::setProductType);
+            remainder.setUnitId(uz.cluster.enums.Unit.DONA.getValue());
+            remainder.setAmount(amount);
+        }
+    }
 
 
 }

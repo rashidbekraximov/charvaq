@@ -31,6 +31,8 @@ public class DocumentFilter {
 
     private String checkNumber;
 
+    private String documentCode;
+
     private LocalDate beginDate;
 
     private LocalDate endDate;

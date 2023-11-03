@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uz.cluster.dao.lb.BarDao;
 import uz.cluster.dao.lb.LBPurchaseDao;
 import uz.cluster.dao.purchase.DocumentFilter;
+import uz.cluster.dao.purchase.PurchaseDao;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.services.lb.LBPurchaseService;
 
@@ -30,6 +32,34 @@ public class LBPurchaseController {
         return ResponseEntity.ok(lbPurchaseService.getPurchasesByPage(documentFilter));
     }
 
+    @GetMapping("lb-purchased/last-line")
+    public ResponseEntity<List<LBPurchaseDao>> getLastLineList(){
+        return ResponseEntity.ok(lbPurchaseService.getLastRows());
+    }
+
+    @GetMapping("lb-purchased/bar")
+    public ResponseEntity<List<Long>> getForBarChart(){
+        return ResponseEntity.ok(lbPurchaseService.getBarList());
+    }
+
+    @GetMapping("lb-nasos/bar")
+    public ResponseEntity<List<Long>> getForNasos(){
+        return ResponseEntity.ok(lbPurchaseService.getBarListForNasos());
+    }
+
+    @GetMapping("lb-nasos/bar-last/{time}")
+    public ResponseEntity<List<Double>> getForNasosBarLast(@PathVariable String time){
+        if(time.equals("DAILY")){
+            return ResponseEntity.ok(lbPurchaseService.getBarListDaily());
+        }else{
+            return ResponseEntity.ok(lbPurchaseService.getBarListMonthly());
+        }
+    }
+
+    @GetMapping("lb-purchased/bar-last/{time}")
+    public ResponseEntity<List<BarDao>> getForBarLast(@PathVariable String time){
+        return ResponseEntity.ok(lbPurchaseService.getBarLast(time));
+    }
 
     @GetMapping("lb-purchase/test/{mark}/{amount}")
     public ResponseEntity<?> getListForSelect(@PathVariable int mark,@PathVariable double amount) {

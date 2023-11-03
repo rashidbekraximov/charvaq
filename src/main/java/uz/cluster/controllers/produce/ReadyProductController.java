@@ -12,6 +12,7 @@ import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.services.produce.ReadyProductService;
 import uz.cluster.services.purchase.RemainderService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -21,6 +22,16 @@ import java.util.List;
 public class ReadyProductController {
 
     private final ReadyProductService remainderService;
+
+    @GetMapping("produced-bar/dates")
+    public ResponseEntity<List<LocalDate>> getBarDateList() {
+        return ResponseEntity.ok(remainderService.getListDate());
+    }
+
+    @GetMapping("produced-bar/amounts")
+    public ResponseEntity<List<Double>> getBarAmountList() {
+        return ResponseEntity.ok(remainderService.getListAmount());
+    }
 
     @GetMapping("ready-products")
     public ResponseEntity<List<ReadyProductDao>> getOrderList() {

@@ -34,6 +34,9 @@ public class Purchase extends Auditable {
     @Column(name = "check_number")
     private String checkNumber;
 
+    @Column(name = "document_code",columnDefinition = "VARCHAR(15) default '' ")
+    private String documentCode;
+
     @Column(name = "client")
     private String client;
 
@@ -105,6 +108,7 @@ public class Purchase extends Auditable {
         price.setId(getId());
         price.setKey(getId());
         price.setCheckNumber(getCheckNumber());
+        price.setDocumentCode(getDocumentCode());
         price.setClient(getClient());
         price.setPhoneNumber(getPhoneNumber());
         price.setDate(getDate());
