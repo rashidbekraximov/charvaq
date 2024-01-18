@@ -6,7 +6,7 @@ pipeline {
     stages{
         stage('clone from github'){
             steps{
-                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rashidbekraximov/spring-boot-with-jenkins']])
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rashidbekraximov/charvaq']])
                 sh 'mvn clean install'
             }
         }
@@ -21,8 +21,8 @@ pipeline {
             steps{
                 script{
                     sh 'docker login -u rashidbek -p hashcode8864'
-                    sh 'docker tag spring-boot-with-jenkins rashidbek/spring-boot-with-jenkins:latest'
-                    sh 'docker push rashidbek/spring-boot-with-jenkins:latest'
+                    sh 'docker tag charvaq rashidbek/charvaq:latest'
+                    sh 'docker push rashidbek/charvaq:latest'
                 }
             }
         }
