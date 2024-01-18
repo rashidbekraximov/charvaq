@@ -13,7 +13,7 @@ pipeline {
         stage('Build docker image'){
             steps{
                 script{
-                    sh 'docker build -t spring-boot-with-jenkins .'
+                    sh 'docker build -t charvaq .'
                 }
             }
         }
