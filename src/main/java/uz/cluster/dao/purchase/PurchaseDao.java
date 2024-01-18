@@ -1,16 +1,20 @@
 package uz.cluster.dao.purchase;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import uz.cluster.dao.reference.BaseDao;
 import uz.cluster.entity.logistic.Technician;
 import uz.cluster.entity.purchase.Order;
 import uz.cluster.entity.purchase.Purchase;
 import uz.cluster.entity.references.model.PaymentType;
 
+import javax.persistence.Column;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +34,15 @@ public class PurchaseDao extends BaseDao {
 
     private String phoneNumber;
 
+    private String hiredCar;
+
     private LocalDate date;
 
+    private String createdOn;
+
     private LocalDate expiryDate;
+
+    private LocalDate paidDate;
 
     private Technician technician;
 
@@ -67,9 +77,11 @@ public class PurchaseDao extends BaseDao {
         price.setId((int) purchaseDao.getId());
         price.setCheckNumber(purchaseDao.getCheckNumber());
         price.setClient(purchaseDao.getClient());
+        price.setHiredCar(purchaseDao.getHiredCar());
         price.setPhoneNumber(purchaseDao.getPhoneNumber());
         price.setDate(purchaseDao.getDate());
         price.setExpiryDate(purchaseDao.getExpiryDate());
+        price.setPaidDate(purchaseDao.getDate());
         price.setTechnician(purchaseDao.getTechnician());
         price.setTechnicianId(purchaseDao.getTechnicianId());
         price.setPaymentType(getPaymentType());

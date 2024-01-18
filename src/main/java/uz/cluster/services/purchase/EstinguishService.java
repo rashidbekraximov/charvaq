@@ -34,26 +34,30 @@ public class EstinguishService {
 
     private final LBPurchaseRepository lbPurchaseRepository;
 
+    private final DailyIncomeService dailyIncomeService;
+
     @CheckPermission(form = FormEnum.ESTINGUISH_DEBT, permission = Action.CAN_ADD)
     @Transactional
     public ApiResponse add(Estinguish estinguish) {
-
         if (estinguish.getAllDebts().size() == 0) {
             return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
         }
         double totalPaidValue = estinguish.getPaidValue();
         for (AllDebtDao purchase : estinguish.getAllDebts()){
             if (purchase.getMchj() == MCHJ.CHSM){
+                dailyIncomeService.addFromEstinguish(estinguish);
                 Optional<Purchase> optionalPurchase = purchaseRepository.findById((int) purchase.getId());
                 if (optionalPurchase.isPresent()){
                     if (estinguish.getDebtTotalValue() == estinguish.getPaidValue()){
                         optionalPurchase.get().setDebtTotalValue(0);
+                        optionalPurchase.get().setPaidDate(estinguish.getDate());
                         optionalPurchase.get().setPaidTotalValue(optionalPurchase.get().getTotalValue());
                         purchaseRepository.save(optionalPurchase.get());
                     }else{
                         if (totalPaidValue - optionalPurchase.get().getDebtTotalValue() > 0){
                             totalPaidValue = totalPaidValue - optionalPurchase.get().getDebtTotalValue();
                             optionalPurchase.get().setDebtTotalValue(0);
+                            optionalPurchase.get().setPaidDate(estinguish.getDate());
                             optionalPurchase.get().setPaidTotalValue(optionalPurchase.get().getTotalValue());
                             purchaseRepository.save(optionalPurchase.get());
                         }else{

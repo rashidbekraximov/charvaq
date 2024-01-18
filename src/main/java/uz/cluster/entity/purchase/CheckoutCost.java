@@ -32,9 +32,8 @@ public class CheckoutCost extends Auditable {
     @Column(name = "date")
     private LocalDate date;
 
-    @ManyToOne
-    @JoinColumn(name = "cost_type_id")
-    private CostType costType;
+    @Column(name = "cost")
+    private String costName;
 
     @Column(name = "amount")
     private double amount;
@@ -42,16 +41,6 @@ public class CheckoutCost extends Auditable {
     @Column(name = "product_id",columnDefinition = "real default 0")
     private byte productId;
 
-    @ManyToOne
-    @JoinColumn(name = "direction_id")
-    private Direction direction;
-
     @Column(name = "description",columnDefinition = "varchar(100) default ' '")
     private String description;
-
-    @Transient
-    private int costTypeId;
-
-    @Transient
-    private int directionId;
 }

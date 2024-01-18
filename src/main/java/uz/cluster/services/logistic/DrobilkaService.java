@@ -6,12 +6,14 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
 import uz.cluster.dao.logistic.DrobilkaDao;
 import uz.cluster.entity.logistic.Drobilka;
+import uz.cluster.entity.references.model.DrobilkaType;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.references.model.Unit;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.logistic.DrobilkaRepository;
+import uz.cluster.repository.references.DrobilkaTypeRepository;
 import uz.cluster.repository.references.ProductTypeRepository;
 import uz.cluster.repository.references.UnitRepository;
 import uz.cluster.util.LanguageManager;
@@ -27,6 +29,8 @@ public class DrobilkaService {
     private final DrobilkaRepository drobilkaRepository;
 
     private final ProductTypeRepository productTypeRepository;
+
+    private final DrobilkaTypeRepository drobilkaTypeRepository;
 
     private final UnitRepository unitRepository;
 
@@ -44,17 +48,29 @@ public class DrobilkaService {
         }
     }
 
+    public DrobilkaDao getByDrobilkaTypeAndProductTypeId(int drobilkaId,int productTypeId) {
+        Optional<Drobilka> optionalDrobilka = drobilkaRepository.findByProductType_IdAndDrobilkaType_Id(productTypeId,drobilkaId);
+        if (optionalDrobilka.isEmpty()) {
+            return null;
+        } else {
+            return optionalDrobilka.get().asDao();
+        }
+    }
+
     @CheckPermission(form = FormEnum.DROBILKA, permission = Action.CAN_ADD)
     @Transactional
     public ApiResponse add(DrobilkaDao drobilkaDao) {
         Drobilka drobilka = drobilkaDao.copy(drobilkaDao);
 
-        if (drobilka.getProductTypeId() == 0 || drobilka.getUnitId() == 0) {
+        if (drobilka.getDrobilkaTypeId() == 0 || drobilka.getProductTypeId() == 0 || drobilka.getUnitId() == 0) {
             return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
         }
 
         Optional<ProductType> optionalProductType = productTypeRepository.findById(drobilka.getProductTypeId());
         optionalProductType.ifPresent(drobilka::setProductType);
+
+        Optional<DrobilkaType> optionalDrobilkaType = drobilkaTypeRepository.findById(drobilka.getDrobilkaTypeId());
+        optionalDrobilkaType.ifPresent(drobilka::setDrobilkaType);
 
         Optional<Unit> optionalUnit = unitRepository.findById(drobilka.getUnitId());
         optionalUnit.ifPresent(drobilka::setUnit);
@@ -63,7 +79,7 @@ public class DrobilkaService {
             return edit(drobilka);
         }
 
-        Optional<Drobilka> optionalDrobilka = drobilkaRepository.findByProductType_Id(drobilka.getProductTypeId());
+        Optional<Drobilka> optionalDrobilka = drobilkaRepository.findByProductType_IdAndDrobilkaType_Id(drobilka.getProductTypeId(),drobilka.getDrobilkaTypeId());
         if (optionalDrobilka.isPresent()){
             optionalDrobilka.get().setAmount(drobilka.getAmount() + optionalDrobilka.get().getAmount());
             Drobilka remainderSaved = drobilkaRepository.save(optionalDrobilka.get());

@@ -31,10 +31,6 @@ public class Price extends Auditable {
     @JoinColumn(name = "product_type_id")
     private ProductType productType;
 
-    @ManyToOne
-    @JoinColumn(name = "unit_id")
-    private Unit unit;
-
     @Column(name = "price")
     private double price;
 
@@ -45,16 +41,11 @@ public class Price extends Auditable {
     @Transient
     private int productTypeId;
 
-    @Transient
-    private int unitId;
-
     public PriceDao asDao(){
         PriceDao price = new PriceDao();
         price.setId(getId());
         price.setProductType(getProductType());
         price.setProductTypeId(getProductTypeId());
-        price.setUnit(getUnit());
-        price.setUnitId(getUnitId());
         price.setPrice(getPrice());
         price.setStatus(getStatus());
         return price;

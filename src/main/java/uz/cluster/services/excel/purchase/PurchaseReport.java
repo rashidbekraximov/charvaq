@@ -138,7 +138,11 @@ public class PurchaseReport {
                     cell8 = rowInTable.createCell(CellType.NUMERIC);
                     cell8.setCellValue(purchasedProduct.getValue());
                     cell9 = rowInTable.createCell(CellType.STRING);
-                    cell9.setCellValue(purchase.getTechnician().getTechniqueType().getName().getActiveLanguage());
+                    if (purchase.getTechnician() != null){
+                        cell9.setCellValue(purchase.getTechnician().getTechniqueType().getName().getActiveLanguage());
+                    }else {
+                        cell9.setCellValue("-");
+                    }
                     cell10 = rowInTable.createCell(CellType.NUMERIC);
                     cell10.setCellValue(purchase.getFare() / products.size());
                     cell11 = rowInTable.createCell(CellType.NUMERIC);

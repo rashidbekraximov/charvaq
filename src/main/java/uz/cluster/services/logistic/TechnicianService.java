@@ -65,7 +65,7 @@ public class TechnicianService {
     public ApiResponse add(TechnicianDao technicianDao) {
         Technician technician = technicianDao.copy(technicianDao);
 
-        if (technician.getTechniqueTypeId() == 0 || technician.getDirectionId() == 0 || technician.getEmployeeId() == 0) {
+        if (technician.getTechniqueTypeId() == 0 || technician.getDirectionId() == 0) {
             return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
         }
 
@@ -74,14 +74,6 @@ public class TechnicianService {
 
         Optional<Direction> optionalDirection = directionRepository.findById(technician.getDirectionId());
         optionalDirection.ifPresent(technician::setDirection);
-
-        EmployeeDao employeeDao = employeeService.getById(technician.getEmployeeId());
-        if (employeeDao != null){
-            Employee employee = employeeDao.copy(employeeDao);
-            technician.setEmployee(employee);
-        }else{
-            return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
-        }
 
         if (technician.getId() != 0) {
             return edit(technician);

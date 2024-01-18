@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class JwtUtils {
 
-    public static Integer expiry = 2_400_000; //40 minut
+    public static Integer expiry = 3_600_000; //60 minut
 //    public static Integer expiry = 120000; //2 minut
     public static String secret = "ASDQW#@!$#@%$#DSFSDFRT%$#%34543terg45%^%$";
 

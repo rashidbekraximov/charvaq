@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 import uz.cluster.dao.logistic.BringDrobilkaProductDao;
 import uz.cluster.entity.Auditable;
+import uz.cluster.entity.references.model.DrobilkaType;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.references.model.Unit;
 import uz.cluster.enums.MCHJ;
@@ -31,6 +32,10 @@ public class BringDrobilkaProduct extends Auditable {
     private int id;
 
     @ManyToOne
+    @JoinColumn(name = "drobilka_type_id")
+    private DrobilkaType drobilkaType;
+
+    @ManyToOne
     @JoinColumn(name = "product_type_id")
     private ProductType productType;
 
@@ -45,6 +50,12 @@ public class BringDrobilkaProduct extends Auditable {
     @ManyToOne
     @JoinColumn(name = "unit_id")
     private Unit unit;
+
+    @Column(name = "drobilka_amount",columnDefinition = "real default 0")
+    private double drobilkaAmount;
+
+    @Column(name = "difference",columnDefinition = "real default 0")
+    private double difference;
 
     @Column(name = "amount")
     private double amount;
@@ -63,6 +74,9 @@ public class BringDrobilkaProduct extends Auditable {
     private int productTypeId;
 
     @Transient
+    private int drobilkaTypeId;
+
+    @Transient
     private int unitId;
 
     @Transient
@@ -73,11 +87,14 @@ public class BringDrobilkaProduct extends Auditable {
         bringDrobilkaProductDao.setId(getId());
         bringDrobilkaProductDao.setProductType(getProductType());
         bringDrobilkaProductDao.setProductTypeId(getProductTypeId());
+        bringDrobilkaProductDao.setDrobilkaType(getDrobilkaType());
+        bringDrobilkaProductDao.setDrobilkaTypeId(getDrobilkaTypeId());
         bringDrobilkaProductDao.setUnit(getUnit());
         bringDrobilkaProductDao.setUnitId(getUnitId());
         bringDrobilkaProductDao.setTechnician(getTechnician());
         bringDrobilkaProductDao.setTechnicianId(getTechnicianId());
         bringDrobilkaProductDao.setAmount(getAmount());
+        bringDrobilkaProductDao.setDrobilkaAmount(getDrobilkaAmount());
         bringDrobilkaProductDao.setKm(getKm());
         bringDrobilkaProductDao.setIncome(getIncome());
         bringDrobilkaProductDao.setDate(getDate());

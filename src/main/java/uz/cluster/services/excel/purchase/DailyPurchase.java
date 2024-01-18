@@ -165,7 +165,6 @@ public class DailyPurchase {
                 rowInTable = new CustomXSSFRow(sheet.createRow(counter), cellStyleCenterOnlyFontWithBorderWithBold);
                 cell1 = rowInTable.createCell(CellType.STRING);
                 cell1.setCellValue(purchase.getId() + "");
-                List<PurchasedProduct> products = purchasedProductRepository.findAllByPurchaseIdOrderByProductType(purchase.getId());
                 for (int i = 1; i <= 7; i++) {
                     Optional<PurchasedProduct> product = purchasedProductRepository.findByProductType_IdAndPurchaseId(i, purchase.getId());
                     cell2 = rowInTable.createCell(CellType.STRING);
@@ -190,9 +189,17 @@ public class DailyPurchase {
                     cell17.setCellValue(purchase.getDebtTotalValue() - purchase.getFare());
                 }
                 cell18 = rowInTable.createCell(CellType.STRING);
-                cell18.setCellValue(purchase.getTechnician().getTechniqueType().getName().getActiveLanguage());
+                if (purchase.getTechnician() == null){
+                    cell18.setCellValue("");
+                }else{
+                    cell18.setCellValue(purchase.getTechnician().getTechniqueType().getName().getActiveLanguage());
+                }
                 cell19 = rowInTable.createCell(CellType.STRING);
-                cell19.setCellValue(purchase.getClient() + "/" + purchase.getLocation());
+                if (!purchase.getLocation().equals("")){
+                    cell19.setCellValue(purchase.getClient() + "/" + purchase.getLocation());
+                }else{
+                    cell19.setCellValue(purchase.getClient());
+                }
                 cell20 = rowInTable.createCell(CellType.NUMERIC);
                 cell21 = rowInTable.createCell(CellType.NUMERIC);
                 if (purchase.getPaidTotalValue() != 0){

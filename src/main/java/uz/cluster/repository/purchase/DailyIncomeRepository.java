@@ -1,6 +1,7 @@
 package uz.cluster.repository.purchase;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.cluster.entity.purchase.DailyIncome;
 
@@ -13,7 +14,6 @@ public interface DailyIncomeRepository extends JpaRepository<DailyIncome,Long> {
 
     Optional<DailyIncome> findByDate(LocalDate date);
 
-    Optional<DailyIncome> findByDateAndProductId(LocalDate date,int productId);
-
+    @Query(value = "select * from daily_income d order by d.date DESC , d.status ASC ", nativeQuery = true)
     List<DailyIncome> findAllByOrderByStatusAsc();
 }

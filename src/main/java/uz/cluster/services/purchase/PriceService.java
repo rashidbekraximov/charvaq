@@ -29,8 +29,6 @@ public class PriceService {
 
     private final ProductTypeRepository productTypeRepository;
 
-    private final UnitRepository unitRepository;
-
     @CheckPermission(form = FormEnum.PRICE, permission = Action.CAN_VIEW)
     public List<PriceDao> getPriceList() {
         return priceRepository.findAll().stream().map(Price::asDao).collect(Collectors.toList());
@@ -59,15 +57,12 @@ public class PriceService {
     public ApiResponse add(PriceDao priceDao) {
         Price price = priceDao.copy(priceDao);
 
-        if (price.getProductTypeId() == 0 || price.getUnitId() == 0) {
+        if (price.getProductTypeId() == 0) {
             return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
         }
 
         Optional<ProductType> optionalProductType = productTypeRepository.findById(price.getProductTypeId());
         optionalProductType.ifPresent(price::setProductType);
-
-        Optional<Unit> optionalUnit = unitRepository.findById(price.getUnitId());
-        optionalUnit.ifPresent(price::setUnit);
 
         if (price.getId() != 0) {
             return edit(price);
@@ -87,23 +82,11 @@ public class PriceService {
     public ApiResponse edit(Price price) {
         Optional<Price> optionalPrice = priceRepository.findById(price.getId());
         if (optionalPrice.isPresent()){
-            Price priceEdited = priceRepository.save(optionalPrice.get());
+            Price priceEdited = priceRepository.save(price);
             return new ApiResponse(true, priceEdited, LanguageManager.getLangMessage("edited"));
         }else{
             return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
         }
     }
 
-    @CheckPermission(form = FormEnum.PRICE, permission = Action.CAN_DELETE)
-    @Transactional
-    public ApiResponse delete(int id) {
-        Optional<Price> optionalPrice = priceRepository.findById(id);
-        if (optionalPrice.isPresent()){
-            optionalPrice.get().setStatus(Status.PASSIVE);
-            Price pricePassive = priceRepository.save(optionalPrice.get());
-            return new ApiResponse(true, pricePassive, LanguageManager.getLangMessage("deleted"));
-        }else{
-            return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
-        }
-    }
 }

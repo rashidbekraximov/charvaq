@@ -8,6 +8,7 @@ import uz.cluster.dao.reference.BaseDao;
 import uz.cluster.entity.logistic.BringDrobilkaProduct;
 import uz.cluster.entity.logistic.Drobilka;
 import uz.cluster.entity.logistic.Technician;
+import uz.cluster.entity.references.model.DrobilkaType;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.references.model.Unit;
 import uz.cluster.enums.MCHJ;
@@ -24,6 +25,8 @@ public class BringDrobilkaProductDao extends BaseDao {
 
     private ProductType productType;
 
+    private DrobilkaType drobilkaType;
+
     private Unit unit;
 
     private Technician technician;
@@ -32,11 +35,15 @@ public class BringDrobilkaProductDao extends BaseDao {
 
     private double amount;
 
+    private double drobilkaAmount;
+
     private double km;
 
     private double income;
 
     private int productTypeId;
+
+    private int drobilkaTypeId;
 
     private int unitId;
 
@@ -51,9 +58,12 @@ public class BringDrobilkaProductDao extends BaseDao {
         bringDrobilkaProduct.setUnitId(bringDrobilkaProductDao.getUnitId());
         bringDrobilkaProduct.setProductType(bringDrobilkaProductDao.getProductType());
         bringDrobilkaProduct.setProductTypeId(bringDrobilkaProductDao.getProductTypeId());
+        bringDrobilkaProduct.setDrobilkaType(bringDrobilkaProductDao.getDrobilkaType());
+        bringDrobilkaProduct.setDrobilkaTypeId(bringDrobilkaProductDao.getDrobilkaTypeId());
         bringDrobilkaProduct.setTechnicianId(bringDrobilkaProductDao.getTechnicianId());
         bringDrobilkaProduct.setTechnician(bringDrobilkaProductDao.getTechnician());
         bringDrobilkaProduct.setAmount(bringDrobilkaProductDao.getAmount());
+        bringDrobilkaProduct.setDrobilkaAmount(bringDrobilkaProductDao.getDrobilkaAmount());
         bringDrobilkaProduct.setIncome(bringDrobilkaProductDao.getIncome());
         bringDrobilkaProduct.setKm(bringDrobilkaProductDao.getKm());
         bringDrobilkaProduct.setDate(bringDrobilkaProductDao.getDate());

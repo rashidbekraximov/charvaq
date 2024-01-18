@@ -31,9 +31,6 @@ public class DailyIncome extends Auditable {
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "product_id",columnDefinition = "real default 0")
-    private int productId;
-
     @Column(name = "income")
     private double income;
 

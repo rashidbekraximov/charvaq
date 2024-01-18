@@ -1,18 +1,12 @@
 package uz.cluster.services.purchase;
 
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.cluster.annotation.CheckPermission;
 import uz.cluster.entity.purchase.DailyIncome;
 import uz.cluster.entity.purchase.Estinguish;
 import uz.cluster.entity.purchase.Purchase;
-import uz.cluster.entity.purchase.PurchasedProduct;
 import uz.cluster.enums.Status;
-import uz.cluster.enums.auth.Action;
-import uz.cluster.enums.forms.FormEnum;
-import uz.cluster.enums.purchase.PurchaseEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.purchase.DailyIncomeRepository;
 import uz.cluster.util.LanguageManager;
@@ -26,9 +20,7 @@ public class DailyIncomeService {
 
     private final DailyIncomeRepository dailyIncomeRepository;
 
-    private ModelMapper mapper;
-
-//    @CheckPermission(form = FormEnum.DAILY_COST, permission = Action.CAN_VIEW)
+    //    @CheckPermission(form = FormEnum.DAILY_COST, permission = Action.CAN_VIEW)
     public List<DailyIncome> getDailyIncomeList() {
         return dailyIncomeRepository.findAllByOrderByStatusAsc();
     }
@@ -46,39 +38,18 @@ public class DailyIncomeService {
 
     @Transactional
     public void addFromPurchase(Purchase purchase) {
-        boolean isHave = false;
-
-        for(PurchasedProduct product : purchase.getPurchasedProductList()) {
-            if (product.getProductTypeId() == PurchaseEnum.SH_BLOK.getValue()){
-                isHave = true;
-            }else{
-                isHave = false;
-            }
+        Optional<DailyIncome> optional = dailyIncomeRepository.findByDate(purchase.getDate());
+        if (optional.isPresent()) {
+            optional.get().setIncome(optional.get().getIncome() + purchase.getPaidTotalValue());
+            dailyIncomeRepository.save(optional.get());
+        }else{
+            DailyIncome dailyIncome = new DailyIncome();
+            dailyIncome.setDate(purchase.getDate());
+            dailyIncome.setIncome(purchase.getPaidTotalValue());
+            dailyIncome.setStatus(Status.ACTIVE);
+            dailyIncomeRepository.save(dailyIncome);
         }
-
-            Optional<DailyIncome> optional = dailyIncomeRepository.findByDate(purchase.getDate());
-
-            if (optional.isPresent()) {
-                    optional.get().setIncome(optional.get().getIncome() + purchase.getPaidTotalValue());
-                    dailyIncomeRepository.save(optional.get());
-            }else{
-                DailyIncome dailyIncome = new DailyIncome();
-                if (isHave){
-                    dailyIncome.setDate(purchase.getDate());
-                    dailyIncome.setIncome(purchase.getPaidTotalValue());
-                    dailyIncome.setProductId(2);
-                    dailyIncome.setStatus(Status.ACTIVE);
-                    dailyIncomeRepository.save(dailyIncome);
-                }else{
-                    dailyIncome.setDate(purchase.getDate());
-                    dailyIncome.setIncome(purchase.getPaidTotalValue());
-                    dailyIncome.setStatus(Status.ACTIVE);
-                    dailyIncome.setProductId(1);
-                    dailyIncomeRepository.save(dailyIncome);
-                }
-            }
     }
-
 
     @Transactional
     public void addFromEstinguish(Estinguish purchaseDao) {

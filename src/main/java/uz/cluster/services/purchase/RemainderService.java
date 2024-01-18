@@ -133,10 +133,9 @@ public class RemainderService {
             Remainder remainder  = new Remainder();
             Optional<ProductType> optionalProductType = productTypeRepository.findById(productId);
             optionalProductType.ifPresent(remainder::setProductType);
-            remainder.setUnitId(uz.cluster.enums.Unit.DONA.getValue());
+            remainder.setMchj(MCHJ.CHSM);
             remainder.setAmount(amount);
+            remainderRepository.save(remainder);
         }
     }
-
-
 }

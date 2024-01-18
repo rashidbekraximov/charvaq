@@ -1,6 +1,7 @@
 package uz.cluster.entity.purchase;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import uz.cluster.entity.Auditable;
 import uz.cluster.entity.logistic.Technician;
 import uz.cluster.entity.references.model.PaymentType;
 import uz.cluster.enums.Status;
+import uz.cluster.util.DateUtil;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -48,12 +50,19 @@ public class Purchase extends Auditable {
     private LocalDate date;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "paid_date")
+    private LocalDate paidDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "expiry_date")
     private LocalDate expiryDate;
 
     @ManyToOne
     @JoinColumn(name = "technician_id")
     private Technician technician;
+
+    @Column(name = "hired_car")
+    private String hiredCar;
 
     @ManyToOne
     @JoinColumn(name = "payment_type_id")
@@ -112,7 +121,9 @@ public class Purchase extends Auditable {
         price.setClient(getClient());
         price.setPhoneNumber(getPhoneNumber());
         price.setDate(getDate());
+        price.setHiredCar(getHiredCar());
         price.setExpiryDate(getExpiryDate());
+        price.setCreatedOn(getCreatedOnString());
         price.setTechnician(getTechnician());
         price.setTechnicianId(getTechnicianId());
         price.setPaymentType(getPaymentType());
@@ -130,4 +141,9 @@ public class Purchase extends Auditable {
         }
         return price;
     }
+
+    public String getCreatedOnString() {
+        return DateUtil.convertToDateTimeString(getCreatedOn());
+    }
+
 }

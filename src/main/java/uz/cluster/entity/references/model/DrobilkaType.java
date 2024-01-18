@@ -10,6 +10,6 @@ import javax.persistence.Table;
 
 @Entity
 @Audited(targetAuditMode = RelationTargetAuditMode.AUDITED)
-@Table(name = "r_tax_type")
-public class TaxType extends AbstractReferenceModel {
+@Table(name = "r_drobilka_type")
+public class DrobilkaType extends AbstractReferenceModel {
 }

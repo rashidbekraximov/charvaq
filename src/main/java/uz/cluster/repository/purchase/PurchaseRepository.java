@@ -63,7 +63,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase,Integer> {
     long getAllPurchaseNumberForBarChart(@Param("month_id") int month_id);
 
     @Query(value = "select * from purchase p " +
-            "order by modified_on desc " +
+            " where EXTRACT(MONTH FROM p.date) = EXTRACT(MONTH FROM CURRENT_DATE) order by modified_on desc " +
             " LIMIT 1 ", nativeQuery = true)
     List<Purchase> getAllByDescForTallon();
 
@@ -72,8 +72,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase,Integer> {
             " LIMIT 6 ", nativeQuery = true)
     List<Purchase> getAllByDesc();
 
-    @Query(value = "select * from purchase p " +
-            "where p.date = :date order by id desc ", nativeQuery = true)
+    @Query(value = "select * from purchase p where p.date = :date or p.paid_date = :date  order by id desc ", nativeQuery = true)
     List<Purchase> getAllByDate(@Param("date") Date date);
 
     @Query(value = "select COALESCE(sum(pp.value),0) allAmount, COALESCE(sum(pp.weight),0) weight from purchase s " +

@@ -20,6 +20,7 @@ import uz.cluster.entity.purchase.Order;
 import uz.cluster.entity.purchase.Purchase;
 import uz.cluster.entity.purchase.PurchasedProduct;
 import uz.cluster.entity.references.model.*;
+import uz.cluster.enums.PaymentEnum;
 import uz.cluster.enums.Status;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
@@ -87,10 +88,10 @@ public class PurchaseService {
         return purchaseRepository.getAllByDesc().stream().map(Purchase::asDao).collect(Collectors.toList());
     }
 
+    //Kassani tekshirish uchun
     public List<PurchaseDao> getByDateForConfirm(Date date) {
         return purchaseRepository.getAllByDate(date).stream().map(Purchase::asDao).collect(Collectors.toList());
     }
-
 
     @CheckPermission(form = FormEnum.PURCHASE, permission = Action.CAN_VIEW)
     public List<PurchaseDao> getSearchList(String client) {
@@ -100,7 +101,6 @@ public class PurchaseService {
             return purchaseRepository.getAllDebts().stream().map(Purchase::asDao).collect(Collectors.toList());
         }
     }
-
 
     public PurchaseDao getById(int id) {
         Optional<Purchase> optionalPurchase = purchaseRepository.findById(id);
@@ -221,7 +221,10 @@ public class PurchaseService {
         if (purchase.getId() != 0) {
             return edit(purchase);
         }
-        dailyIncomeService.addFromPurchase(purchase);
+        if (PaymentEnum.NAQD.getValue() == purchase.getPaymentTypeId()){
+            dailyIncomeService.addFromPurchase(purchase);
+        }
+
         Purchase saved = purchaseRepository.save(purchase);
         for (PurchasedProduct purchasedProduct : purchase.getPurchasedProductList()) {
             purchasedProduct.setPurchaseId(saved.getId());

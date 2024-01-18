@@ -17,8 +17,6 @@ import uz.cluster.enums.Status;
 @NoArgsConstructor
 public class TechnicianDao extends BaseDao {
 
-    private Employee employee;
-
     private TechniqueType techniqueType;
 
     private String autoNumber;
@@ -59,7 +57,6 @@ public class TechnicianDao extends BaseDao {
         technician.setId((int) technicianDao.getId());
         technician.setTechniqueType(technicianDao.getTechniqueType());
         technician.setTechniqueTypeId(technicianDao.getTechniqueTypeId());
-        technician.setEmployee(technicianDao.getEmployee());
         technician.setEmployeeId(technicianDao.getEmployeeId());
         technician.setDirection(technicianDao.getDirection());
         technician.setAutoNumber(technicianDao.getAutoNumber());

@@ -119,12 +119,12 @@ public class PdfGenerator {
         String auto = ",";
 
         if(purchase.getTechnician() != null){
-            name = purchase.getTechnician().getEmployee().getName();
+//            name = purchase.getTechnician().getEmployee().getName();
             auto += purchase.getTechnician().getAutoNumber();
         }
 
         // Creating paragraph
-        Paragraph paragraph5 = new Paragraph("Xaydovchi: " +  name + auto + fontTitle1);
+        Paragraph paragraph5 = new Paragraph("Xaydovchi: "  + auto + fontTitle1);
         // Aligning the paragraph in the document
         paragraph5.setAlignment(Paragraph.ALIGN_LEFT);
         // Adding the created paragraph in the document

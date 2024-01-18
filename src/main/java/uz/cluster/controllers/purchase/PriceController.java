@@ -45,12 +45,4 @@ public class PriceController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
-
-    @GetMapping("price/delete/{id}")
-    public ResponseEntity<?> save(@PathVariable int id) {
-        ApiResponse apiResponse = priceService.delete(id);
-        if (!apiResponse.isSuccess())
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
-        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
-    }
 }

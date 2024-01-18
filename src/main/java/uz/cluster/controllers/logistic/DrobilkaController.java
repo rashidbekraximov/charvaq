@@ -33,6 +33,15 @@ public class DrobilkaController {
         return ResponseEntity.status(HttpStatus.OK).body(drobilkaDao);
     }
 
+    @GetMapping("drobilka/{drobilkaId}/{productId}")
+    public ResponseEntity<?> getByDrobilkaAndProductTypeId(@PathVariable int drobilkaId,@PathVariable int productId) {
+        DrobilkaDao drobilkaDao = drobilkaService.getByDrobilkaTypeAndProductTypeId(drobilkaId,productId);
+        if (drobilkaDao == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(drobilkaDao);
+    }
+
     @PostMapping("drobilka/save")
     public ResponseEntity<?> save(@RequestBody DrobilkaDao drobilkaDao) {
         ApiResponse apiResponse = drobilkaService.add(drobilkaDao);

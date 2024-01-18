@@ -89,12 +89,12 @@ public class LogisticService {
                 logistic.setAmount(salaryAmount * (percentage.getPercentage() / 100));
             }
         }
-        Optional<Technician> optionalTechnician = technicianRepository.findByEmployee_Id(salary.getEmployee().getId());
-        if (optionalTechnician.isPresent()){
-            logistic.setTechnician(optionalTechnician.get());
-        }else{
-            throw new NotFoundException("Texnika biriktirilmagan");
-        }
+//        Optional<Technician> optionalTechnician = technicianRepository.findByEmployee_Id(salary.getEmployee().getId());
+//        if (optionalTechnician.isPresent()){
+//            logistic.setTechnician(optionalTechnician.get());
+//        }else{
+//            throw new NotFoundException("Texnika biriktirilmagan");
+//        }
         logisticRepository.save(logistic);
     }
 
@@ -139,7 +139,7 @@ public class LogisticService {
         for (Technician technician : technicianRepository.findAll()){
             DashboardTechnician dashboardTechnician = new DashboardTechnician();
             dashboardTechnician.setId(technician.getId());
-            dashboardTechnician.setName(technician.getEmployee().getName());
+//            dashboardTechnician.setName(technician.getEmployee().getName());
             dashboardTechnician.setTechnique(technician.getTechniqueType().getName().getActiveLanguage());
             double totalAmount = 0;
             for (LogisticDao dao : logisticRepository.getAllByTechnicianId(technician.getId())){

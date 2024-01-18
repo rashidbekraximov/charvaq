@@ -30,10 +30,6 @@ public class Technician extends Auditable {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
-
-    @ManyToOne
     @JoinColumn(name = "technique_type_id")
     private TechniqueType techniqueType;
 
@@ -92,7 +88,6 @@ public class Technician extends Auditable {
         technicianDao.setId(getId());
         technicianDao.setTechniqueType(getTechniqueType());
         technicianDao.setTechniqueTypeId(getTechniqueTypeId());
-        technicianDao.setEmployee(getEmployee());
         technicianDao.setEmployeeId(getEmployeeId());
         technicianDao.setDirection(getDirection());
         technicianDao.setAutoNumber(getAutoNumber());

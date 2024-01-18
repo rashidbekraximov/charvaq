@@ -29,18 +29,14 @@ public class ReferencesController {
 
     static {
         globalReferences.put("product_type", "r_product_type");
+        globalReferences.put("drobilka_type", "r_drobilka_type");
         globalReferences.put("cost_type", "r_cost_type");
         globalReferences.put("payment_type", "r_payment_type");
-        globalReferences.put("status", "r_status");
-        globalReferences.put("currency_unit", "r_currency_unit");
         globalReferences.put("technique_type", "r_technique_type");
         globalReferences.put("position", "r_position");
         globalReferences.put("direction", "r_direction");
         globalReferences.put("unit", "r_unit");
-        globalReferences.put("forms", "r_forms");
         globalReferences.put("reference_list", "references_list");
-        globalReferences.put("communal_group", "r_communal_group");
-        globalReferences.put("tax_type", "r_tax_type");
     }
 
     public static void clearGlobalCache() {

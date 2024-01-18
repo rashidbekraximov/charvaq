@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface DrobilkaRepository extends JpaRepository<Drobilka,Integer> {
 
-    Optional<Drobilka> findByProductType_Id(int productType_id);
+    Optional<Drobilka> findByProductType_IdAndDrobilkaType_Id(int productType_id,int drobilkaType_Id);
 }
