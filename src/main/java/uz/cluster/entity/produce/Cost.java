@@ -10,6 +10,8 @@ import uz.cluster.dao.produce.CostDao;
 import uz.cluster.dao.produce.ReadyProductDao;
 import uz.cluster.entity.Auditable;
 import uz.cluster.entity.references.model.CostType;
+import uz.cluster.enums.Status;
+import uz.cluster.enums.produce.ProduceEnum;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -38,6 +40,9 @@ public class Cost  extends Auditable {
 
     @Column(name = "amount")
     private double amount;
+
+    @Column(name = "spending_type_id")
+    private int spendingTypeId = ProduceEnum.REAL_COST.getValue();
 
     @Transient
     private int costTypeId;

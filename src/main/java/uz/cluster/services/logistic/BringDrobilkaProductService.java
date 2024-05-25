@@ -87,16 +87,16 @@ public class BringDrobilkaProductService {
         Optional<Unit> optionalUnit = unitRepository.findById(bringDrobilkaProduct.getUnitId());
         optionalUnit.ifPresent(bringDrobilkaProduct::setUnit);
 
-
         Optional<Drobilka> optionalDrobilka = drobilkaRepository.findByProductType_IdAndDrobilkaType_Id(bringDrobilkaProduct.getProductTypeId(), bringDrobilkaProduct.getDrobilkaTypeId());
         if (optionalDrobilka.isPresent()) {
             Drobilka drobilka = optionalDrobilka.get();
-            if (drobilka.getAmount() >= bringDrobilkaProduct.getAmount()){
+            if (drobilka.getAmount() >= bringDrobilkaProduct.getDrobilkaAmount()){
                 bringDrobilkaProduct.setDifference(drobilka.getAmount() - bringDrobilkaProduct.getDrobilkaAmount());
                 drobilka.setAmount(drobilka.getAmount() - bringDrobilkaProduct.getDrobilkaAmount());
+                drobilka.setValue(drobilka.getValue() - bringDrobilkaProduct.getValue());
                 drobilkaRepository.save(drobilka);
                 BringDrobilkaProduct saved = bringDrobilkaProductRepository.save(bringDrobilkaProduct);
-                logisticService.createBringProductLogisticCost(saved);
+                logisticService.createBringProductLogisticCost(saved,false);
                 remainderService.addByBringing(saved);
                 return new ApiResponse(true, saved, LanguageManager.getLangMessage("saved"));
             }else{
@@ -116,6 +116,7 @@ public class BringDrobilkaProductService {
             if (drobilkaOptional.isPresent()) {
                 Drobilka drobilka = drobilkaOptional.get();
                 drobilka.setAmount(drobilka.getAmount() + optionalDrobilka.get().getDrobilkaAmount());
+                drobilka.setValue(drobilka.getValue() + optionalDrobilka.get().getValue());
                 Optional<Remainder> remainder = remainderRepository.findByProductType_IdAndMchj(optionalDrobilka.get().getProductType().getId(),optionalDrobilka.get().getMchj());
                 if (remainder.isPresent()){
                     remainder.get().setAmount(remainder.get().getAmount() - optionalDrobilka.get().getAmount());

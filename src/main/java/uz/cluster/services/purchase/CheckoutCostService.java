@@ -1,6 +1,8 @@
 package uz.cluster.services.purchase;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
@@ -28,6 +30,7 @@ import uz.cluster.repository.purchase.PurchaseDto;
 import uz.cluster.repository.purchase.PurchaseRepository;
 import uz.cluster.repository.references.CostTypeRepository;
 import uz.cluster.repository.references.DirectionRepository;
+import uz.cluster.services.produce.ProduceRemainderService;
 import uz.cluster.util.LanguageManager;
 
 import java.time.LocalDate;
@@ -38,13 +41,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CheckoutCostService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CheckoutCostService.class);
+
     private final CheckoutCostRepository costRepository;
 
     private final DailyIncomeRepository dailyIncomeRepository;
 
+    private final CostTypeRepository costTypeRepository;
+
     @CheckPermission(form = FormEnum.DAILY_COST, permission = Action.CAN_VIEW)
-    public List<CheckoutCost> getList() {
-        return costRepository.findAll();
+    public List<CheckoutCost> getList(int id) {
+        if (id != 0){
+            return costRepository.findAllByCostType_Id(id);
+        }else {
+            return costRepository.findAll();
+        }
     }
 
     @CheckPermission(form = FormEnum.DAILY_COST, permission = Action.CAN_VIEW)
@@ -68,6 +79,14 @@ public class CheckoutCostService {
         if (optional.isPresent() && optional.get().getStatus() == Status.PASSIVE){
             return new ApiResponse(false,LanguageManager.getLangMessage("confirmed_or_deleted"));
         }
+
+        if (price.getCostTypeId() == 0){
+            return new ApiResponse(false,LanguageManager.getLangMessage("confirmed_or_deleted"));
+        }
+
+        Optional<CostType> optionalProductType = costTypeRepository.findById(price.getCostTypeId());
+        optionalProductType.ifPresent(price::setCostType);
+
 
         if (price.getId() != 0){
            return edit(price);

@@ -24,11 +24,15 @@ public class DrobilkaDao extends BaseDao {
 
     private double amount;
 
+    private double value;
+
     private int productTypeId;
 
     private int drobilkaTypeId;
 
     private int unitId;
+
+    private String description;
 
     public Drobilka copy(DrobilkaDao drobilkaDao){
         Drobilka drobilka = new Drobilka();
@@ -40,6 +44,8 @@ public class DrobilkaDao extends BaseDao {
         drobilka.setDrobilkaType(drobilkaDao.getDrobilkaType());
         drobilka.setDrobilkaTypeId(drobilkaDao.getDrobilkaTypeId());
         drobilka.setAmount(drobilkaDao.getAmount());
+        drobilka.setValue(drobilkaDao.getValue());
+        drobilka.setDescription(drobilkaDao.getDescription());
         return drobilka;
     }
 }

@@ -43,6 +43,12 @@ public class Drobilka extends Auditable {
     @Column(name = "amount")
     private double amount;
 
+    @Column(name = "value",columnDefinition = "real default 0")
+    private double value;
+
+    @Column(name = "description")
+    private String description;
+
     @Transient
     private int productTypeId;
 
@@ -62,6 +68,8 @@ public class Drobilka extends Auditable {
         drobilkaDao.setUnit(getUnit());
         drobilkaDao.setUnitId(getUnitId());
         drobilkaDao.setAmount(getAmount());
+        drobilkaDao.setValue(getValue());
+        drobilkaDao.setDescription(getDescription());
         return drobilkaDao;
     }
 }

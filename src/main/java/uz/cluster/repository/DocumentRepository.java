@@ -1,6 +1,7 @@
 package uz.cluster.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,4 +20,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     @Query(value = "select * from documents where date between :begin_date and :end_date and direction_id = :direction_id ", nativeQuery = true)
     List<Document> getAllByDateAndDirectionId(@Param("begin_date") Date beginDate, @Param("end_date") Date endDate, @Param("direction_id") int directionId);
 
+    @Modifying
+    @Query(value = "delete from documents where id = :id ", nativeQuery = true)
+    void deleteByDocumentId(@Param("id") long id);
 }

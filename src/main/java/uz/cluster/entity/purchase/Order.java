@@ -14,6 +14,8 @@ import uz.cluster.enums.Status;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -43,15 +45,11 @@ public class Order extends Auditable {
     @Column(name = "location")
     private String location;
 
-    @ManyToOne
-    @JoinColumn(name = "product_type_id")
-    private ProductType productType;
+    @Column(name = "fare")
+    private double fare;
 
-    @Column(name = "weight")
-    private double weight;
-
-    @Column(name = "price")
-    private double price;
+    @Column(name = "km")
+    private double km;
 
     @Column(name = "value")
     private double value;
@@ -63,6 +61,8 @@ public class Order extends Auditable {
     @Transient
     private int productTypeId;
 
+    @Transient
+    List<OrderedProduct> purchasedProductList = new ArrayList<>();
 
     public OrderDao asDao(){
         OrderDao order = new OrderDao();
@@ -71,12 +71,13 @@ public class Order extends Auditable {
         order.setPhoneNumber(getPhoneNumber());
         order.setLocation(getLocation());
         order.setDate(getDate());
-        order.setProductType(getProductType());
-        order.setProductTypeId(getProductTypeId());
-        order.setWeight(getWeight());
-        order.setPrice(getPrice());
-        order.setValue(getValue());
+        order.setKm(getKm());
+        order.setTotalValue(getValue());
+        order.setFare(getFare());
         order.setStatus(getStatus());
+        for (OrderedProduct orderedProduct : getPurchasedProductList()){
+            order.getPurchasedProductList().add(orderedProduct.asDao());
+        }
         return order;
     }
 }

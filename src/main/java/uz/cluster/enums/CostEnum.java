@@ -12,8 +12,9 @@ public enum CostEnum {
     SALARY(5),
     FOOD(6),
     ALL_COST(7),
-    ALL_INCOME(8),
-    ALL_PROFIT(9);
+    REAL_COST(8),
+    ALL_INCOME(9),
+    ALL_PROFIT(10);
 
     private final int value;
 

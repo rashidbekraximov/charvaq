@@ -16,6 +16,7 @@ import uz.cluster.entity.auth.User;
 import uz.cluster.entity.logistic.BringDrobilkaProduct;
 import uz.cluster.entity.logistic.Technician;
 import uz.cluster.entity.produce.ReadyProduct;
+import uz.cluster.entity.purchase.DailyIncome;
 import uz.cluster.entity.purchase.Order;
 import uz.cluster.entity.purchase.Purchase;
 import uz.cluster.entity.purchase.PurchasedProduct;
@@ -28,10 +29,7 @@ import uz.cluster.enums.purchase.PurchaseEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.logistic.TechnicianRepository;
 import uz.cluster.repository.produce.ReadyProductRepository;
-import uz.cluster.repository.purchase.NotificationDto;
-import uz.cluster.repository.purchase.OrderRepository;
-import uz.cluster.repository.purchase.PurchaseRepository;
-import uz.cluster.repository.purchase.PurchasedProductRepository;
+import uz.cluster.repository.purchase.*;
 import uz.cluster.repository.references.PaymentTypeRepository;
 import uz.cluster.repository.references.ProductTypeRepository;
 import uz.cluster.services.logistic.LogisticService;
@@ -73,6 +71,8 @@ public class PurchaseService {
     private final DailyIncomeService dailyIncomeService;
 
     private final ReadyProductRepository readyProductRepository;
+
+    private final DailyIncomeRepository dailyIncomeRepository;
 
 
     @CheckPermission(form = FormEnum.PURCHASE, permission = Action.CAN_VIEW)
@@ -236,7 +236,7 @@ public class PurchaseService {
             bringDrobilkaProduct.setDate(purchase.getDate());
             bringDrobilkaProduct.setTechnician(purchase.getTechnician());
             bringDrobilkaProduct.setKm(purchase.getKm());
-            logisticService.createBringProductLogisticCost(bringDrobilkaProduct);
+            logisticService.createBringProductLogisticCost(bringDrobilkaProduct,true);
         }
         return new ApiResponse(true, saved, LanguageManager.getLangMessage("saved"));
     }
@@ -273,7 +273,7 @@ public class PurchaseService {
                 bringDrobilkaProduct.setDate(edited.getDate());
                 bringDrobilkaProduct.setTechnician(edited.getTechnician());
                 bringDrobilkaProduct.setKm(edited.getKm());
-                logisticService.createBringProductLogisticCost(bringDrobilkaProduct);
+                logisticService.createBringProductLogisticCost(bringDrobilkaProduct,true);
             }
             return new ApiResponse(true, edited, LanguageManager.getLangMessage("edited"));
         } else {
@@ -286,13 +286,15 @@ public class PurchaseService {
     public ApiResponse delete(int id) {
         Optional<Purchase> optionalPurchase = purchaseRepository.findById(id);
         if (optionalPurchase.isPresent()) {
-            optionalPurchase.get().setStatus(Status.PASSIVE);
-            Purchase passive = purchaseRepository.save(optionalPurchase.get());
+            Optional<DailyIncome> optional = dailyIncomeRepository.findByDate(optionalPurchase.get().getDate());
+            optional.ifPresent(dailyIncome -> dailyIncome.setIncome(dailyIncome.getIncome() - optionalPurchase.get().getPaidTotalValue()));
+//            optionalPurchase.get().setStatus(Status.PASSIVE);
+            purchaseRepository.deleteById(id);
             purchasedProductRepository.deleteAllByPurchaseId(id);
             logisticService.deleteAllById(id);
-            return new ApiResponse(true, passive, LanguageManager.getLangMessage("deleted"));
+            return new ApiResponse(true, LanguageManager.getLangMessage("deleted"));
         } else {
-            return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
+            return new ApiResponse(false, LanguageManager.getLangMessage("cant_find"));
         }
     }
 
@@ -373,9 +375,9 @@ public class PurchaseService {
 
             selQuery.setParameter("endDate", documentFilter.getEndDate());
         } else {
-            selQuery.setParameter("beginDate", getBeginDate(LocalDate.now()));
+            selQuery.setParameter("beginDate", LocalDate.now());
 
-            selQuery.setParameter("endDate", getEndDate(LocalDate.now()));
+            selQuery.setParameter("endDate", LocalDate.now());
         }
 
         if (documentFilter.getPaymentTypeId() != 0) {

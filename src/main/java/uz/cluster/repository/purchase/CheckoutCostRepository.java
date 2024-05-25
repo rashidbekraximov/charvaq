@@ -13,4 +13,5 @@ public interface CheckoutCostRepository extends JpaRepository<CheckoutCost,Long>
 
     List<CheckoutCost> findAllByDate(LocalDate date);
 
+    List<CheckoutCost> findAllByCostType_Id(int costType_id);
 }

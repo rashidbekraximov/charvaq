@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
 import uz.cluster.dao.logistic.DashboardLogistic;
 import uz.cluster.dao.produce.CostDao;
+import uz.cluster.dao.purchase.PurchaseDao;
 import uz.cluster.entity.produce.Cost;
 import uz.cluster.entity.references.model.CostType;
 import uz.cluster.enums.CostEnum;
@@ -17,6 +18,7 @@ import uz.cluster.enums.purchase.PurchaseEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.logistic.LogisticDao;
 import uz.cluster.repository.produce.CostRepository;
+import uz.cluster.repository.produce.ProduceBarDao;
 import uz.cluster.repository.produce.ReadyProductRepository;
 import uz.cluster.repository.purchase.PurchaseDto;
 import uz.cluster.repository.purchase.PurchaseRepository;
@@ -43,7 +45,14 @@ public class CostService {
 
     @CheckPermission(form = FormEnum.PRODUCE_COST, permission = Action.CAN_VIEW)
     public List<CostDao> getList() {
-        return costRepository.findAll().stream().map(Cost::asDao).collect(Collectors.toList());
+        List<CostDao> costs = costRepository.findAll().stream().map(Cost::asDao).collect(Collectors.toList());
+        List<CostDao> filtered = new ArrayList<>();
+        for (CostDao cost : costs){
+            if (cost.getCostType() != null){
+                filtered.add(cost);
+            }
+        }
+        return filtered;
     }
 
     public CostDao getById(int id) {
@@ -57,24 +66,31 @@ public class CostService {
 
     public List<DashboardLogistic> getDashboardDataMonthly() {
         List<DashboardLogistic> dashboardLogistics = new ArrayList<>();
-        List<LogisticDao> list = costRepository.getAllByCostIdMonthly();//
-        double totalCostAmount = 0;
+        List<ProduceBarDao> list = costRepository.getAllByCostIdMonthly();//
+        double totalRealAmount = 0;
+        double totalAmount = 0;
+        double totalPermamentAmount = 0;
 
-        for (LogisticDao logistic : list){
-            DashboardLogistic dashboardLogistic = new DashboardLogistic();
-            dashboardLogistic.setCostId(logistic.getCostId());
-            Optional<CostType> optionalProductType = costTypeRepository.findById(logistic.getCostId());
-            optionalProductType.ifPresent(costType -> dashboardLogistic.setCostName(costType.getName().getActiveLanguage()));
-            dashboardLogistic.setAmount(logistic.getAmount());
-            totalCostAmount += logistic.getAmount();
-            dashboardLogistics.add(dashboardLogistic);
+        for (ProduceBarDao logistic : list){
+            if (ProduceEnum.PERMAMENT_COST.getValue() == logistic.getSpendingTypeId()){
+                totalPermamentAmount += logistic.getAmount();
+            }else {
+                totalRealAmount += logistic.getAmount();
+            }
+            totalAmount = totalPermamentAmount + totalRealAmount;
         }
 
         DashboardLogistic dashboardLogisticTotal = new DashboardLogistic();
-        dashboardLogisticTotal.setCostId(CostEnum.ALL_COST.getValue());
-        dashboardLogisticTotal.setCostName("Umumiy xarajat");
-        dashboardLogisticTotal.setAmount(totalCostAmount);
+        dashboardLogisticTotal.setCostId(CostEnum.REAL_COST.getValue());
+        dashboardLogisticTotal.setCostName("Doimiy xarajat");
+        dashboardLogisticTotal.setAmount(totalPermamentAmount);
         dashboardLogistics.add(dashboardLogisticTotal);
+
+        DashboardLogistic dashboardReal = new DashboardLogistic();
+        dashboardReal.setCostId(CostEnum.ALL_COST.getValue());
+        dashboardReal.setCostName("Real xarajat");
+        dashboardReal.setAmount(totalRealAmount);
+        dashboardLogistics.add(dashboardReal);
 
         DashboardLogistic dashboardLogisticTotalPurchase = new DashboardLogistic();
         DashboardLogistic dashboardLogisticTotalIncome = new DashboardLogistic();
@@ -89,7 +105,7 @@ public class CostService {
 
         DashboardLogistic dashboardLogisticTotalProfit = new DashboardLogistic();
         dashboardLogisticTotalProfit.setCostId(CostEnum.ALL_PROFIT.getValue());
-        dashboardLogisticTotalProfit.setAmount(dashboardLogisticTotalIncome.getAmount() - dashboardLogisticTotal.getAmount());
+        dashboardLogisticTotalProfit.setAmount(dashboardLogisticTotalIncome.getAmount() - totalAmount);
         dashboardLogisticTotalProfit.setCostName("Foyda");
         dashboardLogistics.add(dashboardLogisticTotalProfit);
 
@@ -112,24 +128,31 @@ public class CostService {
 
     public List<DashboardLogistic> getDashboardDataDaily() {
         List<DashboardLogistic> dashboardLogistics = new ArrayList<>();
-        List<LogisticDao> list = costRepository.getAllByCostIdDaily();//
-        double totalCostAmount = 0;
+        List<ProduceBarDao> list = costRepository.getAllByCostIdDaily();//
+        double totalRealAmount = 0;
+        double totalAmount = 0;
+        double totalPermamentAmount = 0;
 
-        for (LogisticDao logistic : list){
-            DashboardLogistic dashboardLogistic = new DashboardLogistic();
-            dashboardLogistic.setCostId(logistic.getCostId());
-            Optional<CostType> optionalProductType = costTypeRepository.findById(logistic.getCostId());
-            optionalProductType.ifPresent(costType -> dashboardLogistic.setCostName(costType.getName().getActiveLanguage()));
-            dashboardLogistic.setAmount(logistic.getAmount());
-            totalCostAmount += logistic.getAmount();
-            dashboardLogistics.add(dashboardLogistic);
+        for (ProduceBarDao logistic : list){
+            if (ProduceEnum.PERMAMENT_COST.getValue() == logistic.getSpendingTypeId()){
+                totalPermamentAmount += logistic.getAmount();
+            }else {
+                totalRealAmount += logistic.getAmount();
+            }
+            totalAmount = totalPermamentAmount + totalRealAmount;
         }
 
         DashboardLogistic dashboardLogisticTotal = new DashboardLogistic();
-        dashboardLogisticTotal.setCostId(CostEnum.ALL_COST.getValue());
-        dashboardLogisticTotal.setCostName("Umumiy xarajat");
-        dashboardLogisticTotal.setAmount(totalCostAmount);
+        dashboardLogisticTotal.setCostId(CostEnum.REAL_COST.getValue());
+        dashboardLogisticTotal.setCostName("Doimiy xarajat");
+        dashboardLogisticTotal.setAmount(totalPermamentAmount);
         dashboardLogistics.add(dashboardLogisticTotal);
+
+        DashboardLogistic dashboardReal = new DashboardLogistic();
+        dashboardReal.setCostId(CostEnum.ALL_COST.getValue());
+        dashboardReal.setCostName("Real xarajat");
+        dashboardReal.setAmount(totalRealAmount);
+        dashboardLogistics.add(dashboardReal);
 
         DashboardLogistic dashboardLogisticTotalPurchase = new DashboardLogistic();
         DashboardLogistic dashboardLogisticTotalIncome = new DashboardLogistic();
@@ -144,7 +167,7 @@ public class CostService {
 
         DashboardLogistic dashboardLogisticTotalProfit = new DashboardLogistic();
         dashboardLogisticTotalProfit.setCostId(CostEnum.ALL_PROFIT.getValue());
-        dashboardLogisticTotalProfit.setAmount(dashboardLogisticTotalIncome.getAmount() - dashboardLogisticTotal.getAmount());
+        dashboardLogisticTotalProfit.setAmount(dashboardLogisticTotalIncome.getAmount() - totalAmount);
         dashboardLogisticTotalProfit.setCostName("Foyda");
         dashboardLogistics.add(dashboardLogisticTotalProfit);
 
@@ -169,13 +192,9 @@ public class CostService {
     public ApiResponse add(CostDao priceDao) {
         Cost price = priceDao.copy(priceDao);
 
-        if (price.getCostTypeId() == 0) {
-            return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
-        }
-
         Optional<CostType> optionalProductType = costTypeRepository.findById(price.getCostTypeId());
         optionalProductType.ifPresent(price::setCostType);
-
+        price.setSpendingTypeId(ProduceEnum.REAL_COST.getValue());
         if (price.getId() != 0) {
             return edit(price);
         }

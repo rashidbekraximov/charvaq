@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 import uz.cluster.dao.purchase.AllDebtDao;
 import uz.cluster.entity.Auditable;
+import uz.cluster.entity.references.model.PaymentType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -41,6 +42,14 @@ public class Estinguish extends Auditable {
     @Column(name = "remainder_debt_value")
     private double remainderDebtValue;
 
+    @ManyToOne
+    @JoinColumn(name = "payment_type_id")
+    private PaymentType paymentType;
+
     @Transient
     List<AllDebtDao> allDebts = new ArrayList<>();
+
+    @Transient
+    private int paymentTypeId;
+
 }

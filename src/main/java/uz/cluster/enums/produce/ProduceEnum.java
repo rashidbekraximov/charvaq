@@ -7,7 +7,9 @@ public enum ProduceEnum {
 
     AMORTIZATION(1),
     ELECTR(2),
-    PRODUCE_COST(3);
+    PRODUCE_COST(3),
+    REAL_COST(1000),
+    PERMAMENT_COST(2000);
 
     private final int value;
 
@@ -27,7 +29,4 @@ public enum ProduceEnum {
     public int getValue() {
         return this.value;
     }
-
-
-
 }

@@ -39,6 +39,8 @@ public class ReadyProductService {
 
     private final RemainderService remainderService;
 
+    private final ProduceRemainderService produceRemainderService;
+
     @CheckPermission(form = FormEnum.READY_PRODUCT, permission = Action.CAN_VIEW)
     public List<ReadyProductDao> getList() {
         return readyProductRepository.findAllByOrderByDateDesc().stream().map(ReadyProduct::asDao).collect(Collectors.toList());
@@ -87,11 +89,12 @@ public class ReadyProductService {
 
         remainderService.enter(remainder.getProductTypeId(),remainder.getAmount());
 
+        produceRemainderService.minusICHRemainder(remainder.getCostPerKgSementAmount());
         Optional<ReadyProduct> readyProduct = readyProductRepository.findByDate(remainder.getDate());
         if (readyProduct.isPresent()){
             CostDao costDao = new CostDao();
             costDao.setDate(readyProduct.get().getDate());
-            costDao.setCostTypeId(ProduceEnum.PRODUCE_COST.getValue());
+            costDao.setSpendingTypeId(ProduceEnum.PERMAMENT_COST.getValue());
             costDao.setAmount(remainder.getAmount() * remainder.getCostAmount());
             costService.add(costDao);
             readyProduct.get().setAmount(readyProduct.get().getAmount() + remainder.getAmount());
@@ -104,7 +107,7 @@ public class ReadyProductService {
         readyProductRepository.save(remainder);
         CostDao costDao = new CostDao();
         costDao.setDate(remainder.getDate());
-        costDao.setCostTypeId(ProduceEnum.PRODUCE_COST.getValue());
+        costDao.setSpendingTypeId(ProduceEnum.PERMAMENT_COST.getValue());
         costDao.setAmount(remainder.getAmount() * remainder.getCostAmount());
         costService.add(costDao);
         ReadyProduct remainderSaved = readyProductRepository.save(remainder);

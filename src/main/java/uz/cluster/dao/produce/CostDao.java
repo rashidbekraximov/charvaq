@@ -7,13 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uz.cluster.dao.reference.BaseDao;
 import uz.cluster.entity.produce.Cost;
-import uz.cluster.entity.produce.ReadyProduct;
 import uz.cluster.entity.references.model.CostType;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 import java.time.LocalDate;
 
 @Getter
@@ -31,6 +26,8 @@ public class CostDao extends BaseDao {
 
     private int costTypeId;
 
+    private int spendingTypeId;
+
     public Cost copy(CostDao costDao){
         Cost cost = new Cost();
         cost.setId((int) costDao.getId());
@@ -38,7 +35,7 @@ public class CostDao extends BaseDao {
         cost.setCostTypeId(costDao.getCostTypeId());
         cost.setDate(costDao.getDate());
         cost.setAmount(costDao.getAmount());
+        cost.setSpendingTypeId(costDao.getSpendingTypeId());
         return cost;
     }
-
 }

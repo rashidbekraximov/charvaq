@@ -48,6 +48,14 @@ public class SalaryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
+    @GetMapping("salary/{id}")
+    public ResponseEntity<?> add(@PathVariable long id){
+        SalaryDao apiResponse = salaryService.getById(id);
+        if (apiResponse == null)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+    }
+
     @PostMapping("salary/edit")
     public ResponseEntity<?> edit(@RequestBody SalaryDao salaryDao){
         ApiResponse apiResponse = salaryService.edit(salaryDao);

@@ -20,9 +20,9 @@ public class CheckoutCostController {
 
     private final CheckoutCostService costService;
 
-    @GetMapping("checkout-costs")
-    public ResponseEntity<List<CheckoutCost>> getList() {
-        return ResponseEntity.ok(costService.getList());
+    @GetMapping("checkout-costs/{id}")
+    public ResponseEntity<List<CheckoutCost>> getList(@PathVariable int id) {
+        return ResponseEntity.ok(costService.getList(id));
     }
 
     @GetMapping("checkout-costs/daily/{date}")

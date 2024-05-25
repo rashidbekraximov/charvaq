@@ -10,13 +10,16 @@ import uz.cluster.dao.purchase.PurchaseDao;
 import uz.cluster.entity.lb.LBPurchase;
 import uz.cluster.entity.purchase.Estinguish;
 import uz.cluster.entity.purchase.Purchase;
+import uz.cluster.entity.purchase.PurchasedProduct;
 import uz.cluster.enums.MCHJ;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.lb.LBPurchaseRepository;
 import uz.cluster.repository.purchase.EstinguishRepository;
-import uz.cluster.repository.purchase.PurchaseRepository;   
+import uz.cluster.repository.purchase.PurchaseRepository;
+import uz.cluster.repository.purchase.PurchasedProductRepository;
+import uz.cluster.repository.references.PaymentTypeRepository;
 import uz.cluster.util.LanguageManager;
 
 import java.util.ArrayList;
@@ -32,9 +35,13 @@ public class EstinguishService {
 
     private final PurchaseRepository purchaseRepository;
 
+    private final PurchasedProductRepository purchasedProductRepository;
+
     private final LBPurchaseRepository lbPurchaseRepository;
 
     private final DailyIncomeService dailyIncomeService;
+
+    private final PaymentTypeRepository paymentTypeRepository;
 
     @CheckPermission(form = FormEnum.ESTINGUISH_DEBT, permission = Action.CAN_ADD)
     @Transactional
@@ -104,26 +111,36 @@ public class EstinguishService {
         List<LBPurchase> lbPurchases = lbPurchaseRepository.getAllLBDebts();
         int key = 0;
         for (Purchase purchase : purchases) {
+            List<PurchasedProduct> purchasedProducts = purchasedProductRepository.findAllByPurchaseIdOrderByProductType(purchase.getId());
             AllDebtDao allDebtDao = new AllDebtDao();
             key++;
             allDebtDao.setKey(key);
             allDebtDao.setId(purchase.getId());
             allDebtDao.setDate(purchase.getDate());
             allDebtDao.setClient(purchase.getClient());
+            allDebtDao.setPaymentType(purchase.getPaymentType().getName().getActiveLanguage());
             allDebtDao.setTotalValue(purchase.getTotalValue());
             allDebtDao.setDebtTotalValue(purchase.getDebtTotalValue());
+            allDebtDao.setMchj(MCHJ.CHSM);
+            StringBuilder txt = new StringBuilder();
+            for (PurchasedProduct p : purchasedProducts) {
+                txt.append(p.getProductType().getName().getActiveLanguage()).append(",");
+            }
+            allDebtDao.setProductsText(txt.substring(0,txt.length()-1));
             allDebtDao.setMchj(MCHJ.CHSM);
             allDebts.add(allDebtDao);
         }
         for (LBPurchase lbPurchase : lbPurchases) {
-            AllDebtDao allDebtDao = new AllDebtDao();
             key++;
+            AllDebtDao allDebtDao = new AllDebtDao();
             allDebtDao.setKey(key);
             allDebtDao.setId(lbPurchase.getId());
             allDebtDao.setDate(lbPurchase.getDate());
             allDebtDao.setClient(lbPurchase.getCustomer());
             allDebtDao.setTotalValue(lbPurchase.getTotalValue());
             allDebtDao.setDebtTotalValue(lbPurchase.getDebtTotalValue());
+            allDebtDao.setProductsText("");
+            allDebtDao.setPaymentType("");
             allDebtDao.setMchj(MCHJ.LB);
             allDebts.add(allDebtDao);
         }

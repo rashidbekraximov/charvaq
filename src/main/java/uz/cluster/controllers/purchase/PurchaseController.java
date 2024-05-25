@@ -128,7 +128,7 @@ public class PurchaseController {
     }
 
     @GetMapping("purchase/delete/{id}")
-    public ResponseEntity<?> save(@PathVariable int id){
+    public ResponseEntity<?> delete(@PathVariable int id){
         ApiResponse apiResponse = purchaseService.delete(id);
         if (!apiResponse.isSuccess())
             return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);

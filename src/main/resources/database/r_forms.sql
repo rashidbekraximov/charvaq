@@ -95,6 +95,12 @@ VALUES (113, 113,
 
 insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
                     modified_by, modified_on, href, parent_id)
+VALUES (114, 114,
+        row ('I/CH qoldig''i', 'I/CH qoldig''i', 'I/CH qoldig''i'),
+        114, 'ACTIVE', null, now(), null, null, '/produce/ready-products', 110);
+
+insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
 VALUES (120, 120, row ('Лидер Бетон', 'Леадер Бетон', 'Leader Beton'), 120, 'ACTIVE', null, now(), null, null,
         null, null);
 

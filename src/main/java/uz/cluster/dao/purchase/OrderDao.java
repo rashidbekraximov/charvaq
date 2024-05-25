@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uz.cluster.dao.reference.BaseDao;
 import uz.cluster.entity.purchase.Order;
-import uz.cluster.entity.purchase.PurchasedProduct;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.enums.Status;
 
@@ -30,19 +29,15 @@ public class OrderDao extends BaseDao {
 
     private String location;
 
-    private ProductType productType;
+    private double totalValue;
 
-    private double weight;
+    private double fare;
 
-    private double price;
-
-    private double value;
+    private double km;
 
     private Status status;
 
-    private int productTypeId;
-
-    List<PurchasedProductDao> purchasedProductList = new ArrayList<>();
+    List<OrderProductDao> purchasedProductList = new ArrayList<>();
 
     public Order copy(OrderDao orderDao){
         Order order = new Order();
@@ -50,13 +45,14 @@ public class OrderDao extends BaseDao {
         order.setClient(orderDao.getClient());
         order.setPhoneNumber(orderDao.getPhoneNumber());
         order.setLocation(orderDao.getLocation());
+        order.setKm(orderDao.getKm());
         order.setDate(orderDao.getDate());
-        order.setProductType(orderDao.getProductType());
-        order.setProductTypeId(orderDao.getProductTypeId());
-        order.setWeight(orderDao.getWeight());
-        order.setPrice(orderDao.getPrice());
-        order.setValue(orderDao.getValue());
+        order.setFare(orderDao.getFare());
+        order.setValue(orderDao.getTotalValue());
         order.setStatus(orderDao.getStatus());
+        for (OrderProductDao purchasedProductDao : orderDao.getPurchasedProductList()){
+            order.getPurchasedProductList().add(purchasedProductDao.copy(purchasedProductDao));
+        }
         return order;
     }
 }

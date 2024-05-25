@@ -100,8 +100,8 @@ public class AuthService implements UserDetailsService {
             return new ApiResponse(false, id, LanguageManager.getLangMessage("no_user"));
 
 
-        if (Period.between(userDTO.getBirthday(), LocalDate.now()).getYears() < 18) //This check that user's age is not less than 18, if not this statement terminates from adding
-            return new ApiResponse(false, optionalUser.get(), LanguageManager.getLangMessage("age_restriction"));
+//        if (Period.between(userDTO.getBirthday(), LocalDate.now()).getYears() < 18) //This check that user's age is not less than 18, if not this statement terminates from adding
+//            return new ApiResponse(false, optionalUser.get(), LanguageManager.getLangMessage("age_restriction"));
 
         User editingUser = optionalUser.get();
         editingUser.setFirstName(userDTO.getFirstName());

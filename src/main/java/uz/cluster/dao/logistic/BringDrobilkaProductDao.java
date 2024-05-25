@@ -35,6 +35,10 @@ public class BringDrobilkaProductDao extends BaseDao {
 
     private double amount;
 
+    private double value;
+
+    private double price;
+
     private double drobilkaAmount;
 
     private double km;
@@ -51,6 +55,8 @@ public class BringDrobilkaProductDao extends BaseDao {
 
     private MCHJ mchj;
 
+    private String description;
+
     public BringDrobilkaProduct copy(BringDrobilkaProductDao bringDrobilkaProductDao){
         BringDrobilkaProduct bringDrobilkaProduct = new BringDrobilkaProduct();
         bringDrobilkaProduct.setId((int) bringDrobilkaProductDao.getId());
@@ -63,10 +69,13 @@ public class BringDrobilkaProductDao extends BaseDao {
         bringDrobilkaProduct.setTechnicianId(bringDrobilkaProductDao.getTechnicianId());
         bringDrobilkaProduct.setTechnician(bringDrobilkaProductDao.getTechnician());
         bringDrobilkaProduct.setAmount(bringDrobilkaProductDao.getAmount());
+        bringDrobilkaProduct.setPrice(bringDrobilkaProductDao.getPrice());
         bringDrobilkaProduct.setDrobilkaAmount(bringDrobilkaProductDao.getDrobilkaAmount());
         bringDrobilkaProduct.setIncome(bringDrobilkaProductDao.getIncome());
+        bringDrobilkaProduct.setValue(bringDrobilkaProductDao.getValue());
         bringDrobilkaProduct.setKm(bringDrobilkaProductDao.getKm());
         bringDrobilkaProduct.setDate(bringDrobilkaProductDao.getDate());
+        bringDrobilkaProduct.setDescription(bringDrobilkaProductDao.getDescription());
         bringDrobilkaProduct.setMchj(bringDrobilkaProductDao.getMchj());
         return bringDrobilkaProduct;
     }

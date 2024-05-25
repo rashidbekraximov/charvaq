@@ -60,6 +60,9 @@ public class Technician extends Auditable {
     @Column(name = "per_km_amortization_cost")
     private double perKmAmortization;
 
+    @Column(name = "per_km_salary_amount",columnDefinition = "real default 0")
+    private double perKmSalaryAmount;
+
     @Column(name = "auto_number")
     private String autoNumber;
 
@@ -98,6 +101,7 @@ public class Technician extends Auditable {
         technicianDao.setPerKmBallonCost(getPerKmBallonCost());
         technicianDao.setOilPrice(getOilPrice());
         technicianDao.setPerKmOilCost(getPerKmOilCost());
+        technicianDao.setPerKmSalaryAmount(getPerKmSalaryAmount());
         technicianDao.setAmortization(getAmortization());
         technicianDao.setPerKmAmortization(getPerKmAmortization());
         technicianDao.setDirectionId(getDirectionId());

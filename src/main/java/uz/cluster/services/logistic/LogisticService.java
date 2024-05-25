@@ -40,18 +40,20 @@ public class LogisticService {
 
     private final PurchaseRepository purchaseRepository;
 
-    public void createBringProductLogisticCost(BringDrobilkaProduct bringDrobilkaProduct){
+    public void createBringProductLogisticCost(BringDrobilkaProduct bringDrobilkaProduct,boolean isPurchase){
         List<Logistic> logistics = new ArrayList<>();
         double km = bringDrobilkaProduct.getKm();
         Logistic logistic1 = new Logistic();
         logistic1.setDocumentId(bringDrobilkaProduct.getId());
         logistic1.setCostId(CostEnum.GAS.getValue());
         logistic1.setDate(bringDrobilkaProduct.getDate());
+        logistic1.setPurchase(isPurchase);
         logistic1.setAmount(bringDrobilkaProduct.getTechnician().getPerKmGasCost() * km);
         logistic1.setTechnician(bringDrobilkaProduct.getTechnician());
         logistics.add(logistic1);
         Logistic logistic2 = new Logistic();
         logistic2.setDocumentId(bringDrobilkaProduct.getId());
+        logistic2.setPurchase(isPurchase);
         logistic2.setCostId(CostEnum.BALLON.getValue());
         logistic2.setDate(bringDrobilkaProduct.getDate());
         logistic2.setAmount(bringDrobilkaProduct.getTechnician().getPerKmBallonCost() * km);
@@ -60,6 +62,7 @@ public class LogisticService {
         Logistic logistic3 = new Logistic();
         logistic3.setDocumentId(bringDrobilkaProduct.getId());
         logistic3.setCostId(CostEnum.OIL.getValue());
+        logistic3.setPurchase(isPurchase);
         logistic3.setDate(bringDrobilkaProduct.getDate());
         logistic3.setAmount(bringDrobilkaProduct.getTechnician().getPerKmOilCost() * km);
         logistic3.setTechnician(bringDrobilkaProduct.getTechnician());
@@ -67,10 +70,19 @@ public class LogisticService {
         Logistic logistic4 = new Logistic();
         logistic4.setDocumentId(bringDrobilkaProduct.getId());
         logistic4.setCostId(CostEnum.AMORTIZATION.getValue());
+        logistic4.setPurchase(isPurchase);
         logistic4.setDate(bringDrobilkaProduct.getDate());
         logistic4.setAmount(bringDrobilkaProduct.getTechnician().getPerKmAmortization() * km);
         logistic4.setTechnician(bringDrobilkaProduct.getTechnician());
         logistics.add(logistic4);
+        Logistic logistic5 = new Logistic();
+        logistic5.setDocumentId(bringDrobilkaProduct.getId());
+        logistic5.setPurchase(isPurchase);
+        logistic5.setCostId(CostEnum.SALARY.getValue());
+        logistic5.setDate(bringDrobilkaProduct.getDate());
+        logistic5.setAmount(bringDrobilkaProduct.getTechnician().getPerKmSalaryAmount() * km);
+        logistic5.setTechnician(bringDrobilkaProduct.getTechnician());
+        logistics.add(logistic5);
         logisticRepository.saveAll(logistics);
     }
 
@@ -129,18 +141,15 @@ public class LogisticService {
         dashboardLogisticTotalProfit.setCostId(CostEnum.ALL_PROFIT.getValue());
         dashboardLogisticTotalProfit.setAmount(dashboardLogisticTotalIncome.getAmount() - dashboardLogisticTotal.getAmount());
         dashboardLogistics.add(dashboardLogisticTotalProfit);
-
         return IntStream.range(0, dashboardLogistics.size()).map(i -> dashboardLogistics.size() - 1-i).mapToObj(dashboardLogistics::get).collect(Collectors.toList());
     }
 
     public List<DashboardTechnician> getTechnicianList(){
         List<DashboardTechnician> dashboardTechnicians = new ArrayList<>();
-
         for (Technician technician : technicianRepository.findAll()){
             DashboardTechnician dashboardTechnician = new DashboardTechnician();
             dashboardTechnician.setId(technician.getId());
-//            dashboardTechnician.setName(technician.getEmployee().getName());
-            dashboardTechnician.setTechnique(technician.getTechniqueType().getName().getActiveLanguage());
+            dashboardTechnician.setTechnique(technician.getTechniqueType().getName().getUz_lat());
             double totalAmount = 0;
             for (LogisticDao dao : logisticRepository.getAllByTechnicianId(technician.getId())){
                 DashboardLogistic dashboardLogistic = new DashboardLogistic();
@@ -166,9 +175,10 @@ public class LogisticService {
             dashboardLogisticProfit.setCostId(CostEnum.ALL_PROFIT.getValue());
             dashboardLogisticProfit.setAmount(round(dashboardLogisticIncome.getAmount() - totalAmount));
             dashboardTechnician.getDashboardLogistics().add(dashboardLogisticProfit);
-            dashboardTechnicians.add(dashboardTechnician);
+            if (totalAmount > 0 && dashboardLogisticIncome.getAmount() > 0){
+                dashboardTechnicians.add(dashboardTechnician);
+            }
         }
-
         return dashboardTechnicians;
     }
 

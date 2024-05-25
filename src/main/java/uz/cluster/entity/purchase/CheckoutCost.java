@@ -32,6 +32,10 @@ public class CheckoutCost extends Auditable {
     @Column(name = "date")
     private LocalDate date;
 
+    @ManyToOne
+    @JoinColumn(name = "cost_type_id")
+    private CostType costType;
+
     @Column(name = "cost")
     private String costName;
 
@@ -43,4 +47,7 @@ public class CheckoutCost extends Auditable {
 
     @Column(name = "description",columnDefinition = "varchar(100) default ' '")
     private String description;
+
+    @Transient
+    private int costTypeId;
 }

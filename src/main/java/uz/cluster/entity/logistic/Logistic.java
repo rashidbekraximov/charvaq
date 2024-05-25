@@ -36,6 +36,9 @@ public class Logistic extends Auditable {
     @Column(name = "cost_id")
     private int costId;
 
+    @Column(name = "is_purchase")
+    private boolean isPurchase;
+
     @ManyToOne
     @JoinColumn(name = "technician_id")
     private Technician technician;

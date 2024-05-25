@@ -57,14 +57,23 @@ public class BringDrobilkaProduct extends Auditable {
     @Column(name = "difference",columnDefinition = "real default 0")
     private double difference;
 
+    @Column(name = "price",columnDefinition = "real default 0")
+    private double price;
+
     @Column(name = "amount")
     private double amount;
 
     @Column(name = "income")
     private double income;
 
+    @Column(name = "value",columnDefinition = "real default 0")
+    private double value;
+
     @Column(name = "km")
     private double km;
+
+    @Column(name = "description")
+    private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "mchj", columnDefinition = "varchar(5) default 'CHSM'")
@@ -94,6 +103,7 @@ public class BringDrobilkaProduct extends Auditable {
         bringDrobilkaProductDao.setTechnician(getTechnician());
         bringDrobilkaProductDao.setTechnicianId(getTechnicianId());
         bringDrobilkaProductDao.setAmount(getAmount());
+        bringDrobilkaProductDao.setValue(getValue());
         bringDrobilkaProductDao.setDrobilkaAmount(getDrobilkaAmount());
         bringDrobilkaProductDao.setKm(getKm());
         bringDrobilkaProductDao.setIncome(getIncome());

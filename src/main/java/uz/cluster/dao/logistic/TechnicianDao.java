@@ -43,6 +43,8 @@ public class TechnicianDao extends BaseDao {
 
     private double perKmAmortization;
 
+    private double perKmSalaryAmount;
+
     private Status status;
 
     private int techniqueTypeId;
@@ -69,6 +71,7 @@ public class TechnicianDao extends BaseDao {
         technician.setPerKmOilCost(technicianDao.getPerKmOilCost());
         technician.setAmortization(technicianDao.getAmortization());
         technician.setPerKmAmortization(getPerKmAmortization());
+        technician.setPerKmSalaryAmount(getPerKmSalaryAmount());
         technician.setDirectionId(technicianDao.getDirectionId());
         technician.setPerKmCostAmount(technicianDao.getPerKmCostAmount());
         technician.setStatus(technicianDao.getStatus());

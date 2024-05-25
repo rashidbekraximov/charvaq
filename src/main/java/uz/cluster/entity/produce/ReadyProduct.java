@@ -48,6 +48,9 @@ public class ReadyProduct extends Auditable {
     @Column(name = "all_cost_amount",columnDefinition = "real default 0")
     private double allCostAmount;
 
+    @Column(name = "cost_per_kg_sement_amount",columnDefinition = "real default 0")
+    private double costPerKgSementAmount;
+
     @Transient
     private int productTypeId;
 
@@ -58,6 +61,7 @@ public class ReadyProduct extends Auditable {
         remainderDao.setProductTypeId(getProductTypeId());
         remainderDao.setAmount(getAmount());
         remainderDao.setCostAmount(getCostAmount());
+        remainderDao.setCostPerKgSementAmount(getCostPerKgSementAmount());
         remainderDao.setDate(getDate());
         return remainderDao;
     }

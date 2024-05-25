@@ -17,6 +17,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextListener;
 import uz.cluster.configuration.OpenApiProperties;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
 @EnableConfigurationProperties({
         OpenApiProperties.class,
 })
@@ -43,6 +48,10 @@ public class ClusterApplication extends SpringBootServletInitializer {
     public RequestContextListener requestContextListener() {
         return new RequestContextListener();
     }
+
+
+    List<Integer> integers = new Vector<>();
+
 
     @Bean
     public RestTemplate getRestTemplate() {

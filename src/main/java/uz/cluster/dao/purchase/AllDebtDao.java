@@ -27,4 +27,8 @@ public class AllDebtDao {
     private double debtTotalValue;
 
     private MCHJ mchj;
+
+    private String productsText;
+
+    private String paymentType;
 }

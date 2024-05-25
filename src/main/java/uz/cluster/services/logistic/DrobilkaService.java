@@ -82,6 +82,7 @@ public class DrobilkaService {
         Optional<Drobilka> optionalDrobilka = drobilkaRepository.findByProductType_IdAndDrobilkaType_Id(drobilka.getProductTypeId(),drobilka.getDrobilkaTypeId());
         if (optionalDrobilka.isPresent()){
             optionalDrobilka.get().setAmount(drobilka.getAmount() + optionalDrobilka.get().getAmount());
+            optionalDrobilka.get().setValue(drobilka.getValue() + optionalDrobilka.get().getValue());
             Drobilka remainderSaved = drobilkaRepository.save(optionalDrobilka.get());
             return new ApiResponse(true, remainderSaved, LanguageManager.getLangMessage("saved"));
         }

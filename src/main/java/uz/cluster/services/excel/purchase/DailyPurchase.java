@@ -56,6 +56,7 @@ public class DailyPurchase {
     XSSFCell cell19;
     XSSFCell cell20;
     XSSFCell cell21;
+    XSSFCell cell22;
 
     int counter = 0;
 
@@ -133,11 +134,11 @@ public class DailyPurchase {
             cell18 = rowInTable.createCell(CellType.STRING);
             cell18.setCellValue("Avto");
             cell19 = rowInTable.createCell(CellType.STRING);
-            cell19.setCellValue("BUYURTMACHI/MIJOZ MANZILI");
-            sheet.addMergedRegion(new CellRangeAddress(counter, counter, 20, 21));
+            cell19.setCellValue("BUYURTMACHI / MIJOZ MANZILI");
             cell20 = rowInTable.createCell(CellType.STRING);
-            cell20.setCellValue("YO'L HAQI");
+            cell20.setCellValue("Yo'l haqi");
             cell21 = rowInTable.createCell(CellType.STRING);
+            cell21.setCellValue("To'lov turi");
             counter++;
 
             rowInTable = new CustomXSSFRow(sheet.createRow(counter), cellStyleCenterBackgroundGreenWithBorder);
@@ -156,9 +157,7 @@ public class DailyPurchase {
             cell18 = rowInTable.createCell(CellType.STRING);
             cell19 = rowInTable.createCell(CellType.STRING);
             cell20 = rowInTable.createCell(CellType.STRING);
-            cell20.setCellValue("N");
             cell21 = rowInTable.createCell(CellType.STRING);
-            cell21.setCellValue("Q");
             counter++;
 
             for (Purchase purchase : purchases) {
@@ -181,34 +180,25 @@ public class DailyPurchase {
                     }
                 }
                 cell16 = rowInTable.createCell(CellType.NUMERIC);
-                cell16.setCellValue(purchase.getPaidTotalValue() - purchase.getFare());
+                cell16.setCellValue(purchase.getPaidTotalValue());
                 cell17 = rowInTable.createCell(CellType.NUMERIC);
-                if (purchase.getDebtTotalValue() == 0){
-                    cell17.setCellValue(purchase.getDebtTotalValue());
-                }else{
-                    cell17.setCellValue(purchase.getDebtTotalValue() - purchase.getFare());
-                }
+                cell17.setCellValue(purchase.getDebtTotalValue());
                 cell18 = rowInTable.createCell(CellType.STRING);
-                if (purchase.getTechnician() == null){
+                if (purchase.getTechnician() == null) {
                     cell18.setCellValue("");
-                }else{
+                } else {
                     cell18.setCellValue(purchase.getTechnician().getTechniqueType().getName().getActiveLanguage());
                 }
                 cell19 = rowInTable.createCell(CellType.STRING);
-                if (!purchase.getLocation().equals("")){
+                if (!purchase.getLocation().equals("")) {
                     cell19.setCellValue(purchase.getClient() + "/" + purchase.getLocation());
-                }else{
+                } else {
                     cell19.setCellValue(purchase.getClient());
                 }
                 cell20 = rowInTable.createCell(CellType.NUMERIC);
+                cell20.setCellValue(purchase.getFare());
                 cell21 = rowInTable.createCell(CellType.NUMERIC);
-                if (purchase.getPaidTotalValue() != 0){
-                    cell20.setCellValue(purchase.getFare());
-                    cell21.setCellValue(0);
-                }else{
-                    cell21.setCellValue(purchase.getFare());
-                    cell20.setCellValue(0);
-                }
+                cell21.setCellValue(purchase.getPaymentType().getName().getUz_lat());
                 counter++;
             }
 //            sheet.addMergedRegion(new CellRangeAddress(counter, counter, 1, 14));

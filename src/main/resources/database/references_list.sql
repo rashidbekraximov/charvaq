@@ -45,3 +45,9 @@ values (11, 'r_cost_type',
         row('Вид расходов',
             'Харажат тури',
             'Xarajat turi')::t_nls);
+
+insert into references_list(id, table_name, name)
+values (12, 'r_product_for_produce',
+        row('I/CH uchun mahsulot',
+            'I/CH uchun mahsulot',
+            'I/CH uchun mahsulot')::t_nls);

@@ -2,6 +2,7 @@ package uz.cluster.services.salary;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
 import uz.cluster.dao.salary.SalaryDao;
 import uz.cluster.dao.salary.Tabel;
@@ -21,6 +22,7 @@ import uz.cluster.repository.references.PositionRepository;
 import uz.cluster.services.logistic.LogisticService;
 import uz.cluster.util.LanguageManager;
 
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.sql.Date;
 import java.util.List;
@@ -40,8 +42,6 @@ public class SalaryService {
 
     private final PositionRepository positionRepository;
 
-    private final LogisticService logisticService;
-
     @CheckPermission(form = FormEnum.SALARY, permission = Action.CAN_VIEW)
     public List<SalaryDao> getList() {
         List<Document> documents = documentRepository.findAll();
@@ -51,6 +51,16 @@ public class SalaryService {
             list.add(new SalaryDao(document, salaries));
         }
         return list;
+    }
+
+    public SalaryDao getById(long id) {
+        Optional<Document> document = documentRepository.findById(id);
+        List<Salary> salaries = new ArrayList<>();
+        if (document.isPresent()){
+            salaries = salaryRepository.findAllByDocumentId(document.get().getDocumentId());
+            return new SalaryDao(document.get(),salaries);
+        }
+        return null;
     }
 
     @CheckPermission(form = FormEnum.TABEL, permission = Action.CAN_VIEW)
@@ -109,12 +119,12 @@ public class SalaryService {
             Optional<Employee> optionalEmployee = employeeRepository.findById(salary.getEmployeeId());
             optionalEmployee.ifPresent(salary::setEmployee);
             Salary saved = salaryRepository.save(salary);
-            logisticService.createSalaryLogisticCost(salaryDao,saved);
         }
         return new ApiResponse(true, LanguageManager.getLangMessage("saved"));
     }
 
     @CheckPermission(form = FormEnum.SALARY, permission = Action.CAN_EDIT)
+    @Transactional
     public ApiResponse edit(SalaryDao salaryDao) {
         Optional<Document> document = documentRepository.findById(salaryDao.getDocumentId());
         if (document.isPresent()) {
@@ -131,17 +141,17 @@ public class SalaryService {
                 Optional<Employee> optionalEmployee = employeeRepository.findById(salary.getEmployeeId());
                 optionalEmployee.ifPresent(salary::setEmployee);
                 salaryRepository.save(salary);
-
             }
         } else {
             return new ApiResponse(true, document, LanguageManager.getLangMessage("cant_find"));
         }
-        return new ApiResponse(true, document, LanguageManager.getLangMessage("cant_saved"));
+        return new ApiResponse(true, document, LanguageManager.getLangMessage("edited"));
     }
 
     @CheckPermission(form = FormEnum.SALARY, permission = Action.CAN_DELETE)
+    @Transactional
     public ApiResponse delete(long id) {
-        documentRepository.deleteById(id);
+        documentRepository.deleteByDocumentId(id);
         salaryRepository.deleteAllByDocumentId(id);
         return new ApiResponse(true, null, LanguageManager.getLangMessage("deleted"));
     }

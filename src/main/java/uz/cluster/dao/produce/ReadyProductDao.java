@@ -29,6 +29,8 @@ public class ReadyProductDao extends BaseDao {
 
     private int productTypeId;
 
+    private double costPerKgSementAmount;
+
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
@@ -40,6 +42,7 @@ public class ReadyProductDao extends BaseDao {
         remainder.setProductTypeId(remainderDao.getProductTypeId());
         remainder.setAmount(remainderDao.getAmount());
         remainder.setCostAmount(remainderDao.getCostAmount());
+        remainder.setCostPerKgSementAmount(remainderDao.getCostPerKgSementAmount());
         remainder.setDate(remainderDao.getDate());
         return remainder;
     }
