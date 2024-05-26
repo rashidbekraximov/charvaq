@@ -2,14 +2,16 @@ package uz.cluster.repository.general;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import uz.cluster.entity.general.SpendingSparePart;
 import uz.cluster.entity.general.Warehouse;
 
 import java.util.Optional;
 
 @Repository
-public interface WarehouseRepository extends JpaRepository<Warehouse,Long> {
+public interface SpendingSparePartRepository extends JpaRepository<SpendingSparePart,Long> {
 
 
-    Optional<Warehouse> findBySparePartType_Id(int sparePartType_id);
+    Optional<SpendingSparePart> findBySparePartType_Id(int sparePartType_id);
+
 
 }

@@ -9,6 +9,7 @@ import uz.cluster.annotation.CheckPermission;
 import uz.cluster.dao.general.SparePartDao;
 import uz.cluster.dao.produce.ProduceRemainderDao;
 import uz.cluster.entity.general.SparePart;
+import uz.cluster.entity.general.Warehouse;
 import uz.cluster.entity.produce.ProduceRemainder;
 import uz.cluster.entity.references.model.ProductForProduce;
 import uz.cluster.entity.references.model.SparePartType;
@@ -16,6 +17,7 @@ import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.general.SparePartRepository;
+import uz.cluster.repository.general.WarehouseRepository;
 import uz.cluster.repository.references.SparePartTypeRepository;
 import uz.cluster.services.produce.ProduceRemainderService;
 import uz.cluster.util.LanguageManager;
@@ -33,6 +35,10 @@ public class SparePartService {
     private final SparePartRepository sparePartRepository;
 
     private final SparePartTypeRepository partTypeRepository;
+
+    private final WarehouseRepository warehouseRepository;
+
+    private final WarehouseService warehouseService;
 
     public List<SparePartDao> getList(){
         return sparePartRepository.findAllByOrderByDateDesc().stream().map(SparePart::asDao).collect(Collectors.toList());
@@ -61,14 +67,22 @@ public class SparePartService {
         Optional<SparePartType> optionalSparePartType = partTypeRepository.findById(sparePart.getSparePartTypeId());
         optionalSparePartType.ifPresent(sparePart::setSparePartType);
 
-//        Optional<ProduceRemainder> optionalProduceRemainder = produceRemainderRepository.findByProductForProduce_Id(remainder.getProductForProduceId());
-//        if (optionalProduceRemainder.isPresent()){
-//            ProduceRemainder produceRemainder = optionalProduceRemainder.get();
-//            produceRemainder.setAmount(produceRemainder.getAmount() + remainder.getAmount());
-//            produceRemainderRepository.save(optionalProduceRemainder.get());
-//            logger.info("Ishlab chiqarish uchun mahsulot ombordagi mavjud mahsulotga qo'shildi !");
-//            return new ApiResponse(true, produceRemainder, LanguageManager.getLangMessage("saved"));
-//        }
+        Optional<Warehouse> optionalWarehouse = warehouseRepository.findBySparePartType_Id(sparePart.getSparePartTypeId());
+        if (optionalWarehouse.isPresent()){
+            Warehouse warehouse = optionalWarehouse.get();
+            warehouse.setQty(warehouse.getQty() + sparePart.getQty());
+            warehouse.setValue(warehouse.getValue() + sparePart.getValue());
+            warehouseRepository.save(warehouse);
+            logger.info("Ehtiyot qism ombordagi mavjud mahsulotga qo'shildi !");
+            return new ApiResponse(true, warehouse, LanguageManager.getLangMessage("saved"));
+        }else {
+            Warehouse warehouse = new Warehouse();
+            warehouse.setSparePartType(sparePart.getSparePartType());
+            warehouse.setQty(sparePart.getQty());
+            warehouse.setValue(sparePart.getValue());
+            warehouseRepository.save(warehouse);
+            logger.info("Ehtiyot qism ombordga kirim bo'ldi :) !");
+        }
 
         SparePart sparePartSaved = sparePartRepository.save(sparePart);
         logger.info("Ehtiyot qism muvaffaqiyatli saqlandi !");
