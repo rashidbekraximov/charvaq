@@ -11,18 +11,20 @@ import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.nasos.NasosRepository;
 import uz.cluster.util.LanguageManager;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class NasosService {
 
     private final NasosRepository nasosRepository;
 
-    @CheckPermission(form = FormEnum.NASOS, permission = Action.CAN_VIEW)
-    public Nasos getNasos(){
-        return nasosRepository.findAll().get(0);
+//    @CheckPermission(form = FormEnum.NASOS, permission = Action.CAN_VIEW)
+    public List<Nasos> getNasos(){
+        return nasosRepository.findAll();
     }
 
-    @CheckPermission(form = FormEnum.PRICE, permission = Action.CAN_ADD)
+//    @CheckPermission(form = FormEnum.PRICE, permission = Action.CAN_ADD)
     @Transactional
     public ApiResponse add(Nasos nasos) {
         Nasos saved = nasosRepository.save(nasos);
