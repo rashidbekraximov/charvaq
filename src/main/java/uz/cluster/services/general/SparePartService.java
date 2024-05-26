@@ -80,6 +80,7 @@ public class SparePartService {
             warehouse.setSparePartType(sparePart.getSparePartType());
             warehouse.setQty(sparePart.getQty());
             warehouse.setValue(sparePart.getValue());
+            warehouse.setValue(sparePart.getPrice());
             warehouseRepository.save(warehouse);
             logger.info("Ehtiyot qism ombordga kirim bo'ldi :) !");
         }

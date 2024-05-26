@@ -54,14 +54,17 @@ public class SpendingSparePartService {
     public ApiResponse delete(long id) {
         Optional<SpendingSparePart> optionalSpendingSparePart = spendingSparePartRepository.findById(id);
         if (optionalSpendingSparePart.isPresent()){
-            optionalSpendingSparePart.get().setQty(0);
-            optionalSpendingSparePart.get().setValue(0);
-            SpendingSparePart remainderPassive = spendingSparePartRepository.save(optionalSpendingSparePart.get());
-            logger.info("Omborda ma'lumot tozalandi !");
-            return new ApiResponse(true, remainderPassive, LanguageManager.getLangMessage("deleted"));
+            Optional<Warehouse> optionalWarehouse = warehouseRepository.findBySparePartType_Id(optionalSpendingSparePart.get().getSparePartType().getId());
+            if (optionalWarehouse.isPresent()){
+                optionalWarehouse.get().setQty(optionalSpendingSparePart.get().getQty() + optionalWarehouse.get().getQty());
+                warehouseRepository.save(optionalWarehouse.get());
+            }
+            spendingSparePartRepository.deleteById(id);
+            logger.info("Omborga sarflangan mahsulot qaytarildi !");
+            return new ApiResponse(true, LanguageManager.getLangMessage("deleted"));
         }else{
-            logger.error("Ombor bo'shatilmadi !");
-            return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
+            logger.error("Omborga sarflangan mahsulotni qaytarishda xatolik yuzaga keldi !");
+            return new ApiResponse(false, LanguageManager.getLangMessage("cant_find"));
         }
     }
 

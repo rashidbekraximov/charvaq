@@ -41,7 +41,7 @@ public class SpendingSparePartController {
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
-    @GetMapping("spending-spare-part/delete/{id}")
+    @DeleteMapping("spending-spare-part/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {
         ApiResponse apiResponse = spendingSparePartService.delete(id);
         if (!apiResponse.isSuccess())

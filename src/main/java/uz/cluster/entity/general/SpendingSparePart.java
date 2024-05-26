@@ -54,6 +54,7 @@ public class SpendingSparePart {
 
     public SpendingSparePartDao asDao() {
         SpendingSparePartDao spendingSparePartDao = new SpendingSparePartDao();
+        spendingSparePartDao.setId(getId());
         spendingSparePartDao.setSparePartType(getSparePartType());
         spendingSparePartDao.setSparePartTypeId(getSparePartTypeId());
         spendingSparePartDao.setQty(getQty());
