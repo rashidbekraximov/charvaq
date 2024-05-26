@@ -87,7 +87,7 @@ public class SpendingSparePartService {
             warehouse.setQty(warehouse.getQty() - spendingSparePart.getQty());
             warehouse.setValue(warehouse.getValue() - spendingSparePart.getValue());
             spendingSparePartRepository.save(spendingSparePart);
-            logger.info("Ehtiyot qism ombordagi mavjud" + spendingSparePart.getQty() + "mahsulotdan ayirildi !");
+            logger.info("Ehtiyot qism ombordagi mavjud " + spendingSparePart.getQty() + " mahsulotdan ayirildi !");
             return new ApiResponse(true, warehouse, LanguageManager.getLangMessage("saved"));
         }else {
             logger.error("Ehtiyot qism omborda topilmadi :( !");

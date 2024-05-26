@@ -8,6 +8,8 @@ import uz.cluster.entity.general.SpendingSparePart;
 import uz.cluster.entity.logistic.Technician;
 import uz.cluster.entity.references.model.SparePartType;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,6 +17,8 @@ import uz.cluster.entity.references.model.SparePartType;
 public class SpendingSparePartDao {
 
     private Long id;
+
+    private LocalDate date;
 
     private SparePartType sparePartType;
 
@@ -33,6 +37,7 @@ public class SpendingSparePartDao {
     public SpendingSparePart asDao(SpendingSparePartDao dao) {
         SpendingSparePart spendingSparePartDao = new SpendingSparePart();
         spendingSparePartDao.setSparePartType(dao.getSparePartType());
+        spendingSparePartDao.setDate(dao.getDate());
         spendingSparePartDao.setSparePartTypeId(dao.getSparePartTypeId());
         spendingSparePartDao.setQty(dao.getQty());
         spendingSparePartDao.setValue(dao.getValue());

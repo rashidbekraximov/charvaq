@@ -60,6 +60,7 @@ public class SpendingSparePart {
         spendingSparePartDao.setValue(getValue());
         spendingSparePartDao.setTechnician(getTechnician());
         spendingSparePartDao.setTechnicianId(getTechnicianId());
+        spendingSparePartDao.setDate(getDate());
         return spendingSparePartDao;
     }
 
