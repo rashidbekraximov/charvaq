@@ -51,3 +51,9 @@ values (12, 'r_product_for_produce',
         row('I/CH uchun mahsulot',
             'I/CH uchun mahsulot',
             'I/CH uchun mahsulot')::t_nls);
+
+insert into references_list(id, table_name, name)
+values (13, 'r_spare_part_type',
+        row('Ehtiyot qism turi',
+            'Ehtiyot qism turi',
+            'Ehtiyot qism turi')::t_nls);

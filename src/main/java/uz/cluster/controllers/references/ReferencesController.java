@@ -30,6 +30,7 @@ public class ReferencesController {
     static {
         globalReferences.put("product_type", "r_product_type");
         globalReferences.put("product_for_produce", "r_product_for_produce");
+        globalReferences.put("spare_types", "r_spare_part_type");
         globalReferences.put("drobilka_type", "r_drobilka_type");
         globalReferences.put("cost_type", "r_cost_type");
         globalReferences.put("payment_type", "r_payment_type");
