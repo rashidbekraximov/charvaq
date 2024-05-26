@@ -176,6 +176,24 @@ insert into r_forms(id, form_number, name, order_number, status, created_by, cre
 VALUES (150, 150, row ('Общая информация', 'Умумий маълумот', 'Umumiy ma''lumot'), 150, 'ACTIVE', null, now(), null, null,
         null, null);
 
+insert into r_forms(id, form_number, name, order_number,  status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (151, 151,
+        row ('E/Q kirimi', 'E/Q kirimi', 'E/Q kirimi'),
+        151, 'ACTIVE', null, now(), null, null, '/general/spare-part', 150);
+
+insert into r_forms(id, form_number, name, order_number,  status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (152, 152,
+        row ('E/Q ombori', 'E/Q ombori', 'E/Q ombori'),
+        152, 'ACTIVE', null, now(), null, null, '/general/warehouse', 150);
+
+insert into r_forms(id, form_number, name, order_number,  status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (153, 153,
+        row ('E/Q sarfi', 'E/Q sarfi', 'E/Q sarfi'),
+        153, 'ACTIVE', null, now(), null, null, '/general/spendings-spare-part', 150);
+
 -------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------
 insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
