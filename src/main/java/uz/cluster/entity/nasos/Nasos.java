@@ -1,10 +1,12 @@
 package uz.cluster.entity.nasos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import uz.cluster.dao.nasos.NasosDao;
 import uz.cluster.entity.Auditable;
 import uz.cluster.entity.references.model.Direction;
 import uz.cluster.entity.references.model.Employee;
@@ -12,6 +14,8 @@ import uz.cluster.entity.references.model.TechniqueType;
 import uz.cluster.enums.Status;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -26,41 +30,35 @@ public class Nasos extends Auditable {
     @GeneratedValue(generator = "nasos_sq", strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "nasos_sq", sequenceName = "nasos_sq", allocationSize = 1)
     @Column(name = "id", updatable = false, unique = true, nullable = false)
-    private int id;
+    private long id;
 
-    @Column(name = "auto")
-    private String auto;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "date")
+    private LocalDate date;
 
-    @Column(name = "gas_price")
-    private double gasPrice;
+    @Column(name = "date")
+    private double time;
 
-    @Column(name = "per_km_gas_cost")
-    private double perKmGasCost;
+    @Column(name = "custumer_name")
+    private String custumerName;
 
-    @Column(name = "ballon")
-    private int ballon;
+    @Column(name = "min_price")
+    private double minPrice;
 
-    @Column(name = "ballon_amount")
-    private double ballonAmount;
+    @Column(name = "additional_price")
+    private double additionalPrice;
 
-    @Column(name = "per_km_ballon_cost")
-    private double perKmBallonCost;
+    @Column(name = "price")
+    private double price;
 
-    @Column(name = "oil_price")
-    private double oilPrice;
-
-    @Column(name = "per_km_oil_cost")
-    private double perKmOilCost;
-
-    @Column(name = "amortization")
-    private double amortization;
-
-    @Column(name = "per_km_amortization_cost")
-    private double perKmAmortization;
-
-    @Column(name = "auto_number")
-    private String autoNumber;
-
-    @Column(name = "per_km_cost_amount")
-    private double perKmCostAmount;
+    public Nasos asDao(){
+        Nasos nasos = new Nasos();
+        nasos.setDate(getDate());
+        nasos.setTime(getTime());
+        nasos.setCustumerName(getCustumerName());
+        nasos.setMinPrice(getMinPrice());
+        nasos.setAdditionalPrice(getAdditionalPrice());
+        nasos.setPrice(getPrice());
+        return nasos;
+    }
 }

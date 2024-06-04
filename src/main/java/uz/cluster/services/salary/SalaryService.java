@@ -1,6 +1,7 @@
 package uz.cluster.services.salary;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
@@ -44,7 +45,7 @@ public class SalaryService {
 
     @CheckPermission(form = FormEnum.SALARY, permission = Action.CAN_VIEW)
     public List<SalaryDao> getList() {
-        List<Document> documents = documentRepository.findAll();
+        List<Document> documents = documentRepository.findAll(Sort.by(Sort.Order.desc("date"), Sort.Order.asc("status")));
         List<SalaryDao> list = new ArrayList<>();
         for (Document document : documents) {
             List<Salary> salaries = salaryRepository.findAllByDocumentId(document.getDocumentId());

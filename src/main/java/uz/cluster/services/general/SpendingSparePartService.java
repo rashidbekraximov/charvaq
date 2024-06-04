@@ -3,6 +3,7 @@ package uz.cluster.services.general;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.dao.general.SpendingSparePartDao;
@@ -37,7 +38,7 @@ public class SpendingSparePartService {
 
 
     public List<SpendingSparePartDao> getList(){
-        return spendingSparePartRepository.findAll().stream().map(SpendingSparePart::asDao).collect(Collectors.toList());
+        return spendingSparePartRepository.findAll(Sort.by(Sort.Order.desc("date"), Sort.Order.asc("status"))).stream().map(SpendingSparePart::asDao).collect(Collectors.toList());
     }
 
     public SpendingSparePartDao getById(long id){

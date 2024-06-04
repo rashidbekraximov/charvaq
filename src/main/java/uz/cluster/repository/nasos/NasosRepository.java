@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import uz.cluster.entity.nasos.Nasos;
 
 @Repository
-public interface NasosRepository extends JpaRepository<Nasos,Integer> {
+public interface NasosRepository extends JpaRepository<Nasos,Long> {
 }
