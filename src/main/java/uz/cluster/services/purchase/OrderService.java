@@ -1,6 +1,7 @@
 package uz.cluster.services.purchase;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class OrderService {
 
@@ -42,10 +44,12 @@ public class OrderService {
     public OrderDao getById(int id) {
         Optional<Order> optionalOrder = orderRepository.findById(id);
         if (optionalOrder.isEmpty()) {
+            log.error("");
             return null;
         } else {
             List<OrderedProduct> products = orderProductRepository.findAllByPurchaseId(optionalOrder.get().getId());
             optionalOrder.get().setPurchasedProductList(products);
+            log.info("");
             return optionalOrder.get().asDao();
         }
     }
