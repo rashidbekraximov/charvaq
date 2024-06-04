@@ -23,7 +23,7 @@ values (6, 'r_direction',
             'Yo''nalish')::t_nls);
 
 insert into references_list(id, table_name, name)
-values (7, 'r_unit_of_measurements',
+values (7, 'r_unit',
         row('Единица измерения',
             'Ўлчов бирлики',
             'O''lchov birliki')::t_nls);

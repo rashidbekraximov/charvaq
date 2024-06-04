@@ -1,17 +1,13 @@
 package uz.cluster.services.purchase;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
 import uz.cluster.dao.purchase.OrderDao;
-import uz.cluster.dao.purchase.OrderProductDao;
-import uz.cluster.dao.purchase.PurchaseDao;
-import uz.cluster.dao.purchase.PurchasedProductDao;
 import uz.cluster.entity.purchase.Order;
 import uz.cluster.entity.purchase.OrderedProduct;
-import uz.cluster.entity.purchase.PurchasedProduct;
-import uz.cluster.entity.references.model.Employee;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.enums.Status;
 import uz.cluster.enums.auth.Action;
@@ -40,7 +36,7 @@ public class OrderService {
 
     @CheckPermission(form = FormEnum.ORDER, permission = Action.CAN_VIEW)
     public List<OrderDao> getOrderList() {
-        return orderRepository.findAll().stream().map(Order::asDao).collect(Collectors.toList());
+        return orderRepository.findAll(Sort.by(Sort.Order.desc("date"), Sort.Order.asc("status"))).stream().map(Order::asDao).collect(Collectors.toList());
     }
 
     public OrderDao getById(int id) {
