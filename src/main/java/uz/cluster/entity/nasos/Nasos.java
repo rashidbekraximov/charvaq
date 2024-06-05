@@ -32,10 +32,6 @@ public class Nasos extends Auditable {
     @Column(name = "id", updatable = false, unique = true, nullable = false)
     private long id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "date")
-    private LocalDate date;
-
     @Column(name = "date")
     private double time;
 
@@ -53,7 +49,6 @@ public class Nasos extends Auditable {
 
     public Nasos asDao(){
         Nasos nasos = new Nasos();
-        nasos.setDate(getDate());
         nasos.setTime(getTime());
         nasos.setCustumerName(getCustumerName());
         nasos.setMinPrice(getMinPrice());

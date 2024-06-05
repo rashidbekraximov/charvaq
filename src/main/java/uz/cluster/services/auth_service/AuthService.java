@@ -74,7 +74,6 @@ public class AuthService implements UserDetailsService {
                 userDTO.isEnabled()
         );
 
-
         user.setPassword(passwordEncoder.encode(userDTO.getPassword())); //This sets user's password that is encrypted
         userRepository.save(user); //this saves user to database
         return new ApiResponse(true, user, LanguageManager.getLangMessage("saved"));

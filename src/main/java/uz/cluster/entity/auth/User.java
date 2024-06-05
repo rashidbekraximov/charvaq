@@ -97,9 +97,6 @@ public class User extends Auditable  implements UserDetails {
     @Column(name = "system_role_name")
     SystemRoleName systemRoleName;
 
-    @Column(name = "cluster_id", columnDefinition = " real default 1 ", insertable = true, updatable = false)
-    private int clusterId = 1;
-
     public User(
             String firstName, String lastName, String middleName,
             String documentSerialNumber, LocalDate birthday, String login,

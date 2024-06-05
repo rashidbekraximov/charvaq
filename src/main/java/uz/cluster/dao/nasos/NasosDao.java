@@ -33,7 +33,6 @@ public class NasosDao extends BaseDao {
 
     public Nasos asDao(NasosDao nasosDao){
         Nasos nasos = new Nasos();
-        nasos.setDate(nasosDao.getDate());
         nasos.setTime(nasosDao.getTime());
         nasos.setCustumerName(nasosDao.getCustumerName());
         nasos.setMinPrice(nasosDao.getMinPrice());

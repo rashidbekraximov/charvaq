@@ -33,8 +33,6 @@ public class UserDTO {
 
     private Gender gender;
 
-    private int clusterId;
-
     private boolean enabled;
 
     @Enumerated(value = EnumType.STRING)

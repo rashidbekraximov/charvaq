@@ -19,11 +19,6 @@ public class GlobalParams {
         return ResourceBundle.getBundle(baseBundleName, LocaleContextHolder.getLocale());
     }
 
-    private static final double CONST_SINGLE_VALUE_ADDED_TAX = 12;// yagona qiymat solig'i    ish xaqi uchun
-
-    private static final double CONST_VALUE_ADDED_TAX = 15; // qo''shimcha qiymat solig'i ishlab chiqarish uchun
-
-
     private static List<Form> userForms = new ArrayList<>();
     private static List<Integer> pageCounts;
 
@@ -33,16 +28,6 @@ public class GlobalParams {
 
     public static void setUserForms(List<Form> userForms) {
         GlobalParams.userForms = userForms;
-    }
-
-    public static int getCurrentClusterId() {
-        SpringSecurityAuditorAware s = new SpringSecurityAuditorAware();
-        int activeUserId = 0;
-        if (s.getCurrentAuditor().isPresent() && s.getCurrentAuditor().get() != -1){
-            return UserComponent.getById(s.getCurrentAuditor().get()).getClusterId();
-        }else{
-            return activeUserId;
-        }
     }
 
     public static User getCurrentUser() {
