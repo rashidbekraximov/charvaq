@@ -1,6 +1,7 @@
 package uz.cluster.services.purchase;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -38,10 +39,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CheckoutCostService {
-
-    private static final Logger logger = LoggerFactory.getLogger(CheckoutCostService.class);
 
     private final CheckoutCostRepository costRepository;
 
@@ -66,8 +66,10 @@ public class CheckoutCostService {
     public CheckoutCost getById(long id) {
         Optional<CheckoutCost> optional = costRepository.findById(id);
         if (optional.isEmpty()) {
+            log.error("Id " + id + " topilmadi");
             return null;
         } else {
+            log.info("ID " + id + "haqida ma'lumot ekranga chiqarildi :)");
             return optional.get();
         }
     }
@@ -77,10 +79,12 @@ public class CheckoutCostService {
     public ApiResponse add(CheckoutCost price) {
         Optional<DailyIncome> optional = dailyIncomeRepository.findByDate(price.getDate());
         if (optional.isPresent() && optional.get().getStatus() == Status.PASSIVE){
+            log.error("Check chiqarilmadi !");
             return new ApiResponse(false,LanguageManager.getLangMessage("confirmed_or_deleted"));
         }
 
         if (price.getCostTypeId() == 0){
+            log.error("Check chiqarib bo'lmadi !");
             return new ApiResponse(false,LanguageManager.getLangMessage("confirmed_or_deleted"));
         }
 
@@ -89,7 +93,8 @@ public class CheckoutCostService {
 
 
         if (price.getId() != 0){
-           return edit(price);
+            log.info("Ma'lumot yangilandi ");
+            return edit(price);
         }
 
         if (optional.isPresent()){
@@ -104,6 +109,7 @@ public class CheckoutCostService {
             dailyIncomeRepository.save(daily);
         }
         CheckoutCost priceSaved = costRepository.save(price);
+        log.info("Ma'lumot muvaffaqiyatli saqlandi !");
         return new ApiResponse(true, priceSaved, LanguageManager.getLangMessage("saved"));
     }
 
@@ -117,11 +123,14 @@ public class CheckoutCostService {
                 optional.get().setSpending(optional.get().getSpending() - optionalPrice.get().getAmount() + checkoutCost.getAmount());
                 dailyIncomeRepository.save(optional.get());
                 costRepository.save(checkoutCost);
+                log.info("Ma'lumot muvaffaqiyatli yangilandi !");
                 return new ApiResponse(true,LanguageManager.getLangMessage("edited"));
             }else{
+                log.error("Ma'lumotni yangilab bo'lmadi !");
                 return new ApiResponse(false,LanguageManager.getLangMessage("confirmed_or_deleted"));
             }
         }else{
+            log.error("Malumot topilmadi !");
             return new ApiResponse(false, LanguageManager.getLangMessage("cant_find"));
         }
     }
@@ -137,11 +146,14 @@ public class CheckoutCostService {
                 optional.get().setSpending(optional.get().getSpending() - optionalPrice.get().getAmount());
                 dailyIncomeRepository.save(optional.get());
                 costRepository.deleteById(id);
+                log.info("Bu id " + id + " muvaffaqiyatli o'chirildi !");
                 return new ApiResponse(true,LanguageManager.getLangMessage("deleted"));
             }else{
+                log.error("Ma'lumotni o'chirib bo'lmadi !");
                 return new ApiResponse(true,LanguageManager.getLangMessage("confirmed_or_deleted"));
             }
         }else{
+            log.error("Bu Id " + id + " o'chirilmadi !");
             return new ApiResponse(false, LanguageManager.getLangMessage("cant_find"));
         }
     }

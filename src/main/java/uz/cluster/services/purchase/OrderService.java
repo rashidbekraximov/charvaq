@@ -44,12 +44,12 @@ public class OrderService {
     public OrderDao getById(int id) {
         Optional<Order> optionalOrder = orderRepository.findById(id);
         if (optionalOrder.isEmpty()) {
-            log.error("");
+            log.error("Bu Id " + id + "haqida ma'lumot topilmadi !");
             return null;
         } else {
             List<OrderedProduct> products = orderProductRepository.findAllByPurchaseId(optionalOrder.get().getId());
             optionalOrder.get().setPurchasedProductList(products);
-            log.info("");
+            log.info("Bu Id " + id + "bo'yicha malumot chiqarildi !");
             return optionalOrder.get().asDao();
         }
     }
@@ -72,6 +72,7 @@ public class OrderService {
 
 
         if (order.getId() != 0) {
+            log.info("Malumot yangilandi !");
             return edit(order);
         }
         order.setStatus(Status.ACTIVE);
@@ -83,7 +84,7 @@ public class OrderService {
             optionalProductType.ifPresent(o::setProductType);
             orderProductRepository.save(o);
         }
-
+         log.info("Ma'lumot saqlandi !");
         return new ApiResponse(true, orderSaved, LanguageManager.getLangMessage("saved"));
     }
 
@@ -98,8 +99,10 @@ public class OrderService {
                 o.setPurchaseId(orderEdited.getId());
                 orderProductRepository.save(o);
             }
+            log.info("Ma'lumot tahrirlandi :)");
             return new ApiResponse(true, orderEdited, LanguageManager.getLangMessage("edited"));
         }else{
+            log.error("Ma'lumotni tahrirlab bo'lmadi :(");
             return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
         }
     }
@@ -112,8 +115,10 @@ public class OrderService {
             optionalOrder.get().setStatus(Status.REJECTED);
             orderProductRepository.deleteAllByPurchaseId(optionalOrder.get().getId());
             Order orderPassive = orderRepository.save(optionalOrder.get());
+            log.info("Bu Id " + id + "O'chirildi !");
             return new ApiResponse(true, orderPassive, LanguageManager.getLangMessage("deleted"));
         }else{
+            log.error("Bu Id " + id + "O'chirib bo'lmadi !");
             return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
         }
     }

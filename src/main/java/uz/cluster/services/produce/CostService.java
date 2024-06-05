@@ -1,6 +1,7 @@
 package uz.cluster.services.produce;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CostService {
 
@@ -58,8 +60,10 @@ public class CostService {
     public CostDao getById(int id) {
         Optional<Cost> optionalPrice = costRepository.findById(id);
         if (optionalPrice.isEmpty()) {
+            log.error("Id " + id + " topilmadi");
             return null;
         } else {
+            log.info("ID " + id + "haqida ma'lumot ekranga chiqarildi :)");
             return optionalPrice.get().asDao();
         }
     }
@@ -196,6 +200,7 @@ public class CostService {
         optionalProductType.ifPresent(price::setCostType);
         price.setSpendingTypeId(ProduceEnum.REAL_COST.getValue());
         if (price.getId() != 0) {
+            log.info("Ma'lumot yangilandi ");
             return edit(price);
         }
 
@@ -209,8 +214,10 @@ public class CostService {
         Optional<Cost> optionalPrice = costRepository.findById(cost.getId());
         if (optionalPrice.isPresent()){
             Cost priceEdited = costRepository.save(cost);
+            log.info("Ma'lumot muvaffaqiyatli yangilandi !");
             return new ApiResponse(true, priceEdited, LanguageManager.getLangMessage("edited"));
         }else{
+            log.error("Malumot topilmadi !");
             return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
         }
     }
@@ -221,8 +228,10 @@ public class CostService {
         Optional<Cost> optionalPrice = costRepository.findById(id);
         if (optionalPrice.isPresent()){
             costRepository.deleteById(id);
+            log.info("Bu id " + id + " muvaffaqiyatli o'chirildi !");
             return new ApiResponse(true,LanguageManager.getLangMessage("deleted"));
         }else{
+            log.error("Bu Id " + id + " o'chirilmadi !");
             return new ApiResponse(false, LanguageManager.getLangMessage("cant_find"));
         }
     }

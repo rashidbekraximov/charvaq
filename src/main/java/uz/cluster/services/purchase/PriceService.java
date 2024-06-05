@@ -1,6 +1,7 @@
 package uz.cluster.services.purchase;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
@@ -21,6 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PriceService {
 
@@ -36,8 +38,10 @@ public class PriceService {
     public PriceDao getById(int id) {
         Optional<Price> optionalPrice = priceRepository.findById(id);
         if (optionalPrice.isEmpty()) {
+            log.error("Bu Id " + id + "O'chirilmadi !");
             return null;
         } else {
+            log.info("Bu Id " + id + "O'chirildi ! :)");
             return optionalPrice.get().asDao();
         }
     }
@@ -45,8 +49,10 @@ public class PriceService {
     public double getPriceById(int id) {
         Optional<Price> optionalPrice = priceRepository.findByProductType_Id(id);
         if (optionalPrice.isEmpty()) {
+            log.error("Bu Id " + id + " Xarajat topilmadi !");
             return 0;
         } else {
+            log.info("Bu id " + id + " xarajadlar chiqarildi !");
             return optionalPrice.get().getPrice();
         }
     }
@@ -57,6 +63,7 @@ public class PriceService {
         Price price = priceDao.copy(priceDao);
 
         if (price.getProductTypeId() == 0) {
+            log.error("Ma;lumot qo'shib bo'lmadi ! :(");
             return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
         }
 
@@ -64,15 +71,18 @@ public class PriceService {
         optionalProductType.ifPresent(price::setProductType);
 
         if (price.getId() != 0) {
+            log.info("Ma'lumot yangilandi ");
             return edit(price);
         }
 
         Optional<Price> optionalPrice = priceRepository.findByProductType_Id(price.getProductTypeId());
         if (optionalPrice.isPresent()){
+            log.error("Malumot allaqachon yaratilgan !");
             return new ApiResponse(false, LanguageManager.getLangMessage("already_created"));
         }
 
         Price priceSaved = priceRepository.save(price);
+        log.info("Ma'lumot saqlandi !");
         return new ApiResponse(true, priceSaved, LanguageManager.getLangMessage("saved"));
     }
 
@@ -82,8 +92,10 @@ public class PriceService {
         Optional<Price> optionalPrice = priceRepository.findById(price.getId());
         if (optionalPrice.isPresent()){
             Price priceEdited = priceRepository.save(price);
+            log.info("Narx saqlandi");
             return new ApiResponse(true, priceEdited, LanguageManager.getLangMessage("edited"));
         }else{
+            log.error("Narxmi saqlab bo'lmadi");
             return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
         }
     }
