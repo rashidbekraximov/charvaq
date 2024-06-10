@@ -54,7 +54,7 @@ public class SpendingSparePartService {
     public ApiResponse delete(long id) {
         Optional<SpendingSparePart> optionalSpendingSparePart = spendingSparePartRepository.findById(id);
         if (optionalSpendingSparePart.isPresent()){
-            Optional<Warehouse> optionalWarehouse = warehouseRepository.findBySparePartType_Id(optionalSpendingSparePart.get().getSparePartType().getId());
+            Optional<Warehouse> optionalWarehouse = warehouseRepository.findBySparePartType_IdAndPrice(optionalSpendingSparePart.get().getSparePartType().getId(),optionalSpendingSparePart.get().getPrice());
             if (optionalWarehouse.isPresent()){
                 optionalWarehouse.get().setQty(optionalSpendingSparePart.get().getQty() + optionalWarehouse.get().getQty());
                 warehouseRepository.save(optionalWarehouse.get());
@@ -84,7 +84,7 @@ public class SpendingSparePartService {
         Optional<Technician> technician = technicianRepository.findById(spendingSparePart.getSparePartTypeId());
         technician.ifPresent(spendingSparePart::setTechnician);
 
-        Optional<Warehouse> optionalWarehouse = warehouseRepository.findBySparePartType_Id(spendingSparePart.getSparePartTypeId());
+        Optional<Warehouse> optionalWarehouse = warehouseRepository.findBySparePartType_IdAndPrice(spendingSparePart.getSparePartTypeId(),spendingSparePart.getPrice());
         if (optionalWarehouse.isPresent()){
             Warehouse warehouse = optionalWarehouse.get();
             warehouse.setQty(warehouse.getQty() - spendingSparePart.getQty());

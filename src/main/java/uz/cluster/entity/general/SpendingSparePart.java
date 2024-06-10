@@ -59,6 +59,7 @@ public class SpendingSparePart {
         spendingSparePartDao.setSparePartTypeId(getSparePartTypeId());
         spendingSparePartDao.setQty(getQty());
         spendingSparePartDao.setValue(getValue());
+        spendingSparePartDao.setPrice(getPrice());
         spendingSparePartDao.setTechnician(getTechnician());
         spendingSparePartDao.setTechnicianId(getTechnicianId());
         spendingSparePartDao.setDate(getDate());

@@ -26,6 +26,11 @@ public class WarehouseController {
         return ResponseEntity.status(HttpStatus.OK).body(warehouseService.getList());
     }
 
+    @GetMapping("warehouse/price/{id}")
+    public ResponseEntity<?> getBySparePartTypeId(@PathVariable int id) {
+        return ResponseEntity.status(HttpStatus.OK).body(warehouseService.getBySparePartType(id));
+    }
+
     @GetMapping("warehouse/{id}")
     public ResponseEntity<?> getById(@PathVariable int id) {
         WarehouseDao partDao = warehouseService.getById(id);

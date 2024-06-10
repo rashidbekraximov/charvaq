@@ -28,6 +28,10 @@ public class WarehouseService {
         return warehouseRepository.findAll().stream().map(Warehouse::asDao).collect(Collectors.toList());
     }
 
+    public List<WarehouseDao> getBySparePartType(int id){
+        return warehouseRepository.findAllBySparePartType_Id(id).stream().map(Warehouse::asDao).collect(Collectors.toList());
+    }
+
     public WarehouseDao getById(long id){
         Optional<Warehouse> optionalWarehouse = warehouseRepository.findById(id);
         if (optionalWarehouse.isPresent()){
