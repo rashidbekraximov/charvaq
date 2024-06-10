@@ -38,10 +38,10 @@ public class PriceService {
     public PriceDao getById(int id) {
         Optional<Price> optionalPrice = priceRepository.findById(id);
         if (optionalPrice.isEmpty()) {
-            log.error("Bu Id " + id + "O'chirilmadi !");
+            log.error("Bu Id " + id + " O'chirilmadi !");
             return null;
         } else {
-            log.info("Bu Id " + id + "O'chirildi ! :)");
+            log.info("Bu Id " + id + " O'chirildi ! :)");
             return optionalPrice.get().asDao();
         }
     }

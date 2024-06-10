@@ -37,6 +37,7 @@ public class WarehouseDao {
         warehouseDao.setSparePartTypeId(dao.getSparePartTypeId());
         warehouseDao.setQty(dao.getQty());
         warehouseDao.setValue(dao.getValue());
+        warehouseDao.setPrice(dao.getPrice());
         return warehouseDao;
     }
 }

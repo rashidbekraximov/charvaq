@@ -34,6 +34,9 @@ public class Warehouse {
     @Column(name = "value")
     private double value;
 
+    @Column(name = "price")
+    private double price;
+
     @Transient
     private int sparePartTypeId;
 
@@ -44,6 +47,7 @@ public class Warehouse {
         warehouseDao.setSparePartTypeId(getSparePartTypeId());
         warehouseDao.setQty(getQty());
         warehouseDao.setValue(getValue());
+        warehouseDao.setPrice(getPrice());
         return warehouseDao;
     }
 }

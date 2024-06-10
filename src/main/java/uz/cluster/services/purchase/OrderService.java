@@ -44,12 +44,12 @@ public class OrderService {
     public OrderDao getById(int id) {
         Optional<Order> optionalOrder = orderRepository.findById(id);
         if (optionalOrder.isEmpty()) {
-            log.error("Bu Id " + id + "haqida ma'lumot topilmadi !");
+            log.error("Bu Id " + id + " haqida ma'lumot topilmadi !");
             return null;
         } else {
             List<OrderedProduct> products = orderProductRepository.findAllByPurchaseId(optionalOrder.get().getId());
             optionalOrder.get().setPurchasedProductList(products);
-            log.info("Bu Id " + id + "bo'yicha malumot chiqarildi !");
+            log.info("Bu Id " + id + " bo'yicha malumot chiqarildi !");
             return optionalOrder.get().asDao();
         }
     }
@@ -115,10 +115,10 @@ public class OrderService {
             optionalOrder.get().setStatus(Status.REJECTED);
             orderProductRepository.deleteAllByPurchaseId(optionalOrder.get().getId());
             Order orderPassive = orderRepository.save(optionalOrder.get());
-            log.info("Bu Id " + id + "O'chirildi !");
+            log.info("Bu Id " + id + " O'chirildi !");
             return new ApiResponse(true, orderPassive, LanguageManager.getLangMessage("deleted"));
         }else{
-            log.error("Bu Id " + id + "O'chirib bo'lmadi !");
+            log.error("Bu Id " + id + " O'chirib bo'lmadi !");
             return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
         }
     }

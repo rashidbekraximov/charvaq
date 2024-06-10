@@ -63,7 +63,7 @@ public class CostService {
             log.error("Id " + id + " topilmadi");
             return null;
         } else {
-            log.info("ID " + id + "haqida ma'lumot ekranga chiqarildi :)");
+            log.info("ID " + id + " haqida ma'lumot ekranga chiqarildi :)");
             return optionalPrice.get().asDao();
         }
     }
