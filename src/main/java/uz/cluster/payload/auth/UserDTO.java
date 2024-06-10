@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 import uz.cluster.enums.Gender;
 import uz.cluster.enums.auth.SystemRoleName;
 
@@ -27,11 +28,9 @@ public class UserDTO {
     private String email;
     private String documentSerialNumber;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate birthday;
-
     private Gender gender;
+
+    private String file;
 
     private boolean enabled;
 

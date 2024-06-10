@@ -11,6 +11,7 @@ import uz.cluster.dao.purchase.RemainderDao;
 import uz.cluster.entity.Auditable;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.references.model.Unit;
+import uz.cluster.enums.SexEnum;
 import uz.cluster.enums.Status;
 
 import javax.persistence.*;
@@ -51,6 +52,10 @@ public class ReadyProduct extends Auditable {
     @Column(name = "cost_per_kg_sement_amount",columnDefinition = "real default 0")
     private double costPerKgSementAmount;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "sex", columnDefinition = "varchar(5) default 'SEX1'")
+    private SexEnum sexEnum;
+
     @Transient
     private int productTypeId;
 
@@ -63,6 +68,7 @@ public class ReadyProduct extends Auditable {
         remainderDao.setCostAmount(getCostAmount());
         remainderDao.setCostPerKgSementAmount(getCostPerKgSementAmount());
         remainderDao.setDate(getDate());
+        remainderDao.setSexEnum(getSexEnum());
         return remainderDao;
     }
 }

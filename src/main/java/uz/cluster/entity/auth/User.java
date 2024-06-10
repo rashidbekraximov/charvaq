@@ -1,6 +1,5 @@
 package uz.cluster.entity.auth;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -9,15 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import uz.cluster.entity.Auditable;
+import uz.cluster.entity.references.model.FileEntity;
 import uz.cluster.entity.references.model.Role;
 import uz.cluster.enums.Gender;
 import uz.cluster.enums.auth.SystemRoleName;
-import uz.cluster.util.DateUtil;
+import uz.cluster.payload.auth.UserDTO;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -58,12 +57,6 @@ public class User extends Auditable  implements UserDetails {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "birthday")
-    private LocalDate birthday;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", columnDefinition = "varchar(10) default 'MALE'")
     private Gender gender = Gender.MALE;
@@ -73,9 +66,9 @@ public class User extends Auditable  implements UserDetails {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @Column(name = "notes")
-    private String notes;
-
+    @ManyToOne
+    @JoinColumn(name = "image_id",nullable = true)
+    private FileEntity file;
 
     @Column(name = "document_serial_number", unique = true)
     private String documentSerialNumber;
@@ -99,30 +92,43 @@ public class User extends Auditable  implements UserDetails {
 
     public User(
             String firstName, String lastName, String middleName,
-            String documentSerialNumber, LocalDate birthday, String login,
+            String documentSerialNumber, String login,
             String password, String email, Gender gender,
-            SystemRoleName systemRoleName, boolean enabled) {
+            SystemRoleName systemRoleName,FileEntity file, boolean enabled) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.middleName = middleName;
         this.documentSerialNumber = documentSerialNumber;
-        this.birthday = birthday;
         this.login = login;
         this.password = password;
         this.email = email;
         this.gender = gender;
         this.systemRoleName = systemRoleName;
+        this.file = file;
         this.enabled = enabled;
     }
 
-
+    public UserDTO getDto() {
+        UserDTO dto = new UserDTO();
+        dto.setId(this.id);
+        dto.setFirstName(this.firstName);
+        dto.setMiddleName(this.middleName);
+        dto.setLastName(this.lastName);
+        dto.setLogin(this.login);
+        dto.setEmail(this.email);
+        dto.setDocumentSerialNumber(this.documentSerialNumber);
+        dto.setGender(this.gender);
+        dto.setEnabled(this.enabled);
+        dto.setSystemRoleName(this.systemRoleName);
+        dto.setFile(this.file == null ? null : this.file.getFileName());
+        return dto;
+    }
 
     public void copy(User user) {
         this.firstName = user.firstName;
         this.lastName = user.lastName;
         this.middleName = user.middleName;
         this.documentSerialNumber = user.documentSerialNumber;
-        this.birthday = user.birthday;
         this.login = user.login;
         this.password = user.password;
         this.email = user.email;
@@ -150,10 +156,5 @@ public class User extends Auditable  implements UserDetails {
 
     public String getAuthority() {
         return null;
-    }
-
-    @Hidden
-    public String getBirthdayString() {
-        return DateUtil.convertToDateString(birthday);
     }
 }

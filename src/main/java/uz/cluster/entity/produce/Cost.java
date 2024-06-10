@@ -10,6 +10,7 @@ import uz.cluster.dao.produce.CostDao;
 import uz.cluster.dao.produce.ReadyProductDao;
 import uz.cluster.entity.Auditable;
 import uz.cluster.entity.references.model.CostType;
+import uz.cluster.enums.SexEnum;
 import uz.cluster.enums.Status;
 import uz.cluster.enums.produce.ProduceEnum;
 
@@ -44,6 +45,10 @@ public class Cost  extends Auditable {
     @Column(name = "spending_type_id")
     private int spendingTypeId = ProduceEnum.REAL_COST.getValue();
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "sex", columnDefinition = "varchar(5) default 'SEX1'")
+    private SexEnum sexEnum;
+
     @Transient
     private int costTypeId;
 
@@ -54,6 +59,7 @@ public class Cost  extends Auditable {
         costDao.setCostTypeId(getCostTypeId());
         costDao.setDate(getDate());
         costDao.setAmount(getAmount());
+        costDao.setSexEnum(getSexEnum());
         return costDao;
     }
 }

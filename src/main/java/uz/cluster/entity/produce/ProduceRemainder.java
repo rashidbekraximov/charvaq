@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uz.cluster.dao.produce.ProduceRemainderDao;
 import uz.cluster.entity.references.model.ProductForProduce;
+import uz.cluster.enums.SexEnum;
 
 import javax.persistence.*;
 
@@ -28,6 +29,10 @@ public class ProduceRemainder {
     @Column(name = "amount")
     private double amount;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "sex", columnDefinition = "varchar(5) default 'SEX1'")
+    private SexEnum sexEnum;
+
     @Transient
     private int productForProduceId;
 
@@ -37,6 +42,7 @@ public class ProduceRemainder {
         costDao.setProductForProduce(getProductForProduce());
         costDao.setProductForProduceId(getProductForProduceId());
         costDao.setAmount(getAmount());
+        costDao.setSexEnum(getSexEnum());
         return costDao;
     }
 }

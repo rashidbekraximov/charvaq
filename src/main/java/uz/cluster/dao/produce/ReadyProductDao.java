@@ -10,6 +10,7 @@ import uz.cluster.entity.produce.ReadyProduct;
 import uz.cluster.entity.purchase.Remainder;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.references.model.Unit;
+import uz.cluster.enums.SexEnum;
 
 import javax.persistence.Column;
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ public class ReadyProductDao extends BaseDao {
 
     private double costPerKgSementAmount;
 
+    private SexEnum sexEnum;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
@@ -44,6 +46,7 @@ public class ReadyProductDao extends BaseDao {
         remainder.setCostAmount(remainderDao.getCostAmount());
         remainder.setCostPerKgSementAmount(remainderDao.getCostPerKgSementAmount());
         remainder.setDate(remainderDao.getDate());
+        remainder.setSexEnum(remainderDao.getSexEnum());
         return remainder;
     }
 }

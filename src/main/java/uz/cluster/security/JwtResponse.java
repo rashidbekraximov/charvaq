@@ -17,7 +17,6 @@ public class JwtResponse {
     private String firstName;
     private String lastName;
     private String middleName;
-    private String birthday;
     private String email;
     private Gender gender;
     private String login;

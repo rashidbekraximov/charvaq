@@ -36,9 +36,8 @@ public class SpendingSparePartService {
 
     public final WarehouseRepository warehouseRepository;
 
-
     public List<SpendingSparePartDao> getList(){
-        return spendingSparePartRepository.findAll(Sort.by(Sort.Order.desc("date"), Sort.Order.asc("status"))).stream().map(SpendingSparePart::asDao).collect(Collectors.toList());
+        return spendingSparePartRepository.findAll(Sort.by(Sort.Order.desc("date"))).stream().map(SpendingSparePart::asDao).collect(Collectors.toList());
     }
 
     public SpendingSparePartDao getById(long id){

@@ -45,7 +45,7 @@ public class SalaryService {
 
     @CheckPermission(form = FormEnum.SALARY, permission = Action.CAN_VIEW)
     public List<SalaryDao> getList() {
-        List<Document> documents = documentRepository.findAll(Sort.by(Sort.Order.desc("date"), Sort.Order.asc("status")));
+        List<Document> documents = documentRepository.findAll(Sort.by(Sort.Order.desc("date")));
         List<SalaryDao> list = new ArrayList<>();
         for (Document document : documents) {
             List<Salary> salaries = salaryRepository.findAllByDocumentId(document.getDocumentId());

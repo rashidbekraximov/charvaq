@@ -1,6 +1,8 @@
 package uz.cluster.controllers.references;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import uz.cluster.services.auth_service.AuthService;
 import uz.cluster.payload.auth.UserDTO;
@@ -35,12 +38,18 @@ public class UserController {
 
     @Operation(summary = "Yangi Userni kiritish")
     @PostMapping("user/save")
-    public HttpEntity<?> addUser(@RequestBody UserDTO userDTO) {
+    public HttpEntity<?> addUser(MultipartHttpServletRequest request) throws JsonProcessingException {
+        MultipartFile file = request.getFile("file");
+        String data = request.getParameter("user");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserDTO userDTO = objectMapper.readValue(data, UserDTO.class);
+
         ApiResponse apiResponse = null;
         if (userDTO.getId() == 0){
-            apiResponse = authService.add(userDTO);
+            apiResponse = authService.add(userDTO,file);
         }else {
-            apiResponse = authService.edit(userDTO,userDTO.getId());
+            apiResponse = authService.edit(userDTO,userDTO.getId(),file);
         }
         return ResponseEntity.status(apiResponse.isSuccess() ? HttpStatus.CREATED : HttpStatus.CONFLICT).body(apiResponse);
     }

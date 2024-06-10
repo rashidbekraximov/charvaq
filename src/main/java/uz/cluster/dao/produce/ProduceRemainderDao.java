@@ -8,6 +8,7 @@ import uz.cluster.dao.reference.BaseDao;
 import uz.cluster.entity.produce.Cost;
 import uz.cluster.entity.produce.ProduceRemainder;
 import uz.cluster.entity.references.model.ProductForProduce;
+import uz.cluster.enums.SexEnum;
 
 @Getter
 @Setter
@@ -15,12 +16,13 @@ import uz.cluster.entity.references.model.ProductForProduce;
 @NoArgsConstructor
 public class ProduceRemainderDao extends BaseDao {
 
-
     private ProductForProduce productForProduce;
 
     private double amount;
 
     private int productForProduceId;
+
+    private SexEnum sexEnum;
 
     public ProduceRemainder copy(ProduceRemainderDao costDao){
         ProduceRemainder cost = new ProduceRemainder();
@@ -28,6 +30,7 @@ public class ProduceRemainderDao extends BaseDao {
         cost.setProductForProduce(costDao.getProductForProduce());
         cost.setProductForProduceId(costDao.getProductForProduceId());
         cost.setAmount(costDao.getAmount());
+        cost.setSexEnum(costDao.getSexEnum());
         return cost;
     }
 }
