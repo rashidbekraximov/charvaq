@@ -23,7 +23,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase,Integer> {
     @Query(value = "select * from purchase where  debt_total_value != 0 ", nativeQuery = true)
     List<Purchase> getAllDebts();
 
-    @Query(value = "select * from purchase where  debt_total_value != 0  and client like  '%'||:client||'%' ", nativeQuery = true)
+    @Query(value = "select * from purchase where  debt_total_value != 0  and lower(client) like  '%'||:client||'%' ", nativeQuery = true)
     List<Purchase> getSearchedDebts(@Param("client") String client);
 
     @Query(value = "select COALESCE(sum(fare),0) from purchase " +

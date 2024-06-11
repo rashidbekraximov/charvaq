@@ -16,7 +16,7 @@ public interface LBPurchaseRepository extends JpaRepository<LBPurchase,Long> {
     @Query(value = "select * from lb_purchase where  debt_total_value != 0 ", nativeQuery = true)
     List<LBPurchase> getAllLBDebts();
 
-    @Query(value = "select * from lb_purchase where  debt_total_value != 0  and customer like  '%'||:client||'%' ", nativeQuery = true)
+    @Query(value = "select * from lb_purchase where  debt_total_value != 0 and lower(customer) like  '%'||:client||'%' ", nativeQuery = true)
     List<LBPurchase> getSearchedLBDebts(@Param("client") String client);
 
     @Query(value = "select * from lb_purchase p " +

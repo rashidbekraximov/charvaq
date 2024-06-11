@@ -151,8 +151,8 @@ public class EstinguishService {
     public List<AllDebtDao> getSearchList(String client) {
         List<AllDebtDao> allDebts = new ArrayList<>();
         if (!client.isEmpty() && !client.trim().isEmpty()){
-            List<Purchase> purchases = purchaseRepository.getSearchedDebts(client);
-            List<LBPurchase> lbPurchases = lbPurchaseRepository.getSearchedLBDebts(client);
+            List<Purchase> purchases = purchaseRepository.getSearchedDebts(client.toLowerCase());
+            List<LBPurchase> lbPurchases = lbPurchaseRepository.getSearchedLBDebts(client.toLowerCase());
             int key = 0;
             for (Purchase purchase : purchases) {
                 AllDebtDao allDebtDao = new AllDebtDao();

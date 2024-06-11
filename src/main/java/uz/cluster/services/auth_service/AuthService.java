@@ -186,6 +186,7 @@ public class AuthService implements UserDetailsService {
             sc.setAuthentication(authentication);
 
             return new JwtResponse(
+                    user.getId(),
                     token,
                     true,
                     user.getFio(),
@@ -200,6 +201,7 @@ public class AuthService implements UserDetailsService {
             );
         } catch (Exception exception) {
             return new JwtResponse(
+                    0,
                     null,
                     false,
                     null,

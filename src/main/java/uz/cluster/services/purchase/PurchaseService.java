@@ -96,7 +96,7 @@ public class PurchaseService {
     @CheckPermission(form = FormEnum.PURCHASE, permission = Action.CAN_VIEW)
     public List<PurchaseDao> getSearchList(String client) {
         if (!client.isEmpty() && !client.trim().isEmpty()) {
-            return purchaseRepository.getSearchedDebts(client).stream().map(Purchase::asDao).collect(Collectors.toList());
+            return purchaseRepository.getSearchedDebts(client.toLowerCase()).stream().map(Purchase::asDao).collect(Collectors.toList());
         } else {
             return purchaseRepository.getAllDebts().stream().map(Purchase::asDao).collect(Collectors.toList());
         }

@@ -11,6 +11,7 @@ import uz.cluster.enums.Gender;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JwtResponse {
+    private long id;
     private String token;
     private boolean success;
     private String fullName;

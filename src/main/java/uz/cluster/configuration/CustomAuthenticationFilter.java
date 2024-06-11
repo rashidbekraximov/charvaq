@@ -66,7 +66,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withClaim("activeUserId", user.getId())
                 .sign(JwtUtils.getAlgorithm());
 
-        JwtResponse jwtResponse = new JwtResponse(accessToken,true, user.getFio(), user.getFirstName(),
+        JwtResponse jwtResponse = new JwtResponse(user.getId(),accessToken,true, user.getFio(), user.getFirstName(),
                 user.getLastName(), user.getMiddleName(),
                 user.getEmail(),user.getGender(), user.getLogin(),
                 user.getSystemRoleName().name(),true
