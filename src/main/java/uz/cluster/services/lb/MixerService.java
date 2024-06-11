@@ -2,6 +2,7 @@ package uz.cluster.services.lb;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MixerService {
 
@@ -43,8 +45,10 @@ public class MixerService {
     public MixerDao getById(int id) {
         Optional<Mixer> optionalIngredient = mixerRepository.findById(id);
         if (optionalIngredient.isEmpty()) {
+            log.error("Bu Id " + id + " haqida ma'lumot topilmadi !");
             return null;
         } else {
+            log.info("Bu Id " + id + " bo'yicha malumot chiqarildi !");
             return optionalIngredient.get().asDao();
         }
     }
@@ -55,10 +59,12 @@ public class MixerService {
         Mixer mixer = mixerDao.copy(mixerDao);
 
         if (mixer.getId() != 0) {
+            log.info("Malumot yangilandi !");
             return edit(mixer);
         }
 
         Mixer saved = mixerRepository.save(mixer);
+        log.info("Ma'lumot saqlandi !");
         return new ApiResponse(true, saved, LanguageManager.getLangMessage("saved"));
     }
 
@@ -69,8 +75,10 @@ public class MixerService {
 
         if (optionalMixer.isPresent()){
             Mixer edited = mixerRepository.save(mixer);
+            log.info("Ma'lumot tahrirlandi :)");
             return new ApiResponse(true, edited, LanguageManager.getLangMessage("edited"));
         }else{
+            log.error("Ma'lumotni tahrirlab bo'lmadi :(");
             return new ApiResponse(false, null, LanguageManager.getLangMessage("cant_find"));
         }
     }
@@ -81,8 +89,10 @@ public class MixerService {
         Optional<Mixer> optionalIngredient = mixerRepository.findById(id);
         if (optionalIngredient.isPresent()){
             mixerRepository.deleteById(id);
+            log.info("Bu Id " + id + " O'chirildi !");
             return new ApiResponse(true, LanguageManager.getLangMessage("deleted"));
         }else{
+            log.error("Bu Id " + id + " O'chirib bo'lmadi !");
             return new ApiResponse(false, LanguageManager.getLangMessage("cant_find"));
         }
     }
