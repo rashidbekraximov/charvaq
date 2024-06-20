@@ -10,8 +10,10 @@ import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.purchase.Remainder;
 import uz.cluster.entity.references.model.Unit;
 import uz.cluster.enums.MCHJ;
+import uz.cluster.enums.SexEnum;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
+import uz.cluster.enums.purchase.PurchaseEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.references.ProductTypeRepository;
 import uz.cluster.repository.purchase.RemainderRepository;
@@ -33,8 +35,12 @@ public class RemainderService {
     private final UnitRepository unitRepository;
 
     @CheckPermission(form = FormEnum.REMAINDER, permission = Action.CAN_VIEW)
-    public List<RemainderDao> getRemainderList(MCHJ mchj) {
-        return remainderRepository.findAllByMchj(mchj).stream().map(Remainder::asDao).collect(Collectors.toList());
+    public List<RemainderDao> getRemainderList(String mchj) {
+        if (mchj.equals(MCHJ.CHSM.name())){
+            return remainderRepository.findAllByMchj(mchj).stream().map(Remainder::asDao).collect(Collectors.toList());
+        }else{
+            return remainderRepository.findAllByMchj("LEADER").stream().map(Remainder::asDao).collect(Collectors.toList());
+        }
     }
 
     public RemainderDao getById(int id) {
@@ -43,6 +49,24 @@ public class RemainderService {
             return null;
         } else {
             return optionalRemainder.get().asDao();
+        }
+    }
+
+    public Remainder getByProductId(int productId) {
+        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(productId,MCHJ.CHSM);
+        if (optionalRemainder.isEmpty()) {
+            return null;
+        } else {
+            return optionalRemainder.get();
+        }
+    }
+
+    public Remainder getByProductIdAndSexEnum(int productId,SexEnum sexEnum) {
+        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndSexEnum(productId,sexEnum);
+        if (optionalRemainder.isEmpty()) {
+            return null;
+        } else {
+            return optionalRemainder.get();
         }
     }
 
@@ -113,19 +137,30 @@ public class RemainderService {
         }
     }
 
-    public boolean purchase(int productId,double amount){
-        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(productId,MCHJ.CHSM);
-        if (optionalRemainder.isPresent() && optionalRemainder.get().getAmount() >= amount){
-            optionalRemainder.get().setAmount(optionalRemainder.get().getAmount() - amount);
-            remainderRepository.save(optionalRemainder.get());
-            return false;
-        }else{
-            return true;
+    public boolean purchase(int productId,double amount,SexEnum sexEnum){
+        if (productId != PurchaseEnum.SH_BLOK.getValue()){
+            Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(productId,MCHJ.CHSM);
+            if (optionalRemainder.isPresent() && optionalRemainder.get().getAmount() >= amount){
+                optionalRemainder.get().setAmount(optionalRemainder.get().getAmount() - amount);
+                remainderRepository.save(optionalRemainder.get());
+                return false;
+            }else{
+                return true;
+            }
+        }else {
+            Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndSexEnum(productId,sexEnum);
+            if (optionalRemainder.isPresent() && optionalRemainder.get().getAmount() >= amount){
+                optionalRemainder.get().setAmount(optionalRemainder.get().getAmount() - amount);
+                remainderRepository.save(optionalRemainder.get());
+                return false;
+            }else{
+                return true;
+            }
         }
     }
 
-    public void enter(int productId,double amount){
-        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndMchj(productId,MCHJ.CHSM);
+    public void enter(int productId, double amount, SexEnum sexEnum){
+        Optional<Remainder> optionalRemainder = remainderRepository.findByProductType_IdAndSexEnum(productId,sexEnum);
         if (optionalRemainder.isPresent()){
             optionalRemainder.get().setAmount(optionalRemainder.get().getAmount() + amount);
             remainderRepository.save(optionalRemainder.get());
@@ -134,6 +169,7 @@ public class RemainderService {
             Optional<ProductType> optionalProductType = productTypeRepository.findById(productId);
             optionalProductType.ifPresent(remainder::setProductType);
             remainder.setMchj(MCHJ.CHSM);
+            remainder.setSexEnum(sexEnum);
             remainder.setAmount(amount);
             remainderRepository.save(remainder);
         }

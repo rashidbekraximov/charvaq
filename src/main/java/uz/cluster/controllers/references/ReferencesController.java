@@ -3,10 +3,8 @@ package uz.cluster.controllers.references;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import uz.cluster.entity.purchase.Price;
 import uz.cluster.services.logistic.TechnicianService;
 import uz.cluster.services.references_service.DefaultReferenceService;
 import uz.cluster.services.references_service.FormService;
@@ -28,8 +26,11 @@ public class ReferencesController {
     public static Map<String, String> localReferences = new HashMap<>();
 
     static {
+        globalReferences.put("nasos_cost_type", "r_nasos_cost_type");
+        globalReferences.put("produce_cost", "r_produce_cost");
         globalReferences.put("product_type", "r_product_type");
         globalReferences.put("product_for_produce", "r_product_for_produce");
+        globalReferences.put("fuel_type", "r_fuel_type");
         globalReferences.put("spare_types", "r_spare_part_type");
         globalReferences.put("drobilka_type", "r_drobilka_type");
         globalReferences.put("cost_type", "r_cost_type");
@@ -56,6 +57,12 @@ public class ReferencesController {
         }
         return null;
     }
+
+    @GetMapping(value = "/def/searched")
+    public List<Price> getSearchedAllReferences(@RequestParam String filter) {
+        return defaultReferenceService.getSearchedReferenceLists(filter);
+    }
+
     @Operation(summary = "oddish spravichniylar nomi")
     @GetMapping(value = "/def-name/{referenceKey}/{id}")
     public String getAllReferencesName(@PathVariable String referenceKey,@PathVariable int id) {

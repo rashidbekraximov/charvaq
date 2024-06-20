@@ -13,14 +13,21 @@ public interface LogisticRepository extends JpaRepository<Logistic,Integer> {
 
     void deleteAllByDocumentId(int documentId);
 
-    @Query(value = "select cost_id costId, COALESCE(sum(amount),0) amount from logistic " +
-            "group by cost_id order by cost_id", nativeQuery = true)
-    List<LogisticDao> getAllByCost();
+    @Query(value = "select e.cost_id costId, COALESCE(sum(e.amount),0) amount from logistic e" +
+            " WHERE (:beginDate IS NULL OR e.date >=  TO_DATE(:beginDate, 'YYYY-MM-DD')) " +
+            " AND (:endDate IS NULL OR e.date <=  TO_DATE(:endDate, 'YYYY-MM-DD')) "+
+            " group by e.cost_id order by e.cost_id", nativeQuery = true)
+    List<LogisticDao> getAllByCost(@Param("beginDate") String beginDate,
+                                   @Param("endDate") String endDate);
 
 
-    @Query(value = "select cost_id costId, COALESCE(sum(amount),0) amount from logistic " +
-            "where technician_id = :technician_id group by cost_id order by cost_id", nativeQuery = true)
-    List<LogisticDao> getAllByTechnicianId(@Param("technician_id") int technicianId);
+    @Query(value = "select e.cost_id costId, COALESCE(sum(e.amount),0) amount from logistic e" +
+            " where e.technician_id = :technician_id and " +
+            " (:beginDate IS NULL OR e.date >=  TO_DATE(:beginDate, 'YYYY-MM-DD')) " +
+            " AND (:endDate IS NULL OR e.date <=  TO_DATE(:endDate, 'YYYY-MM-DD')) "+
+            " group by e.cost_id order by e.cost_id", nativeQuery = true)
+    List<LogisticDao> getAllByTechnicianId(@Param("technician_id") int technicianId,@Param("beginDate") String beginDate,
+                                           @Param("endDate") String endDate);
 
 
 }

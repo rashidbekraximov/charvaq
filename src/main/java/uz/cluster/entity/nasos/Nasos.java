@@ -11,6 +11,8 @@ import uz.cluster.entity.Auditable;
 import uz.cluster.entity.references.model.Direction;
 import uz.cluster.entity.references.model.Employee;
 import uz.cluster.entity.references.model.TechniqueType;
+import uz.cluster.enums.NasosStatus;
+import uz.cluster.enums.SexEnum;
 import uz.cluster.enums.Status;
 
 import javax.persistence.*;
@@ -32,28 +34,42 @@ public class Nasos extends Auditable {
     @Column(name = "id", updatable = false, unique = true, nullable = false)
     private long id;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date")
-    private double time;
+    private LocalDate date;
 
-    @Column(name = "custumer_name")
-    private String custumerName;
+    @Column(name = "client")
+    private String client;
 
-    @Column(name = "min_price")
+    @Column(name = "work_hour")
+        private double workHour;
+
+    @Column(name = "min_summ")
     private double minPrice;
 
-    @Column(name = "additional_price")
+    @Column(name = "additional_summ")
     private double additionalPrice;
 
-    @Column(name = "price")
-    private double price;
+    @Column(name = "total_summ")
+    private double totalSumm;
 
-    public Nasos asDao(){
-        Nasos nasos = new Nasos();
-        nasos.setTime(getTime());
-        nasos.setCustumerName(getCustumerName());
-        nasos.setMinPrice(getMinPrice());
-        nasos.setAdditionalPrice(getAdditionalPrice());
-        nasos.setPrice(getPrice());
-        return nasos;
+    @Column(name = "description")
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "spending_group")
+    private NasosStatus spendingGroup = NasosStatus.SERVICE;
+
+    public NasosDao asDao(){
+        NasosDao nasosDao = new NasosDao();
+        nasosDao.setId(getId());
+        nasosDao.setDate(getDate());
+        nasosDao.setClient(getClient());
+        nasosDao.setWorkHour(getWorkHour());
+        nasosDao.setMinPrice(getMinPrice());
+        nasosDao.setAdditionalPrice(getAdditionalPrice());
+        nasosDao.setTotalSumm(getTotalSumm());
+        nasosDao.setDescription(getDescription());
+        return nasosDao;
     }
 }

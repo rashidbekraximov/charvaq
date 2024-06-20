@@ -34,6 +34,8 @@ import uz.cluster.repository.references.DirectionRepository;
 import uz.cluster.services.produce.ProduceRemainderService;
 import uz.cluster.util.LanguageManager;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -50,11 +52,14 @@ public class CheckoutCostService {
     private final CostTypeRepository costTypeRepository;
 
     @CheckPermission(form = FormEnum.DAILY_COST, permission = Action.CAN_VIEW)
-    public List<CheckoutCost> getList(int id) {
-        if (id != 0){
-            return costRepository.findAllByCostType_Id(id);
+    public List<CheckoutCost> getList(int id, Date beginDate,Date endDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String beginDateText = (beginDate != null) ? sdf.format(beginDate) : null;
+        String endDateText = (endDate != null) ? sdf.format(endDate) : null;
+        if (beginDateText != null && endDateText != null){
+            return costRepository.findByParams(id,beginDateText,endDateText);
         }else {
-            return costRepository.findAll();
+            return costRepository.findAllByCostType_Id(id);
         }
     }
 

@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uz.cluster.entity.general.SpendingSparePart;
 import uz.cluster.entity.logistic.Technician;
+import uz.cluster.entity.references.model.FuelType;
 import uz.cluster.entity.references.model.SparePartType;
+import uz.cluster.enums.ItemEnum;
 
 import java.time.LocalDate;
 
@@ -22,15 +24,21 @@ public class SpendingSparePartDao {
 
     private SparePartType sparePartType;
 
+    private FuelType fuelType;
+
     private double price;
 
     private Technician technician;
+
+    private ItemEnum item;
 
     private double qty;
 
     private double value;
 
     private int sparePartTypeId;
+
+    private int fuelTypeId;
 
     private int technicianId;;
 
@@ -45,6 +53,9 @@ public class SpendingSparePartDao {
         spendingSparePartDao.setPrice(dao.getPrice());
         spendingSparePartDao.setTechnician(dao.getTechnician());
         spendingSparePartDao.setTechnicianId(dao.getTechnicianId());
+        spendingSparePartDao.setFuelType(dao.getFuelType());
+        spendingSparePartDao.setFuelTypeId(dao.getFuelTypeId());
+        spendingSparePartDao.setItem(dao.getItem());
         return spendingSparePartDao;
     }
 

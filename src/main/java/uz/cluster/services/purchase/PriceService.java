@@ -8,17 +8,15 @@ import uz.cluster.annotation.CheckPermission;
 import uz.cluster.dao.purchase.PriceDao;
 import uz.cluster.entity.purchase.Price;
 import uz.cluster.entity.references.model.ProductType;
-import uz.cluster.entity.references.model.Unit;
-import uz.cluster.enums.Status;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.purchase.PriceRepository;
 import uz.cluster.repository.references.ProductTypeRepository;
-import uz.cluster.repository.references.UnitRepository;
 import uz.cluster.util.LanguageManager;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

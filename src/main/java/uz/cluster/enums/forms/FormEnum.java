@@ -27,7 +27,8 @@ public enum FormEnum {
     INGREDIENT(123),
 
     //Nasos
-    NASOS(131),
+    NASOS(130),
+    NASOS_COST(132),
 
     //Ish haqi,
     TABEL(141),
@@ -35,10 +36,16 @@ public enum FormEnum {
     EMPLOYEE(143),
 
     //Umumiy malumot
-    SIMILAR_INFORMATION(151),
+    INCOME_TO_WAREHOUSE(151),
+    WAREHOUSE(152),
+    SPEND_FROM_WAREHOUSE(153),
+    SIMILAR_INFORMATION(111),
 
     //Admin Panel
-    ADMIN_PANEL(160);
+    ADMIN_PANEL(160),
+
+    //Admin Panel
+    KASSA(180);
 
 
     private final int value;

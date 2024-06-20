@@ -3,10 +3,13 @@ package uz.cluster.services.purchase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uz.cluster.annotation.CheckPermission;
 import uz.cluster.entity.purchase.DailyIncome;
 import uz.cluster.entity.purchase.Estinguish;
 import uz.cluster.entity.purchase.Purchase;
 import uz.cluster.enums.Status;
+import uz.cluster.enums.auth.Action;
+import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.purchase.DailyIncomeRepository;
 import uz.cluster.util.LanguageManager;
@@ -20,12 +23,11 @@ public class DailyIncomeService {
 
     private final DailyIncomeRepository dailyIncomeRepository;
 
-    //    @CheckPermission(form = FormEnum.DAILY_COST, permission = Action.CAN_VIEW)
     public List<DailyIncome> getDailyIncomeList() {
         return dailyIncomeRepository.findAllByOrderByStatusAsc();
     }
 
-//    @CheckPermission(form = FormEnum.PRICE, permission = Action.CAN_VIEW)
+    @CheckPermission(form = FormEnum.KASSA, permission = Action.CAN_VIEW)
     public ApiResponse confirm(long id) {
         Optional<DailyIncome> optional = dailyIncomeRepository.findById(id);
         if (optional.isEmpty()) {

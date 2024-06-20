@@ -39,27 +39,27 @@ public class PurchaseController {
     private final EstinguishService estinguishService;
 
     @GetMapping("purchases")
-    public ResponseEntity<List<PurchaseDao>> getList(){
+    public ResponseEntity<List<PurchaseDao>> getList() {
         return ResponseEntity.ok(purchaseService.getList());
     }
 
     @GetMapping("check-tallon")
-    public ResponseEntity<List<PurchaseDao>> checkForTallonNumber(){
+    public ResponseEntity<List<PurchaseDao>> checkForTallonNumber() {
         return ResponseEntity.ok(purchaseService.getLastARow());
     }
 
     @GetMapping("purchase/debts")
-    public ResponseEntity<List<AllDebtDao>> getDebtList(){
+    public ResponseEntity<List<AllDebtDao>> getDebtList() {
         return ResponseEntity.ok(estinguishService.getDebtList());
     }
 
     @GetMapping("purchase/line")
-    public ResponseEntity<List<LineChartDao>> getLineList(){
+    public ResponseEntity<List<LineChartDao>> getLineList() {
         return ResponseEntity.ok(purchaseService.getLineList());
     }
 
     @GetMapping("purchased/last-line")
-    public ResponseEntity<List<PurchaseDao>> getLastLineList(){
+    public ResponseEntity<List<PurchaseDao>> getLastLineList() {
         return ResponseEntity.ok(purchaseService.getLastRows());
     }
 
@@ -77,50 +77,46 @@ public class PurchaseController {
     }
 
     @GetMapping("daily-confirm/{date}")
-    public ResponseEntity<List<PurchaseDao>> getByDateForConfirm(@PathVariable String date){
+    public ResponseEntity<List<PurchaseDao>> getByDateForConfirm(@PathVariable String date) {
         return ResponseEntity.ok(purchaseService.getByDateForConfirm(java.sql.Date.valueOf(date)));
     }
 
     @GetMapping("purchased/bar")
-    public ResponseEntity<List<Long>> getForBarChart(){
+    public ResponseEntity<List<Long>> getForBarChart() {
         return ResponseEntity.ok(purchaseService.getBarList());
     }
 
-    @GetMapping("purchased/bar-last/{time}")
-    public ResponseEntity<List<Long>> getForBarLast(@PathVariable String time){
-        if(time.equals("DAILY")){
-            return ResponseEntity.ok(purchaseService.getBarLastDaily());
-        }else{
-            return ResponseEntity.ok(purchaseService.getBarLastMonthly());
-        }
+    @GetMapping("purchased/bar-last/{beginDate}/{endDate}")
+    public ResponseEntity<List<PurchaseData>> getForBarLast(@PathVariable String beginDate, @PathVariable String endDate) {
+        return ResponseEntity.ok(purchaseService.getBarLastMonthly(beginDate,endDate));
     }
 
     @GetMapping("purchase/debts/searched")
-    public ResponseEntity<List<AllDebtDao>> getSearchList(@RequestParam String client){
+    public ResponseEntity<List<AllDebtDao>> getSearchList(@RequestParam String client) {
         return ResponseEntity.ok(estinguishService.getSearchList(client));
     }
 
     @GetMapping("purchase/debt")
-    public ResponseEntity<List<Notification>> getNotificationList(){
+    public ResponseEntity<List<Notification>> getNotificationList() {
         return ResponseEntity.ok(purchaseService.getNotifications());
     }
 
     @PostMapping(value = "purchase/filter")
-    public ResponseEntity<?> getListDocuments(@RequestBody DocumentFilter documentFilter){
+    public ResponseEntity<?> getListDocuments(@RequestBody DocumentFilter documentFilter) {
         return ResponseEntity.ok(purchaseService.getPurchasesByPage(documentFilter));
     }
 
     @GetMapping("purchase/{id}")
-    public ResponseEntity<?> getById(@PathVariable int id){
+    public ResponseEntity<?> getById(@PathVariable int id) {
         PurchaseDao purchaseDao = purchaseService.getById(id);
-        if (purchaseDao == null){
+        if (purchaseDao == null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
         return ResponseEntity.status(HttpStatus.OK).body(purchaseDao);
     }
 
     @PostMapping("purchase/add")
-    public ResponseEntity<?> save(@RequestBody PurchaseDao purchaseDao){
+    public ResponseEntity<?> save(@RequestBody PurchaseDao purchaseDao) {
         ApiResponse apiResponse = purchaseService.add(purchaseDao);
         if (!apiResponse.isSuccess())
             return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
@@ -128,7 +124,7 @@ public class PurchaseController {
     }
 
     @GetMapping("purchase/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable int id){
+    public ResponseEntity<?> delete(@PathVariable int id) {
         ApiResponse apiResponse = purchaseService.delete(id);
         if (!apiResponse.isSuccess())
             return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
@@ -136,7 +132,7 @@ public class PurchaseController {
     }
 
     @GetMapping("purchase/delete-debt/{id}")
-    public ResponseEntity<?> deleteDebt(@PathVariable int id){
+    public ResponseEntity<?> deleteDebt(@PathVariable int id) {
         ApiResponse apiResponse = purchaseService.deleteDebt(id);
         if (!apiResponse.isSuccess())
             return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);

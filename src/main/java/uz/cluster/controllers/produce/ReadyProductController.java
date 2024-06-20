@@ -23,14 +23,14 @@ public class ReadyProductController {
 
     private final ReadyProductService remainderService;
 
-    @GetMapping("produced-bar/dates")
-    public ResponseEntity<List<LocalDate>> getBarDateList() {
-        return ResponseEntity.ok(remainderService.getListDate());
+    @GetMapping("produced-bar/dates/{sex}")
+    public ResponseEntity<List<String>> getBarDateList(@PathVariable String sex) {
+        return ResponseEntity.ok(remainderService.getListDate(sex));
     }
 
-    @GetMapping("produced-bar/amounts")
-    public ResponseEntity<List<Double>> getBarAmountList() {
-        return ResponseEntity.ok(remainderService.getListAmount());
+    @GetMapping("produced-bar/amounts/{sex}")
+    public ResponseEntity<List<Double>> getBarAmountList(@PathVariable String sex) {
+        return ResponseEntity.ok(remainderService.getListAmount(sex));
     }
 
     @GetMapping("ready-products")

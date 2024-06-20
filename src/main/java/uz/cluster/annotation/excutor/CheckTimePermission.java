@@ -22,7 +22,7 @@ public class CheckTimePermission {
 
     public void checkTimePermission(int formId) {
         User user = GlobalParams.getCurrentUser();
-        if (user.getSystemRoleName() != SystemRoleName.SYSTEM_ROLE_SUPER_ADMIN) {
+        if (user.getSystemRoleName() != SystemRoleName.SYSTEM_ROLE_SUPER_ADMIN && UserComponent.getByRoleName(user.getSystemRoleName()) != null) {
             for (RoleFormPermission roleFormPermission : UserComponent.getByRoleName(user.getSystemRoleName()).getRoleFormPermissions()) {
                 if (roleFormPermission.getForm().getId() == formId) {
                     if (Converter.getReductionToDouble(Duration.between(roleFormPermission.getModifiedOn(), LocalDateTime.now()).getSeconds() / 3600.0) > roleFormPermission.getTime()) {

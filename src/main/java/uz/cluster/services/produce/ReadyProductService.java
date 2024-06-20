@@ -8,19 +8,16 @@ import uz.cluster.dao.produce.CostDao;
 import uz.cluster.dao.produce.ReadyProductDao;
 import uz.cluster.entity.produce.ReadyProduct;
 import uz.cluster.entity.references.model.ProductType;
-import uz.cluster.entity.references.model.Unit;
+import uz.cluster.enums.ManufactureProduct;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.enums.produce.ProduceEnum;
 import uz.cluster.payload.response.ApiResponse;
-import uz.cluster.repository.produce.ProduceCostDao;
 import uz.cluster.repository.produce.ReadyProductRepository;
 import uz.cluster.repository.references.ProductTypeRepository;
-import uz.cluster.repository.references.UnitRepository;
 import uz.cluster.services.purchase.RemainderService;
 import uz.cluster.util.LanguageManager;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,19 +43,19 @@ public class ReadyProductService {
         return readyProductRepository.findAllByOrderByDateDesc().stream().map(ReadyProduct::asDao).collect(Collectors.toList());
     }
 
-    public List<LocalDate> getListDate() {
-        List<LocalDate> dates = new ArrayList<>();
-        List<ReadyProduct> list = readyProductRepository.findAllByOrderByDateAsc();
+    public List<String> getListDate(String sex) {
+        List<String> dates = new ArrayList<>();
+        List<ReadyProduct> list = readyProductRepository.findAllByOrderByDateAsc(sex);
         Collections.reverse(list);
         list.forEach(l -> {
-            dates.add(l.getDate());
+            dates.add(l.getDate().toString());
         });
         return dates;
     }
 
-    public List<Double> getListAmount() {
+    public List<Double> getListAmount(String sex) {
         List<Double> dates = new ArrayList<>();
-        List<ReadyProduct> list = readyProductRepository.findAllByOrderByDateAsc();
+        List<ReadyProduct> list = readyProductRepository.findAllByOrderByDateAsc(sex);
         Collections.reverse(list);
         list.forEach(l -> {
             dates.add(l.getAmount());
@@ -87,15 +84,19 @@ public class ReadyProductService {
         Optional<ProductType> optionalProductType = productTypeRepository.findById(remainder.getProductTypeId());
         optionalProductType.ifPresent(remainder::setProductType);
 
-        remainderService.enter(remainder.getProductTypeId(),remainder.getAmount());
+        remainderService.enter(remainder.getProductTypeId(),remainder.getAmount(),remainder.getSexEnum());
 
-        produceRemainderService.minusICHRemainder(remainder.getCostPerKgSementAmount());
-        Optional<ReadyProduct> readyProduct = readyProductRepository.findByDate(remainder.getDate());
+        ApiResponse api = produceRemainderService.minusICHRemainder(remainder.getCostPerKgSementAmount()*remainder.getAmount(),remainder.getSexEnum());
+        if (!api.isSuccess()){
+            return new ApiResponse(false,  "Sement omborda topilmadi");
+        }
+        Optional<ReadyProduct> readyProduct = readyProductRepository.findByDateAndSexEnum(remainder.getDate(),remainder.getSexEnum());
         if (readyProduct.isPresent()){
             CostDao costDao = new CostDao();
             costDao.setDate(readyProduct.get().getDate());
             costDao.setSpendingTypeId(ProduceEnum.PERMAMENT_COST.getValue());
             costDao.setAmount(remainder.getAmount() * remainder.getCostAmount());
+            costDao.setSexEnum(remainder.getSexEnum());
             costService.add(costDao);
             readyProduct.get().setAmount(readyProduct.get().getAmount() + remainder.getAmount());
             readyProduct.get().setAllCostAmount(readyProduct.get().getAllCostAmount() + (remainder.getCostAmount() * remainder.getAmount()));
@@ -109,6 +110,7 @@ public class ReadyProductService {
         costDao.setDate(remainder.getDate());
         costDao.setSpendingTypeId(ProduceEnum.PERMAMENT_COST.getValue());
         costDao.setAmount(remainder.getAmount() * remainder.getCostAmount());
+        costDao.setSexEnum(remainder.getSexEnum());
         costService.add(costDao);
         ReadyProduct remainderSaved = readyProductRepository.save(remainder);
         return new ApiResponse(true, remainderSaved, LanguageManager.getLangMessage("saved"));

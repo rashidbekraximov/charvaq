@@ -7,6 +7,7 @@ import lombok.Setter;
 import uz.cluster.dao.reference.BaseDao;
 import uz.cluster.entity.purchase.PurchasedProduct;
 import uz.cluster.entity.references.model.ProductType;
+import uz.cluster.enums.SexEnum;
 
 @Getter
 @Setter
@@ -24,6 +25,8 @@ public class PurchasedProductDao extends BaseDao {
 
     private int productTypeId;
 
+    private SexEnum sexEnum;
+
     public PurchasedProduct copy(PurchasedProductDao purchasedProductDao){
         PurchasedProduct price = new PurchasedProduct();
         price.setId((int) purchasedProductDao.getId());
@@ -32,6 +35,7 @@ public class PurchasedProductDao extends BaseDao {
         price.setPrice(purchasedProductDao.getPrice());
         price.setWeight(purchasedProductDao.getWeight());
         price.setValue(purchasedProductDao.getValue());
+        price.setSexEnum(purchasedProductDao.getSexEnum());
         return price;
     }
 }

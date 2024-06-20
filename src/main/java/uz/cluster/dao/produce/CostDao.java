@@ -8,6 +8,7 @@ import lombok.Setter;
 import uz.cluster.dao.reference.BaseDao;
 import uz.cluster.entity.produce.Cost;
 import uz.cluster.entity.references.model.CostType;
+import uz.cluster.entity.references.model.ProduceCost;
 import uz.cluster.enums.SexEnum;
 
 import java.time.LocalDate;
@@ -21,7 +22,7 @@ public class CostDao extends BaseDao {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
-    private CostType costType;
+    private ProduceCost costType;
 
     private double amount;
 
@@ -30,6 +31,8 @@ public class CostDao extends BaseDao {
     private int spendingTypeId;
 
     private SexEnum sexEnum;
+
+    private String description;
 
     public Cost copy(CostDao costDao){
         Cost cost = new Cost();
@@ -40,6 +43,7 @@ public class CostDao extends BaseDao {
         cost.setAmount(costDao.getAmount());
         cost.setSpendingTypeId(costDao.getSpendingTypeId());
         cost.setSexEnum(costDao.getSexEnum());
+        cost.setDescription(costDao.getDescription());
         return cost;
     }
 }

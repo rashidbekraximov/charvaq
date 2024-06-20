@@ -27,20 +27,12 @@ public class UserComponent {
         UserComponent.costRepository = costRepository;
     }
 
-//    hourly 0 0 * * * *
-//    daily 0 0 0 * * *
-    @Scheduled(cron = "0 59 23 * * *")
-    public void timeMethod(){
-        System.out.println("Ishladi");
-        costRepository.save(new Cost());
-    }
-
     public static User getById(int id){
         return authService.getByUserIdComponent(id);
     }
 
     public static Role getByRoleName(SystemRoleName name){
-        return roleService.getByName(name);
+        return roleService.getByName(name.name());
     }
 
 }

@@ -25,7 +25,7 @@ public class RemainderController {
 
     @GetMapping("remainders/{status}")
     public ResponseEntity<List<RemainderDao>> getOrderList(@PathVariable String status) {
-        return ResponseEntity.ok(remainderService.getRemainderList(MCHJ.valueOf(status.equals("LB") ? "LB" : "CHSM")));
+        return ResponseEntity.ok(remainderService.getRemainderList(status));
     }
 
     @GetMapping("remainder/{id}")

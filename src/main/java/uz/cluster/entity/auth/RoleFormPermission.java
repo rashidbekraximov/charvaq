@@ -52,7 +52,7 @@ public class RoleFormPermission extends Auditable {
     @Column
     private boolean canDelete;
 
-    @Column
+    @Column(columnDefinition = "real default 0")
     private Integer time; //minutes
 
 
@@ -83,8 +83,9 @@ public class RoleFormPermission extends Auditable {
         this.time = time;
     }
 
-    public RoleFormPermission(Form form) {
+    public RoleFormPermission(String id,Form form) {
         this.form = form;
+        this.id =new UUID(0,0);
     }
 
     public String getPermissionCodeString() {

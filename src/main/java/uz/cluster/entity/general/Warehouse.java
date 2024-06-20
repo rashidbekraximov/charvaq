@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uz.cluster.dao.general.SparePartDao;
 import uz.cluster.dao.general.WarehouseDao;
+import uz.cluster.entity.references.model.FuelType;
 import uz.cluster.entity.references.model.SparePartType;
+import uz.cluster.enums.ItemEnum;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -28,6 +30,10 @@ public class Warehouse {
     @JoinColumn(name = "spare_part_type_id")
     private SparePartType sparePartType;
 
+    @ManyToOne
+    @JoinColumn(name = "fuel_type_id")
+    private FuelType fuelType;
+
     @Column(name = "qty")
     private double qty;
 
@@ -37,8 +43,15 @@ public class Warehouse {
     @Column(name = "price")
     private double price;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "item", columnDefinition = "varchar(20) default 'FUEL'")
+    private ItemEnum item;
+
     @Transient
     private int sparePartTypeId;
+
+    @Transient
+    private int fuelTypeId;
 
     public WarehouseDao asDao() {
         WarehouseDao warehouseDao = new WarehouseDao();
@@ -48,6 +61,8 @@ public class Warehouse {
         warehouseDao.setQty(getQty());
         warehouseDao.setValue(getValue());
         warehouseDao.setPrice(getPrice());
+        warehouseDao.setItem(getItem());
+        warehouseDao.setFuelType(getFuelType());
         return warehouseDao;
     }
 }

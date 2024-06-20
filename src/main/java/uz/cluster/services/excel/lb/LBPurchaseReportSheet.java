@@ -99,12 +99,8 @@ public class LBPurchaseReportSheet {
             cell4.setCellValue("Marka");
             cell5 = rowInTable.createCell(CellType.STRING);
             cell5.setCellValue("Miqdor");
-            cell6 = rowInTable.createCell(CellType.STRING);
-            cell6.setCellValue("Auto");
             cell7 = rowInTable.createCell(CellType.STRING);
             cell7.setCellValue("Qiymati");
-            cell8 = rowInTable.createCell(CellType.STRING);
-            cell8.setCellValue("Xodka");
             cell9 = rowInTable.createCell(CellType.STRING);
             cell9.setCellValue("Izoh");
 
@@ -122,12 +118,8 @@ public class LBPurchaseReportSheet {
                 cell4.setCellValue(purchase.getMark());
                 cell5 = rowInTable.createCell(CellType.NUMERIC);
                 cell5.setCellValue(purchase.getAmount());
-                cell6 = rowInTable.createCell(CellType.STRING);
-                cell6.setCellValue(purchase.getMixer().getAuto());
                 cell7 = rowInTable.createCell(CellType.NUMERIC);
                 cell7.setCellValue(purchase.getValue());
-                cell8 = rowInTable.createCell(CellType.NUMERIC);
-                cell8.setCellValue(purchase.getXodka());
                 cell9 = rowInTable.createCell(CellType.STRING);
                 cell9.setCellValue(purchase.getDescription());
                 counter++;

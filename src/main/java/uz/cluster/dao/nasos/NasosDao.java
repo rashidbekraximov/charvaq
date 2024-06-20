@@ -1,6 +1,7 @@
 package uz.cluster.dao.nasos;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Setter;
 import uz.cluster.dao.reference.BaseDao;
 import uz.cluster.entity.nasos.Nasos;
 
+import javax.persistence.Column;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -16,28 +18,32 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NasosDao extends BaseDao {
-    private int hj;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
-    private double time;
+    private String client;
 
-    private String custumerName;
+    private double workHour;
 
     private double minPrice;
 
     private double additionalPrice;
 
-    private double price;
+    private double totalSumm;
 
+    private String description;
 
     public Nasos asDao(NasosDao nasosDao){
         Nasos nasos = new Nasos();
-        nasos.setTime(nasosDao.getTime());
-        nasos.setCustumerName(nasosDao.getCustumerName());
+        nasos.setId(nasosDao.getId());
+        nasos.setDate(nasosDao.getDate());
+        nasos.setClient(nasosDao.getClient());
         nasos.setMinPrice(nasosDao.getMinPrice());
+        nasos.setWorkHour(nasosDao.getWorkHour());
         nasos.setAdditionalPrice(nasosDao.getAdditionalPrice());
-        nasos.setPrice(nasosDao.getPrice());
+        nasos.setTotalSumm(nasosDao.getTotalSumm());
+        nasos.setDescription(nasosDao.getDescription());
         return nasos;
     }
 

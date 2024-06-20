@@ -7,8 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.cluster.entity.purchase.CheckoutCost;
 import uz.cluster.payload.response.ApiResponse;
+import uz.cluster.services.excel.Driver;
 import uz.cluster.services.purchase.CheckoutCostService;
 
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,9 +23,16 @@ public class CheckoutCostController {
 
     private final CheckoutCostService costService;
 
-    @GetMapping("checkout-costs/{id}")
-    public ResponseEntity<List<CheckoutCost>> getList(@PathVariable int id) {
-        return ResponseEntity.ok(costService.getList(id));
+    private final Driver driver;
+
+    @GetMapping("checkout-costs/{id}/{beginDate}/{endDate}")
+    public ResponseEntity<List<CheckoutCost>> getList(@PathVariable int id, @PathVariable String beginDate, @PathVariable String endDate) {
+        return ResponseEntity.ok(costService.getList(id, beginDate.equals("null") ? null : Date.valueOf(beginDate),endDate.equals("null") ? null : Date.valueOf(endDate)));
+    }
+
+    @GetMapping("/checkout-cost/report/{id}/{beginDate}/{endDate}")
+    public void downloadCheckoutCostTotal(HttpServletResponse response, @PathVariable String beginDate, @PathVariable String endDate, @PathVariable int id) throws Exception {
+        driver.excelCostSheet(response, costService.getList(id, beginDate.equals("null") ? null : Date.valueOf(beginDate),endDate.equals("null") ? null : Date.valueOf(endDate)));
     }
 
     @GetMapping("checkout-costs/daily/{date}")

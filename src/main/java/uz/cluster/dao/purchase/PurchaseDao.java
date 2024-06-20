@@ -76,6 +76,7 @@ public class PurchaseDao extends BaseDao {
         Purchase price = new Purchase();
         price.setId((int) purchaseDao.getId());
         price.setCheckNumber(purchaseDao.getCheckNumber());
+        price.setDocumentCode(purchaseDao.getDocumentCode());
         price.setClient(purchaseDao.getClient());
         price.setHiredCar(purchaseDao.getHiredCar());
         price.setPhoneNumber(purchaseDao.getPhoneNumber());

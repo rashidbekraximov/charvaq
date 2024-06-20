@@ -8,7 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.cluster.dao.general.SpendingSparePartDao;
 import uz.cluster.payload.response.ApiResponse;
+import uz.cluster.services.excel.Driver;
 import uz.cluster.services.general.SpendingSparePartService;
+
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Date;
 
 @RestController
 @RequestMapping("/api/")
@@ -16,12 +20,18 @@ import uz.cluster.services.general.SpendingSparePartService;
 @RequiredArgsConstructor
 public class SpendingSparePartController {
 
-
     public final SpendingSparePartService spendingSparePartService;
 
-    @GetMapping("spending-spare-parts")
-    public ResponseEntity<?> getById() {
-        return ResponseEntity.status(HttpStatus.OK).body(spendingSparePartService.getList());
+    public final Driver driver;
+
+    @GetMapping("spending-spare-parts/{id}/{beginDate}/{endDate}")
+    public ResponseEntity<?> getById(@PathVariable int id, @PathVariable String beginDate, @PathVariable String endDate) {
+        return ResponseEntity.status(HttpStatus.OK).body(spendingSparePartService.getList(id, beginDate.equals("null") ? null : Date.valueOf(beginDate),endDate.equals("null") ? null : Date.valueOf(endDate)));
+    }
+
+    @GetMapping("spending-spare-parts/report/{id}/{beginDate}/{endDate}")
+    public void downloadCheckoutCostTotal(HttpServletResponse response, @PathVariable String beginDate, @PathVariable String endDate, @PathVariable int id) throws Exception {
+        driver.excelSpendFuelAndSparePartSheet(response, spendingSparePartService.getList(id, beginDate.equals("null") ? null : Date.valueOf(beginDate),endDate.equals("null") ? null : Date.valueOf(endDate)));
     }
 
     @GetMapping("spending-spare-part/{id}")

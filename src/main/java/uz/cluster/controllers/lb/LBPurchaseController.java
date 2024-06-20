@@ -6,9 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.cluster.dao.lb.BarDao;
+import uz.cluster.dao.lb.LBMainDao;
 import uz.cluster.dao.lb.LBPurchaseDao;
 import uz.cluster.dao.purchase.DocumentFilter;
 import uz.cluster.dao.purchase.PurchaseDao;
+import uz.cluster.enums.MCHJ;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.services.lb.LBPurchaseService;
 
@@ -47,23 +49,24 @@ public class LBPurchaseController {
         return ResponseEntity.ok(lbPurchaseService.getBarListForNasos());
     }
 
-    @GetMapping("lb-nasos/bar-last/{time}")
-    public ResponseEntity<List<Double>> getForNasosBarLast(@PathVariable String time){
-        if(time.equals("DAILY")){
-            return ResponseEntity.ok(lbPurchaseService.getBarListDaily());
-        }else{
-            return ResponseEntity.ok(lbPurchaseService.getBarListMonthly());
-        }
+    @GetMapping("lb-nasos/bar-last/{beginDate}/{endDate}")
+    public ResponseEntity<List<Double>> getForNasosBarLast( @PathVariable String beginDate, @PathVariable String endDate){
+            return ResponseEntity.ok(lbPurchaseService.getBarListDaily(beginDate, endDate));
     }
 
-    @GetMapping("lb-purchased/bar-last/{time}")
-    public ResponseEntity<List<BarDao>> getForBarLast(@PathVariable String time){
-        return ResponseEntity.ok(lbPurchaseService.getBarLast(time));
+    @GetMapping("lb-purchased/bar-last/{company}/{beginDate}/{endDate}")
+    public ResponseEntity<List<BarDao>> getForBarLast(@PathVariable String company,@PathVariable String beginDate, @PathVariable String endDate){
+        return ResponseEntity.ok(lbPurchaseService.getBarLast(company,beginDate,endDate));
     }
 
-    @GetMapping("lb-purchase/test/{mark}/{amount}")
-    public ResponseEntity<?> getListForSelect(@PathVariable int mark,@PathVariable double amount) {
-        return ResponseEntity.ok(lbPurchaseService.getByAmountAndMark(mark, amount));
+    @GetMapping("lb-purchased/total-bar/{company}/{beginDate}/{endDate}")
+    public ResponseEntity<List<LBMainDao>> getForTotalBar(@PathVariable String company,@PathVariable String beginDate, @PathVariable String endDate){
+        return ResponseEntity.ok(lbPurchaseService.getDashboardData(company,beginDate,endDate));
+    }
+
+    @GetMapping("lb-purchase/test/{mark}/{amount}/{mchj}")
+    public ResponseEntity<?> getListForSelect(@PathVariable int mark, @PathVariable double amount, @PathVariable String mchj) {
+        return ResponseEntity.ok(lbPurchaseService.getByAmountAndMark(mark, amount,mchj.equals(MCHJ.LEADER_BETON_1.name()) ? MCHJ.LEADER_BETON_1 : MCHJ.LEADER_BETON_2));
     }
 
     @GetMapping("lb-purchase/{id}")

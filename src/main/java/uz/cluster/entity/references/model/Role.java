@@ -46,6 +46,10 @@ public class Role extends Auditable {
         this.systemRoleName = name;
     }
 
+    public Role(List<RoleFormPermission> roleFormPermissions) {
+        this.roleFormPermissions = roleFormPermissions;
+    }
+
     public Role(SystemRoleName name, List<RoleFormPermission> roleFormPermissions) {
         this.systemRoleName = name;
         this.roleFormPermissions = roleFormPermissions;

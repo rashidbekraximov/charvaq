@@ -25,6 +25,8 @@ public class IngredientDao extends BaseDao {
 
     private double pesok;
 
+    private double antimaroz;
+
     private double dobavka;
 
     private double value;
@@ -39,6 +41,7 @@ public class IngredientDao extends BaseDao {
         ingredient.setKlines(ingredientDao.getKlines());
         ingredient.setDobavka(ingredientDao.getDobavka());
         ingredient.setSement(ingredientDao.getSement());
+        ingredient.setAntimaroz(ingredientDao.getAntimaroz());
         ingredient.setValue(ingredientDao.getValue());
         return ingredient;
     }

@@ -3,19 +3,17 @@ package uz.cluster.services.lb;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
 import uz.cluster.dao.lb.MixerDao;
-import uz.cluster.entity.lb.Ingredient;
 import uz.cluster.entity.lb.Mixer;
-import uz.cluster.entity.logistic.Technician;
 import uz.cluster.enums.Status;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.lb.MixerRepository;
-import uz.cluster.repository.logistic.TechnicianRepository;
 import uz.cluster.util.LanguageManager;
 
 import java.util.HashMap;
@@ -31,12 +29,9 @@ public class MixerService {
 
     private final MixerRepository mixerRepository;
 
-    private final TechnicianRepository technicianRepository;
-
-
     @CheckPermission(form = FormEnum.MIXER, permission = Action.CAN_VIEW)
     public List<MixerDao> getList() {
-        return mixerRepository.findAll().stream().map(Mixer::asDao).collect(Collectors.toList());
+        return mixerRepository.findAll(Sort.by(Sort.Order.asc("status"))).stream().map(Mixer::asDao).collect(Collectors.toList());
     }
 
     public Map<Integer,String> getHtmlList(){
@@ -92,13 +87,14 @@ public class MixerService {
     @CheckPermission(form = FormEnum.MIXER, permission = Action.CAN_DELETE)
     @Transactional
     public ApiResponse delete(int id) {
-        Optional<Technician> optionalTechnician = technicianRepository.findById(id);
-        if (optionalTechnician.isPresent()){
-            optionalTechnician.get().setStatus(Status.PASSIVE);
-            log.info("Bu Id " + id + " O'chirildi !");
+        Optional<Mixer> optionalMixer = mixerRepository.findById(id);
+        if (optionalMixer.isPresent()){
+            optionalMixer.get().setStatus(Status.PASSIVE);
+            mixerRepository.save(optionalMixer.get());
+            log.info("Bu Id " + id + " o'chirildi !");
             return new ApiResponse(true, LanguageManager.getLangMessage("deleted"));
         }else{
-            log.error("Bu Id " + id + " O'chirib bo'lmadi !");
+            log.error("Bu Id " + id + " o'chirib bo'lmadi !");
             return new ApiResponse(false, LanguageManager.getLangMessage("cant_find"));
         }
     }

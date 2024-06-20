@@ -5,13 +5,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uz.cluster.annotation.CheckPermission;
 import uz.cluster.dao.general.SparePartDao;
 import uz.cluster.entity.general.SparePart;
 import uz.cluster.entity.general.Warehouse;
+import uz.cluster.entity.references.model.FuelType;
 import uz.cluster.entity.references.model.SparePartType;
+import uz.cluster.enums.ItemEnum;
+import uz.cluster.enums.auth.Action;
+import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
 import uz.cluster.repository.general.SparePartRepository;
 import uz.cluster.repository.general.WarehouseRepository;
+import uz.cluster.repository.references.FuelTypeRepository;
 import uz.cluster.repository.references.SparePartTypeRepository;
 import uz.cluster.util.LanguageManager;
 
@@ -29,8 +35,11 @@ public class SparePartService {
 
     private final SparePartTypeRepository partTypeRepository;
 
+    private final FuelTypeRepository fuelTypeRepository;
+
     private final WarehouseRepository warehouseRepository;
 
+    @CheckPermission(form = FormEnum.INCOME_TO_WAREHOUSE, permission = Action.CAN_VIEW)
     public List<SparePartDao> getList(){
         return sparePartRepository.findAllByOrderByDateDesc().stream().map(SparePart::asDao).collect(Collectors.toList());
     }
@@ -46,11 +55,12 @@ public class SparePartService {
         return null;
     }
 
+    @CheckPermission(form = FormEnum.INCOME_TO_WAREHOUSE, permission = Action.CAN_ADD)
     @Transactional
     public ApiResponse add(SparePartDao sparePartDao) {
         SparePart sparePart = sparePartDao.copy(sparePartDao);
 
-        if (sparePart.getSparePartTypeId() == 0) {
+        if (sparePart.getSparePartTypeId() == 0 && sparePart.getFuelTypeId() == 0) {
             logger.error("Ehtiyot qism turi tanlanmadi !");
             return new ApiResponse(false, "Ehtiyot qism turi tanlanmadi !");
         }
@@ -58,23 +68,49 @@ public class SparePartService {
         Optional<SparePartType> optionalSparePartType = partTypeRepository.findById(sparePart.getSparePartTypeId());
         optionalSparePartType.ifPresent(sparePart::setSparePartType);
 
-        Optional<Warehouse> optionalWarehouse = warehouseRepository.findBySparePartType_IdAndPrice(sparePart.getSparePartTypeId(),sparePart.getPrice());
-        if (optionalWarehouse.isPresent()){
-            Warehouse warehouse = optionalWarehouse.get();
-            warehouse.setQty(warehouse.getQty() + sparePart.getQty());
-            warehouse.setValue(warehouse.getValue() + sparePart.getValue());
-            warehouse.setPrice(sparePart.getPrice());
-            warehouseRepository.save(warehouse);
-            logger.info("Ehtiyot qism ombordagi mavjud mahsulotga qo'shildi !");
-            return new ApiResponse(true, warehouse, LanguageManager.getLangMessage("saved"));
+        Optional<FuelType> optionalFuelType = fuelTypeRepository.findById(sparePart.getFuelTypeId());
+        optionalFuelType.ifPresent(sparePart::setFuelType);
+
+        if (sparePart.getItem().equals(ItemEnum.SPARE_PART)){
+            Optional<Warehouse> optionalWarehouse = warehouseRepository.findBySparePartType_IdAndPrice(sparePart.getSparePartTypeId(),sparePart.getPrice());
+            if (optionalWarehouse.isPresent()){
+                Warehouse warehouse = optionalWarehouse.get();
+                warehouse.setQty(warehouse.getQty() + sparePart.getQty());
+                warehouse.setValue(warehouse.getValue() + sparePart.getValue());
+                warehouse.setPrice(sparePart.getPrice());
+                warehouseRepository.save(warehouse);
+                logger.info("Ehtiyot qism ombordagi mavjud mahsulotga qo'shildi !");
+                return new ApiResponse(true, warehouse, LanguageManager.getLangMessage("saved"));
+            }else {
+                Warehouse warehouse = new Warehouse();
+                warehouse.setSparePartType(sparePart.getSparePartType());
+                warehouse.setItem(ItemEnum.SPARE_PART);
+                warehouse.setQty(sparePart.getQty());
+                warehouse.setValue(sparePart.getValue());
+                warehouse.setPrice(sparePart.getPrice());
+                warehouseRepository.save(warehouse);
+                logger.info("Ehtiyot qism ombordga kirim bo'ldi :) !");
+            }
         }else {
-            Warehouse warehouse = new Warehouse();
-            warehouse.setSparePartType(sparePart.getSparePartType());
-            warehouse.setQty(sparePart.getQty());
-            warehouse.setValue(sparePart.getValue());
-            warehouse.setPrice(sparePart.getPrice());
-            warehouseRepository.save(warehouse);
-            logger.info("Ehtiyot qism ombordga kirim bo'ldi :) !");
+            Optional<Warehouse> optionalWarehouse = warehouseRepository.findByFuelType_IdAndPrice(sparePart.getFuelTypeId(),sparePart.getPrice());
+            if (optionalWarehouse.isPresent()){
+                Warehouse warehouse = optionalWarehouse.get();
+                warehouse.setQty(warehouse.getQty() + sparePart.getQty());
+                warehouse.setValue(warehouse.getValue() + sparePart.getValue());
+                warehouse.setPrice(sparePart.getPrice());
+                warehouseRepository.save(warehouse);
+                logger.info("Ehtiyot qism ombordagi mavjud mahsulotga qo'shildi !");
+                return new ApiResponse(true, warehouse, LanguageManager.getLangMessage("saved"));
+            }else {
+                Warehouse warehouse = new Warehouse();
+                warehouse.setFuelType(sparePart.getFuelType());
+                warehouse.setQty(sparePart.getQty());
+                warehouse.setItem(ItemEnum.FUEL);
+                warehouse.setValue(sparePart.getValue());
+                warehouse.setPrice(sparePart.getPrice());
+                warehouseRepository.save(warehouse);
+                logger.info("Ehtiyot qism ombordga kirim bo'ldi :) !");
+            }
         }
 
         SparePart sparePartSaved = sparePartRepository.save(sparePart);
@@ -82,7 +118,7 @@ public class SparePartService {
         return new ApiResponse(true, sparePartSaved, LanguageManager.getLangMessage("saved"));
     }
 
-//    @CheckPermission(form = FormEnum.REMAINDER, permission = Action.CAN_DELETE)
+    @CheckPermission(form = FormEnum.INCOME_TO_WAREHOUSE, permission = Action.CAN_DELETE)
     @Transactional
     public ApiResponse delete(long id) {
         Optional<SparePart> optionalRemainder = sparePartRepository.findById(id);

@@ -24,28 +24,37 @@ public interface LBPurchaseRepository extends JpaRepository<LBPurchase,Long> {
             " LIMIT 6 ", nativeQuery = true)
     List<LBPurchase> getAllByDesc();
 
-    @Query(value = "select p.mark mark, COALESCE(sum(p.amount),0) amount from lb_purchase p " +
-            "where EXTRACT(MONTH FROM  p.date) = EXTRACT(MONTH FROM CURRENT_DATE) group by p.mark ", nativeQuery = true)
-    List<BarChart> getAllByMarkMonthly();
-
-    @Query(value = "select p.mark mark, COALESCE(sum(p.amount),0) amount from lb_purchase p " +
-            "where p.date = CURRENT_DATE group by p.mark ", nativeQuery = true)
-    List<BarChart> getAllByMarkDaily();
+    @Query(value = "select count(*) num, p.mark mark, COALESCE(sum(p.amount),0) amount from lb_purchase p " +
+            " where (:beginDate IS NULL OR p.date >=  TO_DATE(:beginDate, 'YYYY-MM-DD')) " +
+            " AND (:endDate IS NULL OR p.date <=  TO_DATE(:endDate, 'YYYY-MM-DD')) " +
+            " AND p.mchj = :mchj " +
+            " group by p.mark ", nativeQuery = true)
+    List<BarChart> getAllByMarkDaily(@Param("beginDate") String beginDate,
+                                     @Param("endDate") String endDate,
+                                     @Param("mchj") String mchj);
 
     @Query(value = "select count(*) from lb_purchase p " +
             " where EXTRACT(MONTH FROM  p.date) = :month_id ", nativeQuery = true)
     long getAllPurchaseNumberForBarChart(@Param("month_id") int month_id);
 
-    @Query(value = "select * from lb_purchase p " +
-            " where EXTRACT(MONTH FROM  p.date) = EXTRACT(MONTH FROM CURRENT_DATE) and nasos != 0 ", nativeQuery = true)
-    List<LBPurchase> getAllPurchaseNumberForBarChartMonthly();
-
-    @Query(value = "select * from lb_purchase p " +
-            " where p.date = CURRENT_DATE and nasos != 0", nativeQuery = true)
-    List<LBPurchase> getAllPurchaseNumberForBarChartDaily();
+    @Query(value = "select * from lb_purchase s " +
+            " where (:beginDate IS NULL OR s.date >=  TO_DATE(:beginDate, 'YYYY-MM-DD')) " +
+            " AND (:endDate IS NULL OR s.date <=  TO_DATE(:endDate, 'YYYY-MM-DD')) " +
+            "and nasos != 0", nativeQuery = true)
+    List<LBPurchase> getAllPurchaseNumberForBarChartDaily(@Param("beginDate") String beginDate,
+                                                          @Param("endDate") String endDate);
 
     @Query(value = "select count(*) from lb_purchase p " +
             " where EXTRACT(MONTH FROM  p.date) = :month_id and nasos != 0", nativeQuery = true)
     long getAllHireForNasos(@Param("month_id") int month_id);
+
+
+
+    @Query(value = "select count(*) num, COALESCE(sum(p.total_value - p.nasos),0) amount from lb_purchase p " +
+            " where (:beginDate IS NULL OR p.date >=  TO_DATE(:beginDate, 'YYYY-MM-DD')) " +
+            " AND (:endDate IS NULL OR p.date <=  TO_DATE(:endDate, 'YYYY-MM-DD')) and mchj = :mchj" , nativeQuery = true)
+    List<BarChart> getAllIncomes(@Param("beginDate") String beginDate,
+                                     @Param("endDate") String endDate,
+                                     @Param("mchj") String mchj);
 
 }

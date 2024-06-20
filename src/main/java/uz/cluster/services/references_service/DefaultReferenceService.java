@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import uz.cluster.annotation.CheckPermission;
 import uz.cluster.configuration.SpringSecurityAuditorAware;
 import uz.cluster.dao.reference.DefaultReference;
+import uz.cluster.entity.purchase.Price;
 import uz.cluster.entity.references.model.Reference;
 import uz.cluster.entity.references.model.ReferenceList;
 import uz.cluster.types.Nls;
@@ -31,6 +32,11 @@ public class DefaultReferenceService {
     public List<ReferenceList> getReferenceLists() {
         return (List<ReferenceList>) entityManager.createNativeQuery("select * from references_list", ReferenceList.class).getResultList();
     }
+
+    public List<Price> getSearchedReferenceLists(String filter) {
+        return (List<Price>) entityManager.createNativeQuery("select * from price", Price.class).getResultList();
+    }
+
     @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public Map<Integer, String> getReferenceItems(String viewName) {

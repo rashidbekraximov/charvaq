@@ -57,3 +57,21 @@ values (13, 'r_spare_part_type',
         row('Ehtiyot qism turi',
             'Ehtiyot qism turi',
             'Ehtiyot qism turi')::t_nls);
+
+insert into references_list(id, table_name, name)
+values (14, 'r_fuel_type',
+        row('Yoqilgi turi',
+            'Yoqilgi turi',
+            'Yoqilgi turi')::t_nls);
+
+insert into references_list(id, table_name, name)
+values (15, 'r_produce_cost',
+        row('I/CH xarajat turi',
+            'I/CH xarajat turi',
+            'I/CH xarajat turi')::t_nls);
+
+insert into references_list(id, table_name, name)
+values (16, 'r_nasos_cost_type',
+        row('Nasos xarajat turi',
+            'Nasos xarajat turi',
+            'Nasos xarajat turi')::t_nls);

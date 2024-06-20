@@ -141,7 +141,7 @@ public class EstinguishService {
             allDebtDao.setDebtTotalValue(lbPurchase.getDebtTotalValue());
             allDebtDao.setProductsText("");
             allDebtDao.setPaymentType("");
-            allDebtDao.setMchj(MCHJ.LB);
+            allDebtDao.setMchj(MCHJ.LEADER_BETON_1);
             allDebts.add(allDebtDao);
         }
         return allDebts;
@@ -175,7 +175,7 @@ public class EstinguishService {
                 allDebtDao.setClient(lbPurchase.getCustomer());
                 allDebtDao.setTotalValue(lbPurchase.getTotalValue());
                 allDebtDao.setDebtTotalValue(lbPurchase.getDebtTotalValue());
-                allDebtDao.setMchj(MCHJ.LB);
+                allDebtDao.setMchj(MCHJ.LEADER_BETON_1);
                 allDebts.add(allDebtDao);
             }
             return allDebts;
@@ -204,7 +204,7 @@ public class EstinguishService {
                 allDebtDao.setClient(lbPurchase.getCustomer());
                 allDebtDao.setTotalValue(lbPurchase.getTotalValue());
                 allDebtDao.setDebtTotalValue(lbPurchase.getDebtTotalValue());
-                allDebtDao.setMchj(MCHJ.LB);
+                allDebtDao.setMchj(MCHJ.LEADER_BETON_1);
                 allDebts.add(allDebtDao);
             }
             return allDebts;

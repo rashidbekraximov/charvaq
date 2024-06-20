@@ -32,16 +32,22 @@ public class RoleService {
     }
 
 //    @CheckPermission(form = FormEnum.ROlE_LIST, permission = Action.CAN_VIEW)
-    public List<Form> getAllFormByRole(SystemRoleName systemRoleName) {
-        return formRepository.findAllByParentForm_Id(systemRoleName.getValue());
+    public List<RoleFormPermission> getAllFormByRole(SystemRoleName systemRoleName) {
+        List<Form> forms = formRepository.findAllByParentForm_Id(systemRoleName.getValue());
+        List<RoleFormPermission> roleFormPermissions = new ArrayList<>();
+        for (Form form : forms){
+            roleFormPermissions.add(new RoleFormPermission("0",form));
+        }
+        return roleFormPermissions;
     }
 
     public Role getById(int id) {
         return roleRepository.findById(id).orElse(null);
     }
 
-    public Role getByName(SystemRoleName name) {
-        return roleRepository.findBySystemRoleName(name.name()).get();
+    public Role getByName(String name) {
+        Optional<Role> optionalRole = roleRepository.findBySystemRoleName(name);
+        return optionalRole.orElse(null);
     }
 
     @Transactional
@@ -90,7 +96,7 @@ public class RoleService {
 
     @Transactional
     public ApiResponse editWithPermission(RoleDTO roleDTO, int id) {
-        Optional<Role> optionalRole = roleRepository.findById(id);
+        Optional<Role> optionalRole = roleRepository.findBySystemRoleName(roleDTO.getSystemRoleName().name());
         if (optionalRole.isEmpty())
             return new ApiResponse(false, LanguageManager.getLangMessage("cant_find"));
 

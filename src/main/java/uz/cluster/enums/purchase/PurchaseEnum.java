@@ -14,7 +14,8 @@ public enum PurchaseEnum {
     KIRPICH(6),
     SH_BLOK(7),
     SEMENT(8),
-    DOBAVKA(9);
+    DOBAVKA(9),
+    ANTIMAROZ(10);
 
     private final int value;
 
@@ -34,6 +35,4 @@ public enum PurchaseEnum {
     public int getValue() {
         return this.value;
     }
-
-
 }

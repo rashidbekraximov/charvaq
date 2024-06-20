@@ -49,7 +49,7 @@ public class AuthService implements UserDetailsService {
     private final FileService fileService;
 
     @Transactional
-    @CheckPermission(form = FormEnum.ADMIN_PANEL, permission = Action.CAN_ADD)
+//    @CheckPermission(form = FormEnum.ADMIN_PANEL, permission = Action.CAN_ADD)
     public ApiResponse add(UserDTO userDTO, MultipartFile file) { // This method is to add
         if (userRepository.existsByLoginAndIdNot(userDTO.getLogin(), 0)) //This will check login is unique or not, if not it terminates from adding
             return new ApiResponse(false, LanguageManager.getLangMessage("phone_exists"));
@@ -94,7 +94,7 @@ public class AuthService implements UserDetailsService {
 
 
     @Transactional
-    @CheckPermission(form = FormEnum.ADMIN_PANEL, permission = Action.CAN_EDIT)
+//    @CheckPermission(form = FormEnum.ADMIN_PANEL, permission = Action.CAN_EDIT)
     public ApiResponse edit(UserDTO userDTO,int id,MultipartFile file) {
         ApiResponse apiResponse = new ApiResponse();
         if (userRepository.existsByLoginAndIdNot(userDTO.getLogin(), userDTO.getId())) //This will check login is unique or not, if not it terminates from adding
@@ -130,7 +130,6 @@ public class AuthService implements UserDetailsService {
         editingUser.setMiddleName(userDTO.getMiddleName());
         editingUser.setLogin(userDTO.getLogin());
         editingUser.setDocumentSerialNumber(userDTO.getDocumentSerialNumber());
-        editingUser.setSystemRoleName(userDTO.getSystemRoleName());
         editingUser.setGender(userDTO.getGender());
         editingUser.setEnabled(userDTO.isEnabled());
         editingUser.setFile(fileEntity);
@@ -152,7 +151,7 @@ public class AuthService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    @CheckPermission(form = FormEnum.ADMIN_PANEL, permission = Action.CAN_VIEW)
+//    @CheckPermission(form = FormEnum.ADMIN_PANEL, permission = Action.CAN_VIEW)
     public UserDTO getById(int id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()){
@@ -197,6 +196,7 @@ public class AuthService implements UserDetailsService {
                     user.getGender(),
                     user.getLogin(),
                     user.getSystemRoleName().name(),
+                    user.getFile() == null ? null : user.getFile().getFileName(),
                     true
             );
         } catch (Exception exception) {
@@ -204,6 +204,7 @@ public class AuthService implements UserDetailsService {
                     0,
                     null,
                     false,
+                    null,
                     null,
                     null,
                     null,

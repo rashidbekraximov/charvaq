@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uz.cluster.entity.general.SparePart;
 import uz.cluster.entity.general.Warehouse;
+import uz.cluster.entity.references.model.FuelType;
 import uz.cluster.entity.references.model.SparePartType;
+import uz.cluster.enums.ItemEnum;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -23,6 +25,8 @@ public class WarehouseDao {
 
     private SparePartType sparePartType;
 
+    private FuelType fuelType;
+
     private double price;
 
     private double qty;
@@ -31,6 +35,8 @@ public class WarehouseDao {
 
     private int sparePartTypeId;
 
+    private ItemEnum item;
+
     public WarehouseDao copy(WarehouseDao dao) {
         WarehouseDao warehouseDao = new WarehouseDao();
         warehouseDao.setSparePartType(dao.getSparePartType());
@@ -38,6 +44,8 @@ public class WarehouseDao {
         warehouseDao.setQty(dao.getQty());
         warehouseDao.setValue(dao.getValue());
         warehouseDao.setPrice(dao.getPrice());
+        warehouseDao.setItem(dao.getItem());
+        warehouseDao.setFuelType(dao.getFuelType());
         return warehouseDao;
     }
 }

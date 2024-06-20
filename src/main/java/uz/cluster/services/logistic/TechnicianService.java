@@ -30,8 +30,6 @@ public class TechnicianService {
 
     private final TechnicianRepository technicianRepository;
 
-    private final EmployeeService employeeService;
-
     private final DirectionRepository directionRepository;
 
     private final TechniqueTypeRepository techniqueTypeRepository;
@@ -52,7 +50,7 @@ public class TechnicianService {
 
     public Map<Integer,String> getTechnicianForSelect(){
         Map<Integer,String> htmlOption = new HashMap<>();
-        List<Technician> technicians = technicianRepository.findAll();
+        List<Technician> technicians = technicianRepository.findAllByStatus(Status.ACTIVE);
         for (Technician technician : technicians) {
             htmlOption.put(technician.getId(), technician.getTechniqueType().getName().getActiveLanguage());
         }

@@ -17,6 +17,7 @@ import uz.cluster.services.auth_service.RoleService;
 import uz.cluster.util.GlobalParams;
 import uz.cluster.util.LanguageManager;
 
+import static uz.cluster.enums.auth.SystemRoleName.SYSTEM_ROLE_ADMIN;
 import static uz.cluster.enums.auth.SystemRoleName.SYSTEM_ROLE_SUPER_ADMIN;
 
 @Component
@@ -34,7 +35,14 @@ public class CheckPermissionExecutor {
         CheckTimePermissionComponent.checkTimePermission(form.getValue());
         if (user.getSystemRoleName() == SYSTEM_ROLE_SUPER_ADMIN){
             return;
+        }else if (user.getSystemRoleName() == SYSTEM_ROLE_ADMIN){
+            if (form == FormEnum.KASSA)
+                throw new ForbiddenException("Moderator", "No such permission");
+            return;
         }else if (user.getSystemRoleName() != SYSTEM_ROLE_SUPER_ADMIN && user.getSystemRoleName() != null){
+            if (form == FormEnum.KASSA)
+                throw new ForbiddenException("Moderator", "No such permission");
+
             for (RoleFormPermission roleFormPermission : UserComponent.getByRoleName(user.getSystemRoleName()).getRoleFormPermissions()) {
                 if (permission.getValue() == 1000) {
                     if (roleFormPermission.getForm().getId() == form.getValue() && roleFormPermission.isCanView()) {

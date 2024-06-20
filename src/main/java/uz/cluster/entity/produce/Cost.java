@@ -10,6 +10,7 @@ import uz.cluster.dao.produce.CostDao;
 import uz.cluster.dao.produce.ReadyProductDao;
 import uz.cluster.entity.Auditable;
 import uz.cluster.entity.references.model.CostType;
+import uz.cluster.entity.references.model.ProduceCost;
 import uz.cluster.enums.SexEnum;
 import uz.cluster.enums.Status;
 import uz.cluster.enums.produce.ProduceEnum;
@@ -37,10 +38,13 @@ public class Cost  extends Auditable {
 
     @ManyToOne
     @JoinColumn(name = "cost_type_id")
-    private CostType costType;
+    private ProduceCost costType;
 
     @Column(name = "amount")
     private double amount;
+
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "spending_type_id")
     private int spendingTypeId = ProduceEnum.REAL_COST.getValue();
@@ -60,6 +64,7 @@ public class Cost  extends Auditable {
         costDao.setDate(getDate());
         costDao.setAmount(getAmount());
         costDao.setSexEnum(getSexEnum());
+        costDao.setDescription(getDescription());
         return costDao;
     }
 }

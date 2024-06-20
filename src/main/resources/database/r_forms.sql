@@ -136,16 +136,27 @@ VALUES (125, 125,
         row ('Остаток состав', 'Tаркиб қолдиғи', 'Tarkib qoldig''i'),
         125, 'ACTIVE', null, now(), null, null, '/leader-beton/remainder', 120);
 
+insert into r_forms(id, form_number, name, order_number,  status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (126, 126,
+        row ('Mahsulot narxlari', 'Mahsulot narxlari', 'Mahsulot narxlari'),
+        126, 'ACTIVE', null, now(), null, null, '/leader-beton/price', 120);
+
+
+insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (131, 131, row ('Xizmat kor''satish', 'Xizmat kor''satish', 'Xizmat kor''satish'), 131, 'ACTIVE', null, now(), null, null,
+        null, 130);
+
+insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
+                    modified_by, modified_on, href, parent_id)
+VALUES (132, 132, row ('Nasos xarajatlari', 'Nasos xarajatlari', 'Nasos xarajatlari'), 132, 'ACTIVE', null, now(), null, null,
+        null, 130);
 
 insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
                     modified_by, modified_on, href, parent_id)
 VALUES (130, 130, row ('Насос', 'Насос', 'Nasos'), 130, 'ACTIVE', null, now(), null, null,
-        null, null);
-
-insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
-                    modified_by, modified_on, href, parent_id)
-VALUES (131, 131, row ('Насос', 'Насос', 'Nasos'), 131, 'ACTIVE', null, now(), null, null,
-        '/nasos', 130);
+        '/nasos', null);
 
 insert into r_forms(id, form_number, name, order_number, status, created_by, created_on,
                     modified_by, modified_on, href, parent_id)

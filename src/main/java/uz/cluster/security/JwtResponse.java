@@ -22,5 +22,6 @@ public class JwtResponse {
     private Gender gender;
     private String login;
     private String systemRoleName;
+    private String fileName;
     private boolean enabled;
 }

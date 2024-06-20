@@ -10,6 +10,7 @@ import uz.cluster.entity.Auditable;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.references.model.Unit;
 import uz.cluster.enums.MCHJ;
+import uz.cluster.enums.SexEnum;
 import uz.cluster.enums.Status;
 
 import javax.persistence.*;
@@ -40,8 +41,12 @@ public class Remainder extends Auditable {
     private double amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "mchj", columnDefinition = "varchar(5) default 'CHSM'")
+    @Column(name = "mchj", columnDefinition = "varchar(20) default 'CHSM'")
     private MCHJ mchj;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sex")
+    private SexEnum sexEnum;
 
     @Transient
     private int productTypeId;
@@ -58,6 +63,7 @@ public class Remainder extends Auditable {
         remainderDao.setUnitId(getUnitId());
         remainderDao.setAmount(getAmount());
         remainderDao.setMchj(getMchj());
+        remainderDao.setSexEnum(getSexEnum());
         return remainderDao;
     }
 }

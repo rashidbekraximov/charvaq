@@ -31,6 +31,7 @@ import java.util.Collections;
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"login"})})
 public class User extends Auditable  implements UserDetails {
+
     @Hidden
     @Id
     @SequenceGenerator(allocationSize = 1, name = "users_sq", sequenceName = "users_sq")

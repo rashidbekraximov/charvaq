@@ -10,8 +10,11 @@ import uz.cluster.dao.logistic.DashboardLogistic;
 import uz.cluster.dao.produce.CostDao;
 import uz.cluster.dao.purchase.PurchaseDao;
 import uz.cluster.entity.produce.Cost;
+import uz.cluster.entity.purchase.Remainder;
 import uz.cluster.entity.references.model.CostType;
+import uz.cluster.entity.references.model.ProduceCost;
 import uz.cluster.enums.CostEnum;
+import uz.cluster.enums.SexEnum;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.enums.produce.ProduceEnum;
@@ -24,6 +27,8 @@ import uz.cluster.repository.produce.ReadyProductRepository;
 import uz.cluster.repository.purchase.PurchaseDto;
 import uz.cluster.repository.purchase.PurchaseRepository;
 import uz.cluster.repository.references.CostTypeRepository;
+import uz.cluster.repository.references.ProduceCostRepository;
+import uz.cluster.services.purchase.RemainderService;
 import uz.cluster.util.LanguageManager;
 
 import java.util.ArrayList;
@@ -43,7 +48,9 @@ public class CostService {
 
     private final ReadyProductRepository readyProductRepository;
 
-    private final CostTypeRepository costTypeRepository;
+    private final RemainderService remainderService;
+
+    private final ProduceCostRepository produceCostRepository;
 
     @CheckPermission(form = FormEnum.PRODUCE_COST, permission = Action.CAN_VIEW)
     public List<CostDao> getList() {
@@ -68,9 +75,9 @@ public class CostService {
         }
     }
 
-    public List<DashboardLogistic> getDashboardDataMonthly() {
+    public List<DashboardLogistic> getDashboardDataDaily(String sex,String beginDate,String endDate) {
         List<DashboardLogistic> dashboardLogistics = new ArrayList<>();
-        List<ProduceBarDao> list = costRepository.getAllByCostIdMonthly();//
+        List<ProduceBarDao> list = costRepository.getAllByCostIdDaily(sex,beginDate,endDate);//
         double totalRealAmount = 0;
         double totalAmount = 0;
         double totalPermamentAmount = 0;
@@ -98,7 +105,7 @@ public class CostService {
 
         DashboardLogistic dashboardLogisticTotalPurchase = new DashboardLogistic();
         DashboardLogistic dashboardLogisticTotalIncome = new DashboardLogistic();
-        List<PurchaseDto> allIncome = purchaseRepository.getAllIncomeProductTypeIdMonthly(PurchaseEnum.SH_BLOK.getValue());//
+        List<PurchaseDto> allIncome = purchaseRepository.getAllIncomeProductTypeIdDaily(PurchaseEnum.SH_BLOK.getValue(),sex,beginDate,endDate);//
         dashboardLogisticTotalIncome.setCostId(CostEnum.ALL_INCOME.getValue());
         dashboardLogisticTotalIncome.setCostName("Daromad");
         allIncome.forEach(last -> {
@@ -118,73 +125,9 @@ public class CostService {
         dashboardLogistics.add(dashboardLogisticTotalPurchase);
 
         DashboardLogistic dashboardLogisticTotalAmount = new DashboardLogistic();
-        List<Double> amount = readyProductRepository.getAllAmountByProductTypeId(PurchaseEnum.SH_BLOK.getValue());//
-        amount.forEach(a -> {
-            dashboardLogisticTotalAmount.setAmount(dashboardLogisticTotalAmount.getAmount() + a);
-        });
+        Remainder remainder = remainderService.getByProductIdAndSexEnum(PurchaseEnum.SH_BLOK.getValue(),sex.equals(SexEnum.SEX1.name()) ? SexEnum.SEX1 : SexEnum.SEX2);//
         dashboardLogisticTotalAmount.setCostName("Mahsulot qoldig'i");
-        dashboardLogisticTotalAmount.setCostId(1000);
-        dashboardLogistics.add(dashboardLogisticTotalAmount);
-
-        return IntStream.range(0, dashboardLogistics.size()).map(i -> dashboardLogistics.size() - 1-i).mapToObj(dashboardLogistics::get).collect(Collectors.toList());
-    }
-
-
-    public List<DashboardLogistic> getDashboardDataDaily() {
-        List<DashboardLogistic> dashboardLogistics = new ArrayList<>();
-        List<ProduceBarDao> list = costRepository.getAllByCostIdDaily();//
-        double totalRealAmount = 0;
-        double totalAmount = 0;
-        double totalPermamentAmount = 0;
-
-        for (ProduceBarDao logistic : list){
-            if (ProduceEnum.PERMAMENT_COST.getValue() == logistic.getSpendingTypeId()){
-                totalPermamentAmount += logistic.getAmount();
-            }else {
-                totalRealAmount += logistic.getAmount();
-            }
-            totalAmount = totalPermamentAmount + totalRealAmount;
-        }
-
-        DashboardLogistic dashboardLogisticTotal = new DashboardLogistic();
-        dashboardLogisticTotal.setCostId(CostEnum.REAL_COST.getValue());
-        dashboardLogisticTotal.setCostName("Doimiy xarajat");
-        dashboardLogisticTotal.setAmount(totalPermamentAmount);
-        dashboardLogistics.add(dashboardLogisticTotal);
-
-        DashboardLogistic dashboardReal = new DashboardLogistic();
-        dashboardReal.setCostId(CostEnum.ALL_COST.getValue());
-        dashboardReal.setCostName("Real xarajat");
-        dashboardReal.setAmount(totalRealAmount);
-        dashboardLogistics.add(dashboardReal);
-
-        DashboardLogistic dashboardLogisticTotalPurchase = new DashboardLogistic();
-        DashboardLogistic dashboardLogisticTotalIncome = new DashboardLogistic();
-        List<PurchaseDto> allIncome = purchaseRepository.getAllIncomeProductTypeIdDaily(PurchaseEnum.SH_BLOK.getValue());//
-        dashboardLogisticTotalIncome.setCostId(CostEnum.ALL_INCOME.getValue());
-        dashboardLogisticTotalIncome.setCostName("Daromad");
-        allIncome.forEach(last -> {
-            dashboardLogisticTotalIncome.setAmount(last.getAllAmount());
-            dashboardLogisticTotalPurchase.setAmount(last.getWeight());
-        });
-        dashboardLogistics.add(dashboardLogisticTotalIncome);
-
-        DashboardLogistic dashboardLogisticTotalProfit = new DashboardLogistic();
-        dashboardLogisticTotalProfit.setCostId(CostEnum.ALL_PROFIT.getValue());
-        dashboardLogisticTotalProfit.setAmount(dashboardLogisticTotalIncome.getAmount() - totalAmount);
-        dashboardLogisticTotalProfit.setCostName("Foyda");
-        dashboardLogistics.add(dashboardLogisticTotalProfit);
-
-        dashboardLogisticTotalPurchase.setCostName("Sotilgan mahsulot");
-        dashboardLogisticTotalPurchase.setCostId(2000);
-        dashboardLogistics.add(dashboardLogisticTotalPurchase);
-
-        DashboardLogistic dashboardLogisticTotalAmount = new DashboardLogistic();
-        List<Double> amount = readyProductRepository.getAllAmountByProductTypeId(PurchaseEnum.SH_BLOK.getValue());//
-        amount.forEach(a -> {
-            dashboardLogisticTotalAmount.setAmount(dashboardLogisticTotalAmount.getAmount() + a);
-        });
-        dashboardLogisticTotalAmount.setCostName("Mahsulot qoldig'i");
+        dashboardLogisticTotalAmount.setAmount(remainder == null ? 0 : remainder.getAmount());
         dashboardLogisticTotalAmount.setCostId(1000);
         dashboardLogistics.add(dashboardLogisticTotalAmount);
 
@@ -196,9 +139,9 @@ public class CostService {
     public ApiResponse add(CostDao priceDao) {
         Cost price = priceDao.copy(priceDao);
 
-        Optional<CostType> optionalProductType = costTypeRepository.findById(price.getCostTypeId());
+        Optional<ProduceCost> optionalProductType = produceCostRepository.findById(price.getCostTypeId());
         optionalProductType.ifPresent(price::setCostType);
-        price.setSpendingTypeId(ProduceEnum.REAL_COST.getValue());
+        price.setSpendingTypeId(price.getSpendingTypeId() == 0 ? ProduceEnum.REAL_COST.getValue() : price.getSpendingTypeId());
         if (price.getId() != 0) {
             log.info("Ma'lumot yangilandi ");
             return edit(price);

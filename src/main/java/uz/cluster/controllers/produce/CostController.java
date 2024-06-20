@@ -25,13 +25,9 @@ public class CostController {
         return ResponseEntity.ok(costService.getList());
     }
 
-    @GetMapping("cost/dashboard/{time}")
-    public ResponseEntity<List<DashboardLogistic>> getDashboardData(@PathVariable String time) {
-        if(time.equals("DAILY")){
-            return ResponseEntity.ok(costService.getDashboardDataDaily());
-        }else{
-            return ResponseEntity.ok(costService.getDashboardDataMonthly());
-        }
+    @GetMapping("cost/dashboard/{beginDate}/{endDate}/{sex}")
+    public ResponseEntity<List<DashboardLogistic>> getDashboardData(@PathVariable String beginDate, @PathVariable String endDate, @PathVariable String sex) {
+        return ResponseEntity.ok(costService.getDashboardDataDaily(sex, beginDate, endDate));
     }
 
     @GetMapping("cost/{id}")

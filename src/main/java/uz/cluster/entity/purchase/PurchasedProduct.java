@@ -8,6 +8,7 @@ import org.hibernate.envers.Audited;
 import uz.cluster.dao.purchase.PurchasedProductDao;
 import uz.cluster.entity.Auditable;
 import uz.cluster.entity.references.model.ProductType;
+import uz.cluster.enums.SexEnum;
 
 import javax.persistence.*;
 
@@ -44,6 +45,10 @@ public class PurchasedProduct extends Auditable {
     @Column(name = "value")
     private double value;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sex")
+    private SexEnum sexEnum;
+
     @Transient
     private int productTypeId;
 
@@ -55,6 +60,7 @@ public class PurchasedProduct extends Auditable {
         price.setPrice(getPrice());
         price.setWeight(getWeight());
         price.setValue(getValue());
+        price.setSexEnum(getSexEnum());
         return price;
     }
 }

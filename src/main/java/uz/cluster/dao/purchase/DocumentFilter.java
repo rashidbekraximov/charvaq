@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uz.cluster.enums.MCHJ;
 
 import java.time.LocalDate;
 
@@ -32,6 +33,8 @@ public class DocumentFilter {
     private String checkNumber;
 
     private String documentCode;
+
+    private MCHJ mchj;
 
     private LocalDate beginDate;
 

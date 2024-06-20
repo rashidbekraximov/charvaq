@@ -15,6 +15,7 @@ import uz.cluster.entity.references.model.ProductForProduce;
 import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.references.model.Unit;
 import uz.cluster.enums.ManufactureProduct;
+import uz.cluster.enums.SexEnum;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
@@ -65,7 +66,7 @@ public class ProduceRemainderService {
         Optional<ProductForProduce> optionalProductForProduce = productForProduceRepository.findById(remainder.getProductForProduceId());
         optionalProductForProduce.ifPresent(remainder::setProductForProduce);
 
-        Optional<ProduceRemainder> optionalProduceRemainder = produceRemainderRepository.findByProductForProduce_Id(remainder.getProductForProduceId());
+        Optional<ProduceRemainder> optionalProduceRemainder = produceRemainderRepository.findByProductForProduce_IdAndSexEnum(remainder.getProductForProduceId(),remainder.getSexEnum());
         if (optionalProduceRemainder.isPresent()){
             ProduceRemainder produceRemainder = optionalProduceRemainder.get();
             produceRemainder.setAmount(produceRemainder.getAmount() + remainder.getAmount());
@@ -79,12 +80,13 @@ public class ProduceRemainderService {
         return new ApiResponse(true, remainderSaved, LanguageManager.getLangMessage("saved"));
     }
 
-    public void minusICHRemainder(double minusSement){
-        Optional<ProduceRemainder> optionalProduceRemainder = produceRemainderRepository.findByProductForProduce_Id(ManufactureProduct.SEMENT.getValue());
+    public ApiResponse minusICHRemainder(double minusSement, SexEnum sexEnum){
+        Optional<ProduceRemainder> optionalProduceRemainder = produceRemainderRepository.findByProductForProduce_IdAndSexEnum(ManufactureProduct.SEMENT.getValue(),sexEnum);
         if (optionalProduceRemainder.isPresent()){
             ProduceRemainder produceRemainder = optionalProduceRemainder.get();
             if (produceRemainder.getAmount() - minusSement < 0){
                 logger.error("Ishlab chiqarish uchun mahsulot omborda yetarli emas !");
+                return new ApiResponse(false,  "Ishlab chiqarish uchun mahsulot omborda yetarli emas !");
             }else {
                 produceRemainder.setAmount(produceRemainder.getAmount() - minusSement);
                 logger.info("Ishlab chiqarish uchun mahsulot ombordan " + minusSement + " kg ayrildi !");
@@ -92,7 +94,9 @@ public class ProduceRemainderService {
             }
         }else{
             logger.error("Bu mahsulotga "  + ManufactureProduct.SEMENT.name() + " doir malumot topilmadi");
+            return new ApiResponse(false,  "Bu mahsulotga "  + ManufactureProduct.SEMENT.name() + " doir malumot topilmadi");
         }
+        return new ApiResponse(true,  null);
     }
 
     @CheckPermission(form = FormEnum.REMAINDER, permission = Action.CAN_DELETE)

@@ -26,9 +26,14 @@ public class WarehouseController {
         return ResponseEntity.status(HttpStatus.OK).body(warehouseService.getList());
     }
 
-    @GetMapping("warehouse/price/{id}")
-    public ResponseEntity<?> getBySparePartTypeId(@PathVariable int id) {
-        return ResponseEntity.status(HttpStatus.OK).body(warehouseService.getBySparePartType(id));
+    @GetMapping("warehouse/dashboard/{name}")
+    public ResponseEntity<?> getByItemList(@PathVariable String name) {
+        return ResponseEntity.status(HttpStatus.OK).body(warehouseService.getItemList(name));
+    }
+
+    @GetMapping("warehouse/price/{name}/{id}")
+    public ResponseEntity<?> getBySparePartTypeId(@PathVariable String name, @PathVariable int id) {
+        return ResponseEntity.status(HttpStatus.OK).body(warehouseService.getBySparePartType(name,id));
     }
 
     @GetMapping("warehouse/{id}")

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uz.cluster.entity.produce.ReadyProduct;
+import uz.cluster.enums.SexEnum;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,12 +27,12 @@ public interface ReadyProductRepository extends JpaRepository<ReadyProduct,Integ
     List<ReadyProduct> findAllByOrderByDateDesc();
 
     @Query(value = "select * from ready_product r" +
-            " order by r.date desc LIMIT 7 ", nativeQuery = true)
-    List<ReadyProduct> findAllByOrderByDateAsc();
+            " where r.sex = :sex order by r.date desc LIMIT 7 ", nativeQuery = true)
+    List<ReadyProduct> findAllByOrderByDateAsc(@Param("sex") String sex);
 
     @Query(value = "select COALESCE(sum(amount),0) amount from ready_product " +
             "where product_type_id = :product_type_id ", nativeQuery = true)
     List<Double> getAllAmountByProductTypeId(@Param("product_type_id") int productTypeId);
 
-    Optional<ReadyProduct> findByDate(LocalDate date);
+    Optional<ReadyProduct> findByDateAndSexEnum(LocalDate date, SexEnum sexEnum);
 }

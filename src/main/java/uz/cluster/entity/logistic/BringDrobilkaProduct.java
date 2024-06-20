@@ -76,7 +76,7 @@ public class BringDrobilkaProduct extends Auditable {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "mchj", columnDefinition = "varchar(5) default 'CHSM'")
+    @Column(name = "mchj", columnDefinition = "varchar(20) default 'CHSM'")
     private MCHJ mchj;
 
     @Transient

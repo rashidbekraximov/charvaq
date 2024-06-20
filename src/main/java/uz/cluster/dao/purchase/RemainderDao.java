@@ -9,6 +9,7 @@ import uz.cluster.entity.references.model.ProductType;
 import uz.cluster.entity.purchase.Remainder;
 import uz.cluster.entity.references.model.Unit;
 import uz.cluster.enums.MCHJ;
+import uz.cluster.enums.SexEnum;
 import uz.cluster.enums.Status;
 
 @Getter
@@ -25,6 +26,8 @@ public class RemainderDao extends BaseDao {
 
     private MCHJ mchj;
 
+    private SexEnum sexEnum;
+
     private int productTypeId;
 
     private int unitId;
@@ -38,6 +41,7 @@ public class RemainderDao extends BaseDao {
         remainder.setProductTypeId(remainderDao.getProductTypeId());
         remainder.setAmount(remainderDao.getAmount());
         remainder.setMchj(remainderDao.getMchj());
+        remainder.setSexEnum(remainderDao.getSexEnum());
         return remainder;
     }
 }

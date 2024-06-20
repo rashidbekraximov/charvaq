@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uz.cluster.entity.references.model.Form;
 
 @Getter
 @Setter
@@ -16,5 +17,6 @@ public class FormPermissionDTO {
     private boolean canEdit;
     private boolean canDelete;
     private Integer time;
+//    private Form form;
 
 }

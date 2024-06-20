@@ -16,4 +16,6 @@ public class BarDao {
 
     private double amount;
 
+    private int num;
+
 }

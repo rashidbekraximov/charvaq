@@ -5,6 +5,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uz.cluster.entity.auth.RoleFormPermission;
 import uz.cluster.entity.references.model.Form;
 import uz.cluster.entity.references.model.Role;
 import uz.cluster.enums.auth.SystemRoleName;
@@ -32,7 +33,7 @@ public class RoleRestController {
 
     @GetMapping("/role-form/{systemRoleName}")
     public HttpEntity<?> getAllByRole(@PathVariable SystemRoleName systemRoleName) {
-        List<Form> forms = roleService.getAllFormByRole(systemRoleName);
+        List<RoleFormPermission> forms = roleService.getAllFormByRole(systemRoleName);
         return ResponseEntity.ok(forms);
     }
 
@@ -40,6 +41,16 @@ public class RoleRestController {
     public HttpEntity<?> getById(@PathVariable(name = "role_id") int id) {
         Role role = roleService.getById(id);
         return ResponseEntity.status(role != null ? 201 : 404).body(role);
+    }
+
+    @GetMapping("/role-name/{role}")
+    public HttpEntity<?> getByRoleName(@PathVariable(name = "role") SystemRoleName role) {
+        Role r = roleService.getByName(role.name());
+        if (r == null){
+            List<RoleFormPermission> forms = roleService.getAllFormByRole(role);
+            return ResponseEntity.status(HttpStatus.CREATED).body(forms);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(r);
     }
 
     @PostMapping("/role/save")

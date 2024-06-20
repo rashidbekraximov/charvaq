@@ -9,10 +9,14 @@ import lombok.Setter;
 import uz.cluster.dao.reference.BaseDao;
 import uz.cluster.entity.lb.LBPurchase;
 import uz.cluster.entity.lb.Mixer;
+import uz.cluster.entity.lb.MixerUse;
+import uz.cluster.enums.MCHJ;
 import uz.cluster.enums.Status;
 
 import javax.persistence.Column;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -49,27 +53,27 @@ public class LBPurchaseDao  extends BaseDao {
 
     private double givenValue;
 
+    private double prostoy;
+
     private double debtTotalValue;
 
-    private byte xodka;
-
     private double hour;
-
-    private int mixerId;
 
     private double antimaroz;
 
     private double km;
 
-    private Mixer mixer;
-
     private Status status;
+
+    private MCHJ mchj;
 
     private String description;
 
+    private List<MixerUse> mixerUses = new ArrayList<>();
+
     public LBPurchase copy(LBPurchaseDao lbPurchaseDao){
         LBPurchase order = new LBPurchase();
-        order.setId((int) lbPurchaseDao.getId());
+        order.setId(lbPurchaseDao.getId());
         order.setCustomer(lbPurchaseDao.getCustomer());
         order.setLocation(lbPurchaseDao.getLocation());
         order.setDate(lbPurchaseDao.getDate());
@@ -85,14 +89,14 @@ public class LBPurchaseDao  extends BaseDao {
         order.setNasos(lbPurchaseDao.getNasos());
         order.setGivenValue(lbPurchaseDao.getGivenValue());
         order.setDebtTotalValue(lbPurchaseDao.getDebtTotalValue());
-        order.setXodka(lbPurchaseDao.getXodka());
         order.setKm(lbPurchaseDao.getKm());
         order.setHour(lbPurchaseDao.getHour());
-        order.setMixer(lbPurchaseDao.getMixer());
-        order.setMixerId(lbPurchaseDao.getMixerId());
         order.setAntimaroz(lbPurchaseDao.getAntimaroz());
         order.setStatus(lbPurchaseDao.getStatus());
         order.setDescription(lbPurchaseDao.getDescription());
+        order.setMchj(lbPurchaseDao.getMchj());
+        order.setMixerUses(lbPurchaseDao.getMixerUses());
+        order.setProstoy(lbPurchaseDao.getProstoy());
         return order;
     }
 }

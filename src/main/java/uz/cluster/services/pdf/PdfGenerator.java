@@ -10,6 +10,7 @@ import uz.cluster.dao.purchase.PurchasedProductDao;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 public class PdfGenerator {
 
@@ -28,7 +29,12 @@ public class PdfGenerator {
         Font fontTitle2 = FontFactory.getFont(FontFactory.COURIER);
         fontTitle2.setSize(20);
         // Creating paragraph
-        Paragraph paragraph1 = new Paragraph("15.10.2023y", fontTitle1);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+        // Formatting LocalDate to String
+        String formattedDate = purchase.getDate().format(formatter);
+        Paragraph paragraph1 = new Paragraph(formattedDate + "y", fontTitle1);
         // Aligning the paragraph in the document
         paragraph1.setAlignment(Paragraph.ALIGN_RIGHT);
         // Adding the created paragraph in the document
@@ -119,12 +125,12 @@ public class PdfGenerator {
         String auto = ",";
 
         if(purchase.getTechnician() != null){
-//            name = purchase.getTechnician().getEmployee().getName();
+            name = purchase.getTechnician().getTechniqueType().getName().getActiveLanguage();
             auto += purchase.getTechnician().getAutoNumber();
         }
 
         // Creating paragraph
-        Paragraph paragraph5 = new Paragraph("Xaydovchi: "  + auto + fontTitle1);
+        Paragraph paragraph5 = new Paragraph("Texnika: " + name  + auto, fontTitle1);
         // Aligning the paragraph in the document
         paragraph5.setAlignment(Paragraph.ALIGN_LEFT);
         // Adding the created paragraph in the document

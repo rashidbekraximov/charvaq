@@ -101,18 +101,12 @@ public class LogisticService {
                 logistic.setAmount(salaryAmount * (percentage.getPercentage() / 100));
             }
         }
-//        Optional<Technician> optionalTechnician = technicianRepository.findByEmployee_Id(salary.getEmployee().getId());
-//        if (optionalTechnician.isPresent()){
-//            logistic.setTechnician(optionalTechnician.get());
-//        }else{
-//            throw new NotFoundException("Texnika biriktirilmagan");
-//        }
         logisticRepository.save(logistic);
     }
 
-    public List<DashboardLogistic> getTotalAllCost(){
+    public List<DashboardLogistic> getTotalAllCost(String beginDate,String endDate){
         List<DashboardLogistic> dashboardLogistics = new ArrayList<>();
-        List<LogisticDao> list = logisticRepository.getAllByCost();
+        List<LogisticDao> list = logisticRepository.getAllByCost(beginDate, endDate);
         double totalCostAmount = 0;
 
         for (LogisticDao logistic : list){
@@ -128,10 +122,10 @@ public class LogisticService {
         dashboardLogistics.add(dashboardLogisticTotal);
 
         DashboardLogistic dashboardLogisticTotalIncome = new DashboardLogistic();
-        List<Double> allIncome = bringDrobilkaProductRepository.getAllIncome();
+        List<Double> allIncome = bringDrobilkaProductRepository.getAllIncome(beginDate, endDate);
         dashboardLogisticTotalIncome.setCostId(CostEnum.ALL_INCOME.getValue());
         allIncome.forEach(dashboardLogisticTotalIncome::setAmount);
-        List<Double> lastIncome = purchaseRepository.getAllIncome();
+        List<Double> lastIncome = purchaseRepository.getAllIncome(beginDate, endDate);
         lastIncome.forEach(last -> {
             dashboardLogisticTotalIncome.setAmount(dashboardLogisticTotalIncome.getAmount() + last);
         });
@@ -144,14 +138,14 @@ public class LogisticService {
         return IntStream.range(0, dashboardLogistics.size()).map(i -> dashboardLogistics.size() - 1-i).mapToObj(dashboardLogistics::get).collect(Collectors.toList());
     }
 
-    public List<DashboardTechnician> getTechnicianList(){
+    public List<DashboardTechnician> getTechnicianList(String beginDate,String endDate){
         List<DashboardTechnician> dashboardTechnicians = new ArrayList<>();
         for (Technician technician : technicianRepository.findAll()){
             DashboardTechnician dashboardTechnician = new DashboardTechnician();
             dashboardTechnician.setId(technician.getId());
             dashboardTechnician.setTechnique(technician.getTechniqueType().getName().getUz_lat());
             double totalAmount = 0;
-            for (LogisticDao dao : logisticRepository.getAllByTechnicianId(technician.getId())){
+            for (LogisticDao dao : logisticRepository.getAllByTechnicianId(technician.getId(),beginDate,endDate)){
                 DashboardLogistic dashboardLogistic = new DashboardLogistic();
                 dashboardLogistic.setCostId(dao.getCostId());
                 dashboardLogistic.setAmount(round(dao.getAmount()));
@@ -163,10 +157,10 @@ public class LogisticService {
             dashboardLogistic.setAmount(round(totalAmount));
             dashboardTechnician.getDashboardLogistics().add(dashboardLogistic);
             DashboardLogistic dashboardLogisticIncome = new DashboardLogistic();
-            List<Double> allIncome = bringDrobilkaProductRepository.getAllIncomeTechnicianId(technician.getId());
+            List<Double> allIncome = bringDrobilkaProductRepository.getAllIncomeTechnicianId(technician.getId(),beginDate,endDate);
             dashboardLogisticIncome.setCostId(CostEnum.ALL_INCOME.getValue());
             allIncome.forEach(dashboardLogisticIncome::setAmount);
-            List<Double> lastIncome = purchaseRepository.getAllIncomeTechnicianId(technician.getId());
+            List<Double> lastIncome = purchaseRepository.getAllIncomeTechnicianId(technician.getId(),beginDate,endDate);
             lastIncome.forEach(last -> {
                 dashboardLogisticIncome.setAmount(round(dashboardLogisticIncome.getAmount() + last));
             });

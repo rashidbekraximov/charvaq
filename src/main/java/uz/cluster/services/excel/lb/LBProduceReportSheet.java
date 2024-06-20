@@ -134,8 +134,6 @@ public class LBProduceReportSheet {
                 cell10.setCellValue(purchase.getDobavka());
                 cell11 = rowInTable.createCell(CellType.NUMERIC);
                 cell11.setCellValue(purchase.getAntimaroz());
-                cell12 = rowInTable.createCell(CellType.STRING);
-                cell12.setCellValue(purchase.getMixer().getAuto());
                 cell13 = rowInTable.createCell(CellType.STRING);
                 cell13.setCellValue(purchase.getDescription());
                 counter++;

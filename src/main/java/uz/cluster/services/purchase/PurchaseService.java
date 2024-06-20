@@ -7,19 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.cluster.annotation.CheckPermission;
-import uz.cluster.dao.purchase.DocumentFilter;
-import uz.cluster.dao.purchase.LineChartDao;
-import uz.cluster.dao.purchase.Notification;
-import uz.cluster.dao.purchase.PurchaseDao;
+import uz.cluster.dao.purchase.*;
 import uz.cluster.entity.Document;
 import uz.cluster.entity.auth.User;
 import uz.cluster.entity.logistic.BringDrobilkaProduct;
 import uz.cluster.entity.logistic.Technician;
 import uz.cluster.entity.produce.ReadyProduct;
-import uz.cluster.entity.purchase.DailyIncome;
-import uz.cluster.entity.purchase.Order;
-import uz.cluster.entity.purchase.Purchase;
-import uz.cluster.entity.purchase.PurchasedProduct;
+import uz.cluster.entity.purchase.*;
 import uz.cluster.entity.references.model.*;
 import uz.cluster.enums.PaymentEnum;
 import uz.cluster.enums.Status;
@@ -53,6 +47,8 @@ public class PurchaseService {
     private final EntityManager entityManager;
 
     private final PurchasedProductRepository purchasedProductRepository;
+
+    private final RemainderRepository remainderRepository;
 
     private final TechnicianRepository technicianRepository;
 
@@ -145,25 +141,20 @@ public class PurchaseService {
         return lineChartDaoList;
     }
 
-    public List<Long> getBarLastMonthly() {
-        List<Long> lineChartDaoList = new ArrayList<>();
-        long numPurchase = purchaseRepository.geCountOfPurchaseForBarChartMonthly();
-        lineChartDaoList.add(numPurchase);
-        long numPurchaseDebt = purchaseRepository.geCountOfDebtForBarChartMonthly();
-        lineChartDaoList.add(numPurchaseDebt);
-        long numPurchaseNoDebt = purchaseRepository.geCountOfNoDebtForBarChartMonthly();
-        lineChartDaoList.add(numPurchaseNoDebt);
-        return lineChartDaoList;
-    }
-
-    public List<Long> getBarLastDaily() {
-        List<Long> lineChartDaoList = new ArrayList<>();
-        long numPurchase = purchaseRepository.geCountOfPurchaseForBarChartDaily();
-        lineChartDaoList.add(numPurchase);
-        long numPurchaseDebt = purchaseRepository.geCountOfDebtForBarChartDaily();
-        lineChartDaoList.add(numPurchaseDebt);
-        long numPurchaseNoDebt = purchaseRepository.geCountOfNoDebtForBarChartDaily();
-        lineChartDaoList.add(numPurchaseNoDebt);
+    public List<PurchaseData> getBarLastMonthly(String beginDate,String endDate) {
+        List<PurchaseData> lineChartDaoList = new ArrayList<>();
+        List<SaleData> numPurchase = purchaseRepository.geCountOfPurchaseForBarChartMonthly(beginDate, endDate);
+        numPurchase.forEach(val -> {
+            lineChartDaoList.add(new PurchaseData(val.getNum(),val.getAmount()));
+        });
+        List<SaleData> numPurchaseDebt = purchaseRepository.geCountOfDebtForBarChartMonthly(beginDate, endDate);
+        numPurchaseDebt.forEach(val -> {
+            lineChartDaoList.add(new PurchaseData(val.getNum(),val.getAmount()));
+        });
+        List<SaleData> numPurchaseNoDebt = purchaseRepository.geCountOfNoDebtForBarChartMonthly(beginDate, endDate);
+        numPurchaseNoDebt.forEach(val -> {
+            lineChartDaoList.add(new PurchaseData(val.getNum(),val.getAmount()));
+        });
         return lineChartDaoList;
     }
 
@@ -205,7 +196,7 @@ public class PurchaseService {
             optionalProductType.ifPresent(purchasedProduct::setProductType);
             purchasedProduct.setTechnicianId(purchase.getTechnicianId());
             if (purchase.getId() == 0) {
-                if (remainderService.purchase(purchasedProduct.getProductTypeId(),purchasedProduct.getWeight())){
+                if (remainderService.purchase(purchasedProduct.getProductTypeId(),purchasedProduct.getWeight(),purchasedProduct.getSexEnum())){
                     return new ApiResponse(false, LanguageManager.getLangMessage("not_found_all"));
                 }
             }
@@ -288,10 +279,20 @@ public class PurchaseService {
         if (optionalPurchase.isPresent()) {
             Optional<DailyIncome> optional = dailyIncomeRepository.findByDate(optionalPurchase.get().getDate());
             optional.ifPresent(dailyIncome -> dailyIncome.setIncome(dailyIncome.getIncome() - optionalPurchase.get().getPaidTotalValue()));
-//            optionalPurchase.get().setStatus(Status.PASSIVE);
             purchaseRepository.deleteById(id);
-            purchasedProductRepository.deleteAllByPurchaseId(id);
             logisticService.deleteAllById(id);
+            for (PurchasedProduct purchasedProduct : purchasedProductRepository.findAllByPurchaseIdOrderByProductType(id)){
+                if (purchasedProduct.getProductType().getId() != PurchaseEnum.SH_BLOK.getValue()){
+                    Remainder remainder = remainderService.getByProductId(purchasedProduct.getProductType().getId());
+                    remainder.setAmount(remainder.getAmount() + purchasedProduct.getWeight());
+                    remainderRepository.save(remainder);
+                }else{
+                    Remainder remainder = remainderService.getByProductIdAndSexEnum(purchasedProduct.getProductType().getId(),purchasedProduct.getSexEnum());
+                    remainder.setAmount(remainder.getAmount() + purchasedProduct.getWeight());
+                    remainderRepository.save(remainder);
+                }
+            }
+            purchasedProductRepository.deleteAllByPurchaseId(id);
             return new ApiResponse(true, LanguageManager.getLangMessage("deleted"));
         } else {
             return new ApiResponse(false, LanguageManager.getLangMessage("cant_find"));

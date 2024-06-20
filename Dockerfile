@@ -1,11 +1,17 @@
-# Use a base image with Java 11
-FROM adoptopenjdk:11-jre-hotspot
+#Use an official OpenJDK runtime as a parent image
+FROM openjdk:11-jre-slim
 
 # Set the working directory
 WORKDIR /app
-# Copy the JAR file to the container
+
+# Create a directory for logs
+RUN mkdir -p /app/logs
+
+# Add the jar file
 COPY target/charvaq-0.0.1.jar charvaq.jar
-# Expose the port that your Spring Boot application listens on (default is 8080)
+
+# Expose the port that the application will run on
 EXPOSE 3030
-# Define the command to run your application
-CMD ["java", "-jar", "charvaq.jar"]
+
+# Run the jar file
+ENTRYPOINT ["java", "-jar", "charvaq.jar"]

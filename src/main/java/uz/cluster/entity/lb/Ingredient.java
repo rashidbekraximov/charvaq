@@ -46,6 +46,9 @@ public class Ingredient extends Auditable {
     @Column(name = "dobavka")
     private double dobavka;
 
+    @Column(name = "antimaroz")
+    private double antimaroz;
+
     @Column(name = "value")
     private double value;
 
@@ -59,6 +62,7 @@ public class Ingredient extends Auditable {
         ingredientDao.setSheben(getSheben());
         ingredientDao.setPesok(getPesok());
         ingredientDao.setDobavka(getDobavka());
+        ingredientDao.setAntimaroz(getAntimaroz());
         ingredientDao.setValue(getValue());
         return ingredientDao;
     }
