@@ -28,15 +28,9 @@ public class FileService {
 
         // Save the file to the specified upload directory
         byte[] fileData = file.getBytes();
-        Path uploadPath = Paths.get(FileNames.FILE_FOLDER);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-        Path destination = Paths.get(FileNames.FILE_FOLDER + fileName);
-        Files.write(destination, fileData);
 
         // Create and save file entity
-        FileEntity fileEntity = new FileEntity(fileName, filePath, fileSize);
+        FileEntity fileEntity = new FileEntity(fileName, filePath, fileSize,fileData);
         return fileRepository.save(fileEntity);
     }
 
