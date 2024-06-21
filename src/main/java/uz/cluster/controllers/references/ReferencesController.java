@@ -28,7 +28,7 @@ public class ReferencesController {
     static {
         globalReferences.put("nasos_cost_type", "r_nasos_cost_type");
         globalReferences.put("produce_cost", "r_produce_cost");
-//        globalReferences.put("product_type", "r_product_type");
+        globalReferences.put("product_type", "r_product_type");
         globalReferences.put("product_for_produce", "r_product_for_produce");
         globalReferences.put("fuel_type", "r_fuel_type");
         globalReferences.put("spare_types", "r_spare_part_type");
