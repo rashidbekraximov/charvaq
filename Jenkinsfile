@@ -1,31 +1,65 @@
 pipeline {
     agent any
-    tools{
-        maven 'maven_2_6_4'
+
+    environment {
+        GIT_REPO = 'https://github.com/rashidbekraximov/charvaq.git'
+        DOCKER_IMAGE = 'rashidbek/charvaq:v1.0.2'
+        GIT_CREDENTIALS_ID = 'github-creds'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-creds'
+        CONTAINER_NAME = 'charvaq'
     }
-    stages{
-        stage('clone from github'){
-            steps{
-                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/rashidbekraximov/charvaq']])
-                sh 'mvn clean install'
-            }
-        }
-        stage('Build docker image'){
-            steps{
-                script{
-                    sh 'docker build -t charvaq .'
+
+    stages {
+
+        stage('Stop and Remove Container') {
+            steps {
+                script {
+                    echo "Stopping Docker container ${CONTAINER_NAME}"
+                    sh "docker stop ${CONTAINER_NAME} || true"
+                    echo "Removing Docker container ${CONTAINER_NAME}"
+                    sh "docker rm ${CONTAINER_NAME} || true"
                 }
             }
         }
-        stage('Push to Docker Hub'){
-            steps{
-                script{
-                    sh 'docker login -u rashidbek -p hashcode8864'
-                    sh 'docker tag charvaq rashidbek/charvaq:latest'
-                    sh 'docker push rashidbek/charvaq:latest'
+
+        stage('Checkout') {
+            steps {
+                git url: "${env.GIT_REPO}", credentialsId: "${env.GIT_CREDENTIALS_ID}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("${env.DOCKER_IMAGE}")
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    sh "docker run -d -p 3030:3030 --name charvaq ${env.DOCKER_IMAGE}"
                 }
             }
         }
     }
 
+    post {
+        always {
+            script {
+                echo "Cleaning up"
+                sh "docker stop 3030:3030 || true"
+                sh "docker rm 3030:3030 || true"
+            }
+        }
+    }
 }

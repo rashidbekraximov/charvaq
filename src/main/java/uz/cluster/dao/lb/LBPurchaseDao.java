@@ -51,6 +51,8 @@ public class LBPurchaseDao  extends BaseDao {
 
     private double nasos;
 
+    private double nasosHour;
+
     private double givenValue;
 
     private double prostoy;
@@ -87,6 +89,7 @@ public class LBPurchaseDao  extends BaseDao {
         order.setValue(lbPurchaseDao.getValue());
         order.setTotalValue(lbPurchaseDao.getTotalValue());
         order.setNasos(lbPurchaseDao.getNasos());
+        order.setNasosHour(lbPurchaseDao.getNasosHour());
         order.setGivenValue(lbPurchaseDao.getGivenValue());
         order.setDebtTotalValue(lbPurchaseDao.getDebtTotalValue());
         order.setKm(lbPurchaseDao.getKm());

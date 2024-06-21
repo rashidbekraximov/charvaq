@@ -15,8 +15,10 @@ import uz.cluster.entity.nasos.Nasos;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
+import uz.cluster.repository.lb.LBPurchaseRepository;
 import uz.cluster.repository.nasos.NasosCostRepository;
 import uz.cluster.repository.nasos.NasosRepository;
+import uz.cluster.repository.purchase.PurchaseRepository;
 import uz.cluster.services.general.SparePartService;
 import uz.cluster.util.LanguageManager;
 
@@ -36,14 +38,17 @@ public class NasosService {
 
     private final NasosCostRepository nasosCostRepository;
 
+    private final LBPurchaseRepository lbPurchaseRepository;
+
     public List<NasosData> getDataList(String beginDate,String endDate){
         List<NasosData> nasosData = new ArrayList<>();
         List<Double> summAmount = nasosRepository.findAllByBetweenDate(beginDate,endDate);
         List<Double> costAmount = nasosCostRepository.findAllByBetweenDate(beginDate,endDate);
+        List<Double> nasosPurchasedAmount = lbPurchaseRepository.findAllByBetweenDate(beginDate,endDate);
         NasosData nasosData1 = new NasosData();
         nasosData1.setId(100);
         nasosData1.setName("Asosiy sotuv");
-        nasosData1.setAmount(0);
+        nasosPurchasedAmount.forEach(nasosData1::setAmount);
         nasosData.add(nasosData1);
 
         NasosData nasosData2 = new NasosData();

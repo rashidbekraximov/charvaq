@@ -11,7 +11,9 @@ import uz.cluster.entity.lb.LBPurchase;
 import uz.cluster.entity.purchase.Estinguish;
 import uz.cluster.entity.purchase.Purchase;
 import uz.cluster.entity.purchase.PurchasedProduct;
+import uz.cluster.entity.references.model.PaymentType;
 import uz.cluster.enums.MCHJ;
+import uz.cluster.enums.PaymentEnum;
 import uz.cluster.enums.auth.Action;
 import uz.cluster.enums.forms.FormEnum;
 import uz.cluster.payload.response.ApiResponse;
@@ -50,6 +52,7 @@ public class EstinguishService {
             return new ApiResponse(false, LanguageManager.getLangMessage("no_data_submitted"));
         }
         double totalPaidValue = estinguish.getPaidValue();
+        PaymentType paymentType = paymentTypeRepository.findById(PaymentEnum.NAQD.getValue()).orElse(null);
         for (AllDebtDao purchase : estinguish.getAllDebts()){
             if (purchase.getMchj() == MCHJ.CHSM){
                 dailyIncomeService.addFromEstinguish(estinguish);
@@ -57,6 +60,7 @@ public class EstinguishService {
                 if (optionalPurchase.isPresent()){
                     if (estinguish.getDebtTotalValue() == estinguish.getPaidValue()){
                         optionalPurchase.get().setDebtTotalValue(0);
+                        optionalPurchase.get().setPaymentType(paymentType);
                         optionalPurchase.get().setPaidDate(estinguish.getDate());
                         optionalPurchase.get().setPaidTotalValue(optionalPurchase.get().getTotalValue());
                         purchaseRepository.save(optionalPurchase.get());
@@ -64,6 +68,7 @@ public class EstinguishService {
                         if (totalPaidValue - optionalPurchase.get().getDebtTotalValue() > 0){
                             totalPaidValue = totalPaidValue - optionalPurchase.get().getDebtTotalValue();
                             optionalPurchase.get().setDebtTotalValue(0);
+                            optionalPurchase.get().setPaymentType(paymentType);
                             optionalPurchase.get().setPaidDate(estinguish.getDate());
                             optionalPurchase.get().setPaidTotalValue(optionalPurchase.get().getTotalValue());
                             purchaseRepository.save(optionalPurchase.get());
@@ -118,7 +123,7 @@ public class EstinguishService {
             allDebtDao.setId(purchase.getId());
             allDebtDao.setDate(purchase.getDate());
             allDebtDao.setClient(purchase.getClient());
-            allDebtDao.setPaymentType(purchase.getPaymentType().getName().getActiveLanguage());
+            allDebtDao.setPaymentType(purchase.getPaymentType().getName().getUz_lat());
             allDebtDao.setTotalValue(purchase.getTotalValue());
             allDebtDao.setDebtTotalValue(purchase.getDebtTotalValue());
             allDebtDao.setMchj(MCHJ.CHSM);

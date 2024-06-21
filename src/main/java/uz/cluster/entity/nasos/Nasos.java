@@ -42,7 +42,7 @@ public class Nasos extends Auditable {
     private String client;
 
     @Column(name = "work_hour")
-        private double workHour;
+    private double workHour;
 
     @Column(name = "min_summ")
     private double minPrice;

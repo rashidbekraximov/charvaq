@@ -57,4 +57,13 @@ public interface LBPurchaseRepository extends JpaRepository<LBPurchase,Long> {
                                      @Param("endDate") String endDate,
                                      @Param("mchj") String mchj);
 
+
+    @Query(value = "SELECT COALESCE(sum(e.nasos),0) amount FROM lb_purchase e " +
+            "WHERE (:beginDate IS NULL OR e.date >=  TO_DATE(:beginDate, 'YYYY-MM-DD')) " +
+            "AND (:endDate IS NULL OR e.date <=  TO_DATE(:endDate, 'YYYY-MM-DD'))",
+            nativeQuery = true)
+    List<Double> findAllByBetweenDate(
+            @Param("beginDate") String beginDate,
+            @Param("endDate") String endDate
+    );
 }

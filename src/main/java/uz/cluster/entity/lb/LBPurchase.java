@@ -71,6 +71,9 @@ public class LBPurchase extends Auditable {
     @Column(name = "total_value")
     private double totalValue;
 
+    @Column(name = "nasos_hour")
+    private double nasosHour;
+
     @Column(name = "nasos")
     private double nasos;
 
@@ -121,6 +124,7 @@ public class LBPurchase extends Auditable {
         lbPurchaseDao.setValue(getValue());
         lbPurchaseDao.setTotalValue(getTotalValue());
         lbPurchaseDao.setNasos(getNasos());
+        lbPurchaseDao.setNasosHour(getNasosHour());
         lbPurchaseDao.setGivenValue(getGivenValue());
         lbPurchaseDao.setDebtTotalValue(getDebtTotalValue());
         lbPurchaseDao.setKm(getKm());
