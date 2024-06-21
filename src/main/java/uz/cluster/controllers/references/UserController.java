@@ -82,7 +82,8 @@ public class UserController {
         String fileName = "default.jpg";
         User user = GlobalParams.getCurrentUser();
         // Path to the image file
-        File imageFile = new File("/opt/images/" + (user.getFile() == null ? fileName : user.getFile().getFileName()));
+//        File imageFile = new File("/opt/images/" + (user.getFile() == null ? fileName : user.getFile().getFileName()));
+        File imageFile = new File("/opt/images/default.jpg");
         // Read the image file
         byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
 
