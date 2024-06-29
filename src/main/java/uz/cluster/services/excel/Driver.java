@@ -125,7 +125,7 @@ public class Driver {
 
         String headerKey = "Content-Disposition";
 
-        String fileName = "Tabel.xlsx";
+        String fileName = "Sotuvlar ro'yxati.xlsx";
 
         response.setContentType("application/octet-stream");
         response.setHeader(headerKey, "attachment; filename=" + java.net.URLEncoder.encode(fileName.replaceAll(" ", "_").toLowerCase(), StandardCharsets.UTF_8));

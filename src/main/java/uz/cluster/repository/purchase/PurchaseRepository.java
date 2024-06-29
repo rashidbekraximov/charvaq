@@ -14,9 +14,9 @@ import java.util.List;
 @Repository
 public interface PurchaseRepository extends JpaRepository<Purchase,Integer> {
 
-    @Query(value = "select id id,client client,location location,debt_total_value debtTotalValue,EXTRACT(DAY FROM CURRENT_DATE) - EXTRACT(DAY FROM  expiry_date) days from purchase " +
-            "where (EXTRACT(DAY FROM CURRENT_DATE) - EXTRACT(DAY FROM  expiry_date)) >= 0 and debt_total_value != 0 ", nativeQuery = true)
-    List<NotificationDto> getAllDebt();
+    @Query(value = "select id id,client client,location location,debt_total_value debtTotalValue,EXTRACT(DAY FROM  expiry_date) - EXTRACT(DAY FROM CURRENT_DATE) days from purchase " +
+            "where debt_total_value != 0 LIMIT :limit ", nativeQuery = true)
+    List<NotificationDto> getAllDebt(@Param("limit") int limit);
 
     @Query(value = "select COALESCE(sum(e.fare),0) from purchase e"
             +" WHERE (:beginDate IS NULL OR e.date >=  TO_DATE(:beginDate, 'YYYY-MM-DD')) " +

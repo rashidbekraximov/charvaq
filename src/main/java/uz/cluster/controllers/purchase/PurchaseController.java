@@ -96,9 +96,9 @@ public class PurchaseController {
         return ResponseEntity.ok(estinguishService.getSearchList(client));
     }
 
-    @GetMapping("purchase/debt")
-    public ResponseEntity<List<Notification>> getNotificationList() {
-        return ResponseEntity.ok(purchaseService.getNotifications());
+    @GetMapping("purchase/debt/{rows}")
+    public ResponseEntity<List<Notification>> getNotificationList(@PathVariable int rows) {
+        return ResponseEntity.ok(purchaseService.getNotifications(rows));
     }
 
     @PostMapping(value = "purchase/filter")

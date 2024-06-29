@@ -158,9 +158,9 @@ public class PurchaseService {
         return lineChartDaoList;
     }
 
-    public List<Notification> getNotifications(){
+    public List<Notification> getNotifications(int rows){
         List<Notification> notifications = new ArrayList<>();
-        List<NotificationDto> notificationDtos = purchaseRepository.getAllDebt();
+        List<NotificationDto> notificationDtos = purchaseRepository.getAllDebt(rows);
         notificationDtos.forEach(dto -> {
             Notification notification = new Notification();
             notification.setId(dto.getId());

@@ -27,18 +27,14 @@ public class FileEntity {
     private long fileSize;
     private LocalDateTime uploadDateTime;
 
-    @Lob
-    private byte[] data;
-
     public FileEntity() {
         this.uploadDateTime = LocalDateTime.now();
     }
 
-    public FileEntity(String fileName, String filePath, long fileSize,byte[] data) {
+    public FileEntity(String fileName, String filePath, long fileSize) {
         this.fileName = fileName;
         this.filePath = filePath;
         this.fileSize = fileSize;
-        this.data = data;
         this.uploadDateTime = LocalDateTime.now();
     }
 }

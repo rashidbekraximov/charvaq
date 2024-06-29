@@ -82,14 +82,14 @@ public class UserController {
         String fileName = "default.jpg";
         User user = GlobalParams.getCurrentUser();
         // Path to the image file
-//        File imageFile = new File("/opt/images/" + (user.getFile() == null ? fileName : user.getFile().getFileName()));
-//        File imageFile = new File("/opt/images/default.jpg");
-//
-//        if (imageFile.exists()){
-//            System.out.println("File topildi !");
-//        }
+        File imageFile = new File("/opt/images/" + (user.getFile() == null ? fileName : user.getFile().getFileName()));
+
+        if (imageFile.exists()){
+            System.out.println("File topildi !");
+        }
+
         // Read the image file
-        byte[] imageBytes = user.getFile().getData();
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
 
         // Encode the image to Base64
         String base64Image = Base64Utils.encodeToString(imageBytes);

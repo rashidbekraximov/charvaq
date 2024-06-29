@@ -5,7 +5,9 @@ FROM openjdk:11-jre-slim
 WORKDIR /app
 
 # Create a directory for logs
-RUN mkdir -p /app/logs
+RUN mkdir -p /opt/images
+
+COPY default.jpg /opt/images/default.jpg
 
 # Add the jar file
 COPY target/charvaq-0.0.1.jar charvaq.jar
