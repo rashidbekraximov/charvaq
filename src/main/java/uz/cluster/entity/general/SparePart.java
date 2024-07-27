@@ -9,6 +9,7 @@ import uz.cluster.dao.general.SparePartDao;
 import uz.cluster.entity.references.model.FuelType;
 import uz.cluster.entity.references.model.SparePartType;
 import uz.cluster.enums.ItemEnum;
+import uz.cluster.enums.MCHJ;
 import uz.cluster.enums.SexEnum;
 
 import javax.persistence.*;
@@ -50,6 +51,10 @@ public class SparePart {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "item", columnDefinition = "varchar(20) default 'FUEL'")
     private ItemEnum item;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "mchj", columnDefinition = "varchar(20) default 'CHSM'")
+    private MCHJ mchj;
 
     @Transient
     private int sparePartTypeId;
