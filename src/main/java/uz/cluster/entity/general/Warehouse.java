@@ -10,6 +10,7 @@ import uz.cluster.dao.general.WarehouseDao;
 import uz.cluster.entity.references.model.FuelType;
 import uz.cluster.entity.references.model.SparePartType;
 import uz.cluster.enums.ItemEnum;
+import uz.cluster.enums.MCHJ;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -46,6 +47,10 @@ public class Warehouse {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "item", columnDefinition = "varchar(20) default 'FUEL'")
     private ItemEnum item;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "mchj", columnDefinition = "varchar(20) default 'LB'")
+    private MCHJ mchj;
 
     @Transient
     private int sparePartTypeId;

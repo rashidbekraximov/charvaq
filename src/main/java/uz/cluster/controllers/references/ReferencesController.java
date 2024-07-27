@@ -22,8 +22,8 @@ public class ReferencesController {
 
     public static Map<String, Map<Integer, String>> globalReferenceItems = new HashMap<>();
 
-    public static Map<String, String> globalReferences = new HashMap<>();
     public static Map<String, String> localReferences = new HashMap<>();
+    public static Map<String, String> globalReferences = new HashMap<>();
 
     static {
         globalReferences.put("nasos_cost_type", "r_nasos_cost_type");
